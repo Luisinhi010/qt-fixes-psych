@@ -44,6 +44,8 @@ class FlxSoundTray extends Sprite
 
 	var _defaultScale:Float = 2.0;
 
+	var lastvolume:Int = 1;
+
 	/**
 	 * Sets up the "sound tray", the little volume meter that pops down sometimes.
 	 */

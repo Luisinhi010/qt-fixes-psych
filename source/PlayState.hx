@@ -397,7 +397,6 @@ class PlayState extends MusicBeatState
 	var hazardOverlayShit:BGSprite;
 	var luisOverlayShit:BGSprite;
 	var luisOverlayWarning:BGSprite;
-	var luisOverlayalt:BGSprite;
 	var hazardBGpulsing:Bool = false; // Set to true to pulse the background in some sections.
 	var interlopeIntroTween:FlxTween;
 	var interlopeIntroTweenHUD:FlxTween;
@@ -1004,14 +1003,6 @@ class PlayState extends MusicBeatState
 				add(luisOverlayWarning);
 			}
 
-			luisOverlayalt = new BGSprite('luis/qt-fixes/vignettealt');
-			luisOverlayalt.setGraphicSize(FlxG.width, FlxG.height);
-			luisOverlayalt.screenCenter();
-			luisOverlayalt.updateHitbox();
-			luisOverlayalt.alpha = 0.001;
-			luisOverlayalt.cameras = [camOther];
-			add(luisOverlayalt);
-
 			if (ClientPrefs.flashing)
 			{
 				hazardOverlayShit = new BGSprite('hazard/inhuman-port/alert-vignette');
@@ -1565,8 +1556,6 @@ class PlayState extends MusicBeatState
 				n.mustPress = true; */
 
 		dacamera = defaultCamZoom;
-		if (isStoryMode && !ClientPrefs.lowQuality && Paths.formatToSongPath(SONG.song) == 'careless')
-			luisOverlayalt.alpha = 0.5;
 
 		super.create();
 
@@ -2324,11 +2313,6 @@ class PlayState extends MusicBeatState
 
 		hazardRandom = FlxG.random.int(1, 5);
 		FlxG.log.notice(('Cessation Random Roll:' + hazardRandom));
-
-		if (!isStoryMode && !ClientPrefs.lowQuality && Paths.formatToSongPath(SONG.song) == 'careless')
-			FlxTween.tween(luisOverlayalt, {alpha: 0.5}, 0.5, {
-				ease: FlxEase.quadInOut
-			});
 
 		if (SONG.song.toLowerCase() == "interlope")
 		{
