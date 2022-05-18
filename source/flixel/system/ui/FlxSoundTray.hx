@@ -15,6 +15,7 @@ import flixel.util.FlxColor;
 import flash.text.AntiAliasType;
 import flash.text.GridFitType;
 #end
+import Paths;
 
 /**
  * The flixel sound tray, the little volume meter that pops down sometimes.
@@ -167,7 +168,4 @@ class FlxSoundTray extends Sprite
 		scaleX = _defaultScale;
 		scaleY = _defaultScale;
 
-		x = (0.5 * (Lib.current.stage.stageWidth - _width * _defaultScale) - FlxG.game.x);
-	}
-}
-#end
+		x = (0.5 * (Lib.current.s
