@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="connection.png">
+	<!-- Created with Adobe Animate version 19.2.0.405 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="gameover-lost-loop0000" x="4" y="4" width="1279" height="302" frameX="0" frameY="0" frameWidth="1279" frameHeight="303"/>
+	<SubTexture name="gameover-lost-loop0001" x="4" y="308" width="1279" height="302" frameX="0" frameY="-1" frameWidth="1279" frameHeight="303"/>
+	<SubTexture name="gameover-lost-loop0002" x="4" y="612" width="1279" height="302" frameX="0" frameY="0" frameWidth="1279" frameHeight="303"/>
+	<SubTexture name="gameover-lost-retry0000" x="4" y="916" width="1279" height="302" frameX="0" frameY="0" frameWidth="1279" frameHeight="303"/>
+	<SubTexture name="gameover-lost-retry0001" x="4" y="916" width="1279" height="302" frameX="0" frameY="-1" frameWidth="1279" frameHeight="303"/>
+	<SubTexture name="gameover-lost-retry0002" x="4" y="916" width="1279" height="302" frameX="0" frameY="0" frameWidth="1279" frameHeight="303"/>
+</TextureAtlas>

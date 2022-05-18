@@ -1,0 +1,11 @@
+{
+  "Lua.diagnostics.globals": [
+    "getSongPosition",
+    "curBeat",
+    "bpm",
+    "setActorX",
+    "setActorY",
+    "onUpdate",
+    "songPos"
+  ]
+}

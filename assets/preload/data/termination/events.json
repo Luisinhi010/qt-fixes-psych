@@ -1,0 +1,103 @@
+{
+	"song": {
+		"speed": 3.2,
+		"stage": "street-termination",
+		"player1": "bf",
+		"player2": "kb",
+		"player3": null,
+		"events": [
+			[
+				190270.270270271,
+				[
+					[
+						"notes modchart player",
+						"10",
+						"0"
+					],
+					[
+						"notes modchart opponent",
+						"10",
+						"0"
+					]
+				]
+			],
+			[
+				207567.567567568,
+				[
+					[
+						"notes modchart opponent",
+						"15",
+						"0"
+					],
+					[
+						"notes modchart player",
+						"15",
+						"0"
+					]
+				]
+			],
+			[
+				224864.864864866,
+				[
+					[
+						"reset notes pos",
+						"1",
+						""
+					]
+				]
+			],
+			[
+				259459.459459461,
+				[
+					[
+						"notes modchart opponent",
+						"5",
+						"15"
+					],
+					[
+						"notes modchart player",
+						"5",
+						"15"
+					]
+				]
+			],
+			[
+				276756.756756758,
+				[
+					[
+						"notes modchart player",
+						"10",
+						"20"
+					]
+				]
+			],
+			[
+				285405.405405407,
+				[
+					[
+						"notes modchart player",
+						"10",
+						"15"
+					]
+				]
+			],
+			[
+				294054.054054055,
+				[
+					[
+						"reset notes pos",
+						"5",
+						" "
+					]
+				]
+			]
+		],
+		"notes": [],
+		"validScore": false,
+		"gfVersion": "gf",
+		"bpm": 222,
+		"needsVoices": true,
+		"song": "Termination",
+		"dodgeEnabled": true
+	}
+}

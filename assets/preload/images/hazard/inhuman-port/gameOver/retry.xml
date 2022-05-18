@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="retry.png">
+	<!-- Created with Adobe Animate version 19.2.0.405 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="gameover-retry-introEMPTY.png" x="4" y="4" width="6" height="6"/>
+	<SubTexture name="gameover-retry-loop0000" x="12" y="4" width="854" height="476"/>
+	<SubTexture name="gameover-retry-loop0001" x="868" y="4" width="854" height="476"/>
+	<SubTexture name="gameover-retry-start0000" x="1724" y="4" width="6" height="6" frameX="0" frameY="0" frameWidth="854" frameHeight="476"/>
+	<SubTexture name="gameover-retry-start0001" x="4" y="482" width="854" height="476"/>
+	<SubTexture name="gameover-retry-start0002" x="860" y="482" width="854" height="476"/>
+	<SubTexture name="gameover-retry-start0003" x="4" y="960" width="854" height="476"/>
+	<SubTexture name="gameover-retry-start0004" x="860" y="960" width="854" height="476"/>
+	<SubTexture name="gameover-retry-start0005" x="4" y="1438" width="854" height="476"/>
+	<SubTexture name="gameover-retry-start0006" x="868" y="4" width="854" height="476"/>
+	<SubTexture name="gameover-retry-start0007" x="868" y="4" width="854" height="476"/>
+</TextureAtlas>

@@ -1,0 +1,423 @@
+{
+  "song": {
+    "speed": 2.9,
+    "stage": "street-kb",
+    "player1": "bf",
+    "player2": "kb",
+    "player3": null,
+    "events": [
+      [0, [["Set GF Speed", "2", ""]]],
+      [
+        20210.5263157895,
+        [
+          ["streetTV state", "5", ""],
+          ["censory overload events", "1", ""]
+        ]
+      ],
+      [24315.7894736842, [["censory overload events", "2", ""]]],
+      [
+        25263.1578947368,
+        [
+          ["streetTV state", "0", ""],
+          ["Set GF Speed", "1", ""]
+        ]
+      ],
+      [45473.6842105263, [["censory overload events", "3", ""]]],
+      [55578.947368421, [["censory overload events", "4", ""]]],
+      [65684.2105263157, [["Set GF Speed", "2", ""]]],
+      [
+        75789.4736842105,
+        [
+          ["streetTV state", "9", ""],
+          ["Alarm Gradient", "right", "0.09"]
+        ]
+      ],
+      [76421.0526315789, [["Alarm Gradient", "left", "0.09"]]],
+      [77052.6315789473, [["Alarm Gradient", "right", "0.09"]]],
+      [77684.2105263157, [["Alarm Gradient", "left", "0.09"]]],
+      [78315.7894736841, [["Alarm Gradient", "right", "0.1"]]],
+      [78947.3684210526, [["Alarm Gradient", "left", "0.1"]]],
+      [79578.947368421, [["Alarm Gradient", "right", "0.12"]]],
+      [80210.5263157894, [["Alarm Gradient", "left", "0.15"]]],
+      [80842.1052631578, [["Alarm Gradient", "right", "0.16"]]],
+      [81473.6842105262, [["Alarm Gradient", "left", "0.16"]]],
+      [82105.2631578947, [["Alarm Gradient", "right", "0.2"]]],
+      [82736.8421052631, [["Alarm Gradient", "left", "0.2"]]],
+      [83368.4210526315, [["Alarm Gradient", "right", "0.2"]]],
+      [83999.9999999999, [["Alarm Gradient", "left", "0.2"]]],
+      [84631.5789473683, [["Alarm Gradient", "right", "0.26"]]],
+      [85263.1578947368, [["Alarm Gradient", "left", "0.29"]]],
+      [85894.7368421052, [["Alarm Gradient", "right", "0.3"]]],
+      [86526.3157894736, [["Alarm Gradient", "left", "0.33"]]],
+      [87157.894736842, [["Alarm Gradient", "right", "0.36"]]],
+      [87789.4736842104, [["Alarm Gradient", "left", "0.39"]]],
+      [88421.0526315789, [["Alarm Gradient", "right", "0.41"]]],
+      [89052.6315789473, [["Alarm Gradient", "left", "0.44"]]],
+      [89684.2105263157, [["Alarm Gradient", "right", "0.47"]]],
+      [90315.7894736841, [["Alarm Gradient", "left", "0.49"]]],
+      [90947.3684210525, [["Alarm Gradient", "right", "0.5"]]],
+      [91578.947368421, [["Alarm Gradient", "left", "0.51"]]],
+      [92210.5263157894, [["Alarm Gradient", "right", "0.53"]]],
+      [92842.1052631578, [["Alarm Gradient", "left", "0.54"]]],
+      [93473.6842105262, [["Alarm Gradient", "right", "0.56"]]],
+      [94105.2631578946, [["Alarm Gradient", "left", "0.58"]]],
+      [94736.8421052631, [["Alarm Gradient", "right", "0.6"]]],
+      [95368.4210526315, [["Alarm Gradient", "left", "0.61"]]],
+      [
+        95999.9999999999,
+        [
+          ["streetTV state", "1", ""],
+          ["Set GF Speed", "1", ""],
+          ["Alarm Gradient", "right", "0.4"],
+          ["Alarm Gradient", "left", "0.4"],
+          ["censory overload events", "5", ""]
+        ]
+      ],
+      [116210.526315789, [["Alarm Gradient", "right", "0.3"]]],
+      [116842.105263158, [["Alarm Gradient", "left", "0.3"]]],
+      [117473.684210526, [["Alarm Gradient", "right", "0.3"]]],
+      [118105.263157895, [["Alarm Gradient", "left", "0.3"]]],
+      [121263.157894737, [["Alarm Gradient", "right", "0.3"]]],
+      [121894.736842105, [["Alarm Gradient", "left", "0.3"]]],
+      [122526.315789474, [["Alarm Gradient", "right", "0.3"]]],
+      [123157.894736842, [["Alarm Gradient", "left", "0.3"]]],
+      [126315.789473684, [["Alarm Gradient", "right", "0.3"]]],
+      [126947.368421052, [["Alarm Gradient", "left", "0.3"]]],
+      [127578.947368421, [["Alarm Gradient", "right", "0.3"]]],
+      [128210.526315789, [["Alarm Gradient", "left", "0.3"]]],
+      [128842.105263158, [["Alarm Gradient", "right", "0.3"]]],
+      [129473.684210526, [["Alarm Gradient", "left", "0.3"]]],
+      [130105.263157895, [["Alarm Gradient", "right", "0.3"]]],
+      [
+        130736.842105263,
+        [
+          ["Alarm Gradient", "left", "0.3"],
+          ["censory overload events", "6", ""]
+        ]
+      ],
+      [131368.421052631, [["Alarm Gradient", "right", "0.3"]]],
+      [132000, [["Alarm Gradient", "left", "0.31"]]],
+      [132631.578947368, [["Alarm Gradient", "right", "0.32"]]],
+      [133263.157894737, [["Alarm Gradient", "left", "0.33"]]],
+      [133894.736842105, [["Alarm Gradient", "right", "0.34"]]],
+      [134526.315789474, [["Alarm Gradient", "left", "0.35"]]],
+      [135157.894736842, [["Alarm Gradient", "right", "0.36"]]],
+      [135789.47368421, [["Alarm Gradient", "left", "0.36"]]],
+      [
+        136421.052631579,
+        [
+          ["Set GF Speed", "2", ""],
+          ["streetTV state", "0", ""],
+          ["censory overload events", "7", ""]
+        ]
+      ],
+      [156631.578947369, [["censory overload events", "8", ""]]],
+      [
+        176210.52631579,
+        [
+          ["streetTV state", "5", ""],
+          ["Screen Shake", "0.63,0.0097", "0.63,0.0092"],
+          ["censory overload events", "9", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [176526.315789474, [["censory Chroma", "0.018", ""]]],
+      [
+        176842.105263158,
+        [
+          ["streetTV state", "1", ""],
+          ["censory overload events", "10 ", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [
+        217263.157894738,
+        [
+          ["streetTV state", "0", ""],
+          ["Set GF Speed", "2", ""],
+          ["Alt Idle Animation", "dad", "-alt"],
+          ["censory overload events", "11", ""]
+        ]
+      ],
+      [
+        221684.210526317,
+        [
+          ["streetTV state", "6", ""],
+          ["streetBG state", "1", ""],
+          ["Screen Shake", "0.63,0.0123", "0.63,0.012"],
+          ["Alt Idle Animation", "dad", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [
+        222315.789473685,
+        [
+          ["streetTV state", "7", ""],
+          ["streetBG state", "2", ""],
+          ["Change Character OPTIONAL", "gf", "gf-404"],
+          ["Change Character OPTIONAL", "dad", "kb-404"],
+          ["Change Character OPTIONAL", "bf", "bf-404"],
+          ["newDadDrainHealthValue", "0.0095", ""],
+          ["newLossMultiplier", "1.125", ""],
+          ["Set GF Speed", "1", ""],
+          ["Gas Effect", "burst", ""],
+          ["censory overload events", "12", ""],
+          ["censory Chroma", "0.018", ""],
+          ["notes modchart player", "10", "10"],
+          ["notes modchart opponent", "10", "0"]
+        ]
+      ],
+      [222947.368421053, [["Gas Effect", "burstloop", ""]]],
+      [242526.315789475, [["newDadDrainHealthValue", "0.100", ""]]],
+      [
+        262736.842105264,
+        [
+          ["Change Character OPTIONAL", "dad", "kb"],
+          ["Change Character OPTIONAL", "bf", "bf"],
+          ["Change Character OPTIONAL", "gf", "gf"],
+          ["Set GF Speed", "1", ""],
+          ["newLossMultiplier", "1.075", ""],
+          ["newDadDrainHealthValue", "0.02", ""],
+          ["streetTV state", "1", ""],
+          ["streetBG state", "0", ""],
+          ["Gas Effect", "burstfaster", ""],
+          ["censory overload events", "13", ""],
+          ["censory Chroma", "0.018", ""],
+          ["reset notes pos", "0.5", ""]
+        ],
+        null,
+        "Hurt Note"
+      ],
+      [
+        264947.368421054,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [265263.157894738, [["censory Chroma", "0.018", ""]]],
+      [
+        267473.684210527,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [267789.473684212, [["censory Chroma", "0.018", ""]]],
+      [269052.631578949, [["censory Chroma", "0.018", ""]]],
+      [270315.789473685, [["censory Chroma", "0.018", ""]]],
+      [
+        272526.315789475,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [272842.105263159, [["censory Chroma", "0.018", ""]]],
+      [
+        275052.631578949,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [275368.421052633, [["censory Chroma", "0.018", ""]]],
+      [
+        277578.947368422,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [277894.736842107, [["censory Chroma", "0.018", ""]]],
+      [279157.894736843, [["censory Chroma", "0.018", ""]]],
+      [280421.05263158, [["censory Chroma", "0.018", ""]]],
+      [
+        282631.57894737,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [
+        282947.368421054,
+        [
+          ["Alarm Gradient", "right", "0.32"],
+          ["set vignette", "0.3", "0.3"],
+          ["censory Chroma", "0.018", ""],
+          ["notes modchart opponent", "10", "0"],
+          ["notes modchart player", "10", "0"]
+        ]
+      ],
+      [283578.947368422, [["Alarm Gradient", "left", "0.32"]]],
+      [284210.526315791, [["Alarm Gradient", "right", "0.32"]]],
+      [284842.105263159, [["Alarm Gradient", "left", "0.32"]]],
+      [
+        285157.894736843,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [
+        285473.684210528,
+        [
+          ["Alarm Gradient", "right", "0.32"],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [286105.263157896, [["Alarm Gradient", "left", "0.32"]]],
+      [286736.842105264, [["Alarm Gradient", "right", "0.32"]]],
+      [287368.421052633, [["Alarm Gradient", "left", "0.32"]]],
+      [
+        287684.210526317,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [
+        288000.000000001,
+        [
+          ["Alarm Gradient", "right", "0.32"],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [288631.57894737, [["Alarm Gradient", "left", "0.32"]]],
+      [
+        289263.157894738,
+        [
+          ["Alarm Gradient", "right", "0.32"],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [289894.736842107, [["Alarm Gradient", "left", "0.32"]]],
+      [
+        290526.315789475,
+        [
+          ["Alarm Gradient", "right", "0.32"],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [291157.894736843, [["Alarm Gradient", "left", "0.32"]]],
+      [291789.473684212, [["Alarm Gradient", "right", "0.32"]]],
+      [292421.05263158, [["Alarm Gradient", "left", "0.32"]]],
+      [
+        292736.842105265,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [
+        293052.631578949,
+        [
+          ["Alarm Gradient", "right", "0.32"],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [293684.210526317, [["Alarm Gradient", "left", "0.32"]]],
+      [294315.789473686, [["Alarm Gradient", "right", "0.32"]]],
+      [294947.368421054, [["Alarm Gradient", "left", "0.32"]]],
+      [
+        295263.157894738,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [
+        295578.947368422,
+        [
+          ["Alarm Gradient", "right", "0.32"],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [296210.526315791, [["Alarm Gradient", "left", "0.32"]]],
+      [296842.105263159, [["Alarm Gradient", "right", "0.32"]]],
+      [297473.684210528, [["Alarm Gradient", "left", "0.32"]]],
+      [
+        297789.473684212,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [
+        298105.263157896,
+        [
+          ["Alarm Gradient", "right", "0.32"],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [298736.842105265, [["Alarm Gradient", "left", "0.32"]]],
+      [
+        299368.421052633,
+        [
+          ["Alarm Gradient", "right", "0.32"],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [300000.000000001, [["Alarm Gradient", "left", "0.32"]]],
+      [
+        300631.57894737,
+        [
+          ["Alarm Gradient", "right", "0.32"],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [301263.157894738, [["Alarm Gradient", "left", "0.32"]]],
+      [301894.736842107, [["Alarm Gradient", "right", "0.32"]]],
+      [302526.315789475, [["Alarm Gradient", "left", "0.32"]]],
+      [
+        302842.105263159,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory overload events", "15", ""],
+          ["censory Chroma", "0.018", ""]
+        ]
+      ],
+      [
+        303157.894736844,
+        [
+          ["streetTV state", "0", ""],
+          ["censory Chroma", "0.018", ""],
+          ["reset notes pos", "2", ""]
+        ]
+      ],
+      [
+        308210.526315791,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.02", ""]
+        ]
+      ],
+      [
+        312947.368421054,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.02", ""]
+        ]
+      ],
+      [
+        313263.157894738,
+        [
+          ["Add Camera Zoom", "", ""],
+          ["censory Chroma", "0.02", ""]
+        ]
+      ],
+      [322105.263157896, [["censory final events", "1", ""]]],
+      [322421.052631581, [["censory final events", "2", ""]]],
+      [322736.842105265, [["censory final events", "3", ""]]],
+      [323052.631578949, [["censory final events", "4", ""]]]
+    ],
+    "notes": [],
+    "validScore": false,
+    "gfVersion": "gf",
+    "bpm": 190,
+    "needsVoices": true,
+    "song": "Censory-Overload",
+    "dodgeEnabled": null
+  }
+}

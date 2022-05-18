@@ -1,0 +1,53 @@
+{
+	"storyName": "Cutie",
+	"difficulties": "Easy, Normal, Hard, Harder",
+	"hideFreeplay": true,
+	"weekBackground": "alleyway",
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"weekCharacters": [
+		"qt",
+		"bf",
+		"gf"
+	],
+	"songs": [
+		[
+			"Carefree",
+			"qt",
+			[
+				249,
+				64,
+				148
+			]
+		],
+		[
+			"Careless",
+			"qt-nervous",
+			[
+				100,
+				90,
+				90
+			]
+		],
+		[
+			"Censory-Overload",
+			"qt",
+			[
+				69,
+				69,
+				69
+			]
+		],
+		[
+			"Terminate",
+			"qt",
+			[
+				255,
+				83,
+				23
+			]
+		]
+	],
+	"hideStoryMode": false,
+	"weekName": "QT"
+}

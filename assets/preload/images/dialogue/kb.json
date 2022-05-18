@@ -1,0 +1,89 @@
+{
+	"dialogue_pos": "left",
+	"position": [
+		-30,
+		60
+	],
+	"scale": 1.3,
+	"animations": [
+		{
+			"anim": "talk",
+			"loop_offsets": [
+				0,
+				0
+			],
+			"idle_offsets": [
+				0,
+				0
+			],
+			"loop_name": "KBDialogueNormal",
+			"idle_name": "KBDialogueNormalIDLE"
+		},
+		{
+			"loop_name": "KBDialogueAngry",
+			"idle_offsets": [
+				26,
+				1
+			],
+			"idle_name": "KBDialogueAngryIDLE",
+			"anim": "angry",
+			"loop_offsets": [
+				26,
+				1
+			]
+		},
+		{
+			"loop_name": "KBDialogueLooksAway",
+			"idle_offsets": [
+				0,
+				1
+			],
+			"idle_name": "KBDialogueLooksAwayUWU",
+			"anim": "lookAway",
+			"loop_offsets": [
+				0,
+				1
+			]
+		},
+		{
+			"loop_name": "KBDialogueLooksAwayUWU",
+			"idle_offsets": [
+				0,
+				1
+			],
+			"idle_name": "KBDialogueLooksAwayUWU",
+			"anim": "lookAwayNoTalk",
+			"loop_offsets": [
+				0,
+				1
+			]
+		},
+		{
+			"loop_name": "KBDialogueBruh",
+			"idle_offsets": [
+				0,
+				1
+			],
+			"idle_name": "KBDialogueBruhIDLE",
+			"anim": "bruh",
+			"loop_offsets": [
+				0,
+				1
+			]
+		},
+		{
+			"loop_name": "KBDialogueBruhIDLE",
+			"idle_offsets": [
+				0,
+				1
+			],
+			"idle_name": "KBDialogueBruhIDLE",
+			"anim": "bruhNoTalk",
+			"loop_offsets": [
+				0,
+				1
+			]
+		}
+	],
+	"image": "KB_Dialogue"
+}

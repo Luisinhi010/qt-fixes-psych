@@ -1,0 +1,55 @@
+{
+  "animations": [
+    {
+      "offsets": [68, -159],
+      "loop": false,
+      "fps": 24,
+      "anim": "singRIGHT",
+      "indices": [],
+      "name": "godRight"
+    },
+    {
+      "offsets": [72, -157],
+      "loop": false,
+      "fps": 24,
+      "anim": "singLEFT",
+      "indices": [],
+      "name": "godLeft"
+    },
+    {
+      "offsets": [3, -151],
+      "loop": false,
+      "fps": 24,
+      "anim": "singUP",
+      "indices": [],
+      "name": "godUp"
+    },
+    {
+      "offsets": [6, -162],
+      "loop": false,
+      "fps": 24,
+      "anim": "singDOWN",
+      "indices": [],
+      "name": "godDown"
+    },
+    {
+      "offsets": [4, -163],
+      "loop": false,
+      "fps": 24,
+      "anim": "idle",
+      "indices": [],
+      "name": "godIdle"
+    }
+  ],
+  "no_antialiasing": false,
+  "splashSkin": "noteSplashesQtNew",
+  "image": "characters/qt-port/qt_meme",
+  "position": [80, 270],
+  "healthicon": "qt",
+  "flip_x": false,
+  "healthbar_colors": [255, 165, 202],
+  "camera_position": [-150, 110],
+  "noteSkin": "NOTE_assets_Qt_New",
+  "sing_duration": 4,
+  "scale": 1
+}

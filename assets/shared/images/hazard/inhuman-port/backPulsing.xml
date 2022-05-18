@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="backPulsing.png">
+	<!-- Created with Adobe Animate version 19.2.0.405 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="kbBACK-pulse0000" x="4" y="4" width="2560" height="1400"/>
+	<SubTexture name="kbBACK-pulse0001" x="4" y="1406" width="2560" height="1400"/>
+	<SubTexture name="kbBACK-pulse0002" x="4" y="2808" width="2560" height="1400"/>
+	<SubTexture name="kbBACK-pulse0003" x="4" y="4210" width="2560" height="1400"/>
+	<SubTexture name="kbBACK-pulse0004" x="4" y="5612" width="2560" height="1400"/>
+	<SubTexture name="kbBACK-pulse0005" x="4" y="5612" width="2560" height="1400"/>
+</TextureAtlas>

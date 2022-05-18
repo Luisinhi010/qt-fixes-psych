@@ -1,0 +1,20 @@
+{
+	"songs": [
+		["Terminate", "qt", [165, 0, 77]]
+	],
+
+	"weekCharacters": [
+		"qt",
+		"bf",
+		"gf"
+	],
+	"weekBackground": "alleyway",
+
+	"storyName": "Cutie TESTING",
+	"weekBefore": "qt",
+	"weekName": "Tutorial",
+	"startUnlocked": true,
+
+	"hideStoryMode": true,
+	"hideFreeplay": true
+}

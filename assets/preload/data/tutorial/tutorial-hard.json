@@ -1,0 +1,982 @@
+{
+	"song": {
+		"player1": "bf",
+		"sectionLengths": [],
+		"notes": [
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						9600,
+						0,
+						0
+					],
+					[
+						10800,
+						3,
+						0
+					]
+				],
+				"mustHitSection": false
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						12000,
+						0,
+						0
+					],
+					[
+						13200,
+						3,
+						0
+					]
+				],
+				"mustHitSection": false
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						14400,
+						0,
+						0
+					],
+					[
+						15600,
+						3,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						16800,
+						0,
+						0
+					],
+					[
+						18000,
+						3,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						19200,
+						2,
+						0
+					],
+					[
+						20400,
+						1,
+						0
+					]
+				],
+				"mustHitSection": false
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						21600,
+						2,
+						0
+					],
+					[
+						22800,
+						1,
+						0
+					]
+				],
+				"mustHitSection": false
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						24000,
+						2,
+						0
+					],
+					[
+						25200,
+						1,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						26400,
+						2,
+						0
+					],
+					[
+						27600,
+						1,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						28800,
+						0,
+						0
+					],
+					[
+						30000,
+						2,
+						0
+					]
+				],
+				"mustHitSection": false
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						31200,
+						1,
+						0
+					],
+					[
+						32400,
+						3,
+						0
+					]
+				],
+				"mustHitSection": false
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						33600,
+						0,
+						0
+					],
+					[
+						34800,
+						2,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						36000,
+						1,
+						0
+					],
+					[
+						37200,
+						3,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						38400,
+						1,
+						0
+					],
+					[
+						39000,
+						1,
+						0
+					],
+					[
+						39600,
+						2,
+						0
+					]
+				],
+				"mustHitSection": false
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						40800,
+						1,
+						0
+					],
+					[
+						41400,
+						1,
+						0
+					],
+					[
+						42000,
+						3,
+						0
+					]
+				],
+				"mustHitSection": false
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						43200,
+						1,
+						0
+					],
+					[
+						43800,
+						1,
+						0
+					],
+					[
+						44400,
+						2,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						45600,
+						1,
+						0
+					],
+					[
+						46200,
+						1,
+						0
+					],
+					[
+						46800,
+						3,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						48000,
+						1,
+						0
+					],
+					[
+						48300,
+						2,
+						0
+					],
+					[
+						48600,
+						3,
+						0
+					],
+					[
+						48900,
+						2,
+						0
+					],
+					[
+						49800,
+						3,
+						0
+					]
+				],
+				"mustHitSection": false
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						50400,
+						1,
+						0
+					],
+					[
+						50700,
+						2,
+						0
+					],
+					[
+						51000,
+						3,
+						0
+					],
+					[
+						51300,
+						2,
+						0
+					],
+					[
+						52200,
+						3,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						52800,
+						3,
+						0
+					],
+					[
+						53400,
+						1,
+						0
+					],
+					[
+						54000,
+						0,
+						0
+					],
+					[
+						54600,
+						1,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						55200,
+						2,
+						0
+					],
+					[
+						55800,
+						3,
+						0
+					],
+					[
+						56400,
+						0,
+						0
+					],
+					[
+						57000,
+						2,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						57600,
+						1,
+						750
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [],
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"sectionNotes": [
+					[
+						62400,
+						0,
+						0
+					],
+					[
+						62550,
+						1,
+						0
+					],
+					[
+						62700,
+						2,
+						0
+					],
+					[
+						62850,
+						3,
+						0
+					],
+					[
+						63000,
+						2,
+						0
+					],
+					[
+						63150,
+						1,
+						0
+					],
+					[
+						63300,
+						0,
+						0
+					],
+					[
+						63450,
+						1,
+						0
+					],
+					[
+						63600,
+						2,
+						0
+					],
+					[
+						63750,
+						3,
+						0
+					],
+					[
+						63900,
+						2,
+						0
+					],
+					[
+						64050,
+						3,
+						0
+					],
+					[
+						64200,
+						2,
+						0
+					],
+					[
+						64350,
+						3,
+						0
+					],
+					[
+						64650,
+						0,
+						0
+					],
+					[
+						64500,
+						1,
+						0
+					]
+				],
+				"mustHitSection": true
+			},
+			{
+				"lengthInSteps": 16,
+				"sectionNotes": [],
+				"typeOfSection": 0,
+				"mustHitSection": true,
+				"changeBPM": false,
+				"bpm": 100
+			},
+			{
+				"sectionNotes": [],
+				"typeOfSection": 0,
+				"lengthInSteps": 16,
+				"gfSection": false,
+				"altAnim": false,
+				"mustHitSection": true,
+				"changeBPM": false,
+				"bpm": 100
+			},
+			{
+				"gfSection": false,
+				"lengthInSteps": 16,
+				"altAnim": false,
+				"typeOfSection": 0,
+				"sectionNotes": [],
+				"bpm": 100,
+				"changeBPM": false,
+				"mustHitSection": true
+			}
+		],
+		"player2": "gf",
+		"gfVersion": "gf",
+		"events": [
+			[
+				0,
+				[
+					[
+						"newDodgeDuration",
+						"0.3",
+						""
+					],
+					[
+						"newDodgeCooldown",
+						"0.175",
+						""
+					]
+				]
+			],
+			[
+				9600,
+				[
+					[
+						"KB_AttackPrepare",
+						"",
+						"1"
+					]
+				]
+			],
+			[
+				10200,
+				[
+					[
+						"KB_Alert",
+						"",
+						""
+					]
+				]
+			],
+			[
+				10800,
+				[
+					[
+						"KB_AttackFire",
+						"",
+						""
+					]
+				]
+			],
+			[
+				12000,
+				[
+					[
+						"KB_AttackPrepare",
+						"",
+						""
+					]
+				]
+			],
+			[
+				12600,
+				[
+					[
+						"KB_Alert",
+						"",
+						""
+					]
+				]
+			],
+			[
+				13200,
+				[
+					[
+						"KB_AttackFire",
+						"",
+						""
+					]
+				]
+			],
+			[
+				19200,
+				[
+					[
+						"KB_AttackPrepare",
+						"",
+						""
+					]
+				]
+			],
+			[
+				19800,
+				[
+					[
+						"KB_AlertDouble",
+						"",
+						""
+					]
+				]
+			],
+			[
+				20400,
+				[
+					[
+						"KB_AttackFire",
+						"",
+						""
+					]
+				]
+			],
+			[
+				20850,
+				[
+					[
+						"KB_AttackFireDOUBLE",
+						"1",
+						""
+					]
+				]
+			],
+			[
+				21000,
+				[
+					[
+						"KB_AttackFireDOUBLE",
+						"",
+						""
+					]
+				]
+			],
+			[
+				21600,
+				[
+					[
+						"KB_AttackPrepare",
+						"",
+						""
+					]
+				]
+			],
+			[
+				22200,
+				[
+					[
+						"KB_AlertDouble",
+						"",
+						""
+					]
+				]
+			],
+			[
+				22800,
+				[
+					[
+						"KB_AttackFire",
+						"",
+						""
+					]
+				]
+			],
+			[
+				23250,
+				[
+					[
+						"KB_AttackFireDOUBLE",
+						"1",
+						""
+					]
+				]
+			],
+			[
+				23400,
+				[
+					[
+						"KB_AttackFireDOUBLE",
+						"",
+						""
+					]
+				]
+			],
+			[
+				28800,
+				[
+					[
+						"KB_AttackPrepare",
+						"",
+						""
+					]
+				]
+			],
+			[
+				29400,
+				[
+					[
+						"KB_Alert",
+						"",
+						""
+					]
+				]
+			],
+			[
+				30000,
+				[
+					[
+						"KB_AttackFire",
+						"",
+						""
+					]
+				]
+			],
+			[
+				31200,
+				[
+					[
+						"KB_AttackPrepare",
+						"",
+						""
+					]
+				]
+			],
+			[
+				31800,
+				[
+					[
+						"KB_AlertDouble",
+						"",
+						""
+					]
+				]
+			],
+			[
+				32400,
+				[
+					[
+						"KB_AttackFire",
+						"",
+						""
+					]
+				]
+			],
+			[
+				32850,
+				[
+					[
+						"KB_AttackFireDOUBLE",
+						"1",
+						""
+					]
+				]
+			],
+			[
+				33000,
+				[
+					[
+						"KB_AttackFireDOUBLE",
+						"",
+						""
+					]
+				]
+			],
+			[
+				36000,
+				[
+					[
+						"KB_AttackPrepare",
+						"",
+						""
+					]
+				]
+			],
+			[
+				36600,
+				[
+					[
+						"KB_Alert",
+						"",
+						""
+					]
+				]
+			],
+			[
+				37200,
+				[
+					[
+						"KB_AttackFire",
+						"",
+						""
+					]
+				]
+			],
+			[
+				43200,
+				[
+					[
+						"KB_AttackPrepare",
+						"",
+						""
+					]
+				]
+			],
+			[
+				43800,
+				[
+					[
+						"KB_Alert",
+						"",
+						""
+					]
+				]
+			],
+			[
+				44400,
+				[
+					[
+						"KB_AttackFire",
+						"",
+						""
+					]
+				]
+			],
+			[
+				45600,
+				[
+					[
+						"KB_AttackPrepare",
+						"",
+						""
+					]
+				]
+			],
+			[
+				46200,
+				[
+					[
+						"KB_AlertDouble",
+						"",
+						""
+					]
+				]
+			],
+			[
+				46800,
+				[
+					[
+						"KB_AttackFire",
+						"",
+						""
+					]
+				]
+			],
+			[
+				47250,
+				[
+					[
+						"KB_AttackFireDOUBLE",
+						"1",
+						""
+					]
+				]
+			],
+			[
+				47400,
+				[
+					[
+						"KB_AttackFireDOUBLE",
+						"",
+						""
+					]
+				]
+			],
+			[
+				56400,
+				[
+					[
+						"KB_AttackPrepare",
+						"",
+						""
+					]
+				]
+			],
+			[
+				57000,
+				[
+					[
+						"KB_Alert",
+						"",
+						""
+					]
+				]
+			],
+			[
+				57600,
+				[
+					[
+						"KB_AttackFire",
+						"",
+						""
+					]
+				]
+			]
+		],
+		"player3": null,
+		"dodgeEnabled": true,
+		"song": "Tutorial",
+		"needsVoices": false,
+		"sections": 0,
+		"validScore": true,
+		"bpm": 100,
+		"speed": 1.2
+	}
+}

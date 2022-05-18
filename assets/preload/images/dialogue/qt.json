@@ -1,0 +1,63 @@
+{
+	"dialogue_pos": "left",
+	"position": [
+		50,
+		50
+	],
+	"scale": 1.35,
+	"animations": [
+		{
+			"anim": "talk",
+			"loop_offsets": [
+				0,
+				7
+			],
+			"idle_offsets": [
+				0,
+				2
+			],
+			"loop_name": "QTDialogueNormalLoop",
+			"idle_name": "QTDialogueNormalIDLE"
+		},
+		{
+			"loop_offsets": [
+				36,
+				30
+			],
+			"anim": "excited",
+			"idle_offsets": [
+				27,
+				18
+			],
+			"loop_name": "QTDialogueHappyLoop",
+			"idle_name": "QTDialogueHappyIDLE"
+		},
+		{
+			"idle_offsets": [
+				0,
+				1
+			],
+			"anim": "nervous",
+			"loop_offsets": [
+				1,
+				7
+			],
+			"idle_name": "QTDialogueNervousIDLE",
+			"loop_name": "QTDialogueNervousLoop"
+		},
+		{
+			"loop_offsets": [
+				-51,
+				-34
+			],
+			"anim": "fucked",
+			"idle_offsets": [
+				-51,
+				-34
+			],
+			"loop_name": "QTDialogueFucked",
+			"idle_name": "QTDialogueFucked"
+		}
+	],
+	"image": "QT_Dialogue"
+}

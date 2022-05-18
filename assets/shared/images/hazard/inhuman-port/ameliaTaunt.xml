@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ameliaTaunt.png">
+	<!-- Created with Adobe Animate version 19.2.0.405 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Amelia_Chuckle0000" x="4" y="4" width="1348" height="1141" frameX="0" frameY="0" frameWidth="1348" frameHeight="1143"/>
+	<SubTexture name="Amelia_Chuckle0001" x="4" y="4" width="1348" height="1141" frameX="0" frameY="0" frameWidth="1348" frameHeight="1143"/>
+	<SubTexture name="Amelia_Chuckle0002" x="1354" y="4" width="1348" height="1141" frameX="0" frameY="-2" frameWidth="1348" frameHeight="1143"/>
+	<SubTexture name="Amelia_Chuckle0003" x="1354" y="4" width="1348" height="1141" frameX="0" frameY="-2" frameWidth="1348" frameHeight="1143"/>
+	<SubTexture name="Amelia_Laugh0000" x="2704" y="4" width="1096" height="1188" frameX="0" frameY="-4" frameWidth="1096" frameHeight="1192"/>
+	<SubTexture name="Amelia_Laugh0001" x="2704" y="4" width="1096" height="1188" frameX="0" frameY="-4" frameWidth="1096" frameHeight="1192"/>
+	<SubTexture name="Amelia_Laugh0002" x="2704" y="4" width="1096" height="1188" frameX="0" frameY="-4" frameWidth="1096" frameHeight="1192"/>
+	<SubTexture name="Amelia_Laugh0003" x="4" y="1194" width="1096" height="1188" frameX="0" frameY="0" frameWidth="1096" frameHeight="1192"/>
+	<SubTexture name="Amelia_Laugh0004" x="4" y="1194" width="1096" height="1188" frameX="0" frameY="0" frameWidth="1096" frameHeight="1192"/>
+	<SubTexture name="Amelia_Laugh0005" x="4" y="1194" width="1096" height="1188" frameX="0" frameY="0" frameWidth="1096" frameHeight="1192"/>
+</TextureAtlas>
