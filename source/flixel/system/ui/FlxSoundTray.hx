@@ -168,4 +168,7 @@ class FlxSoundTray extends Sprite
 		scaleX = _defaultScale;
 		scaleY = _defaultScale;
 
-		x = (0.5 * (Lib.current.s
+		x = (0.5 * (Lib.current.stage.stageWidth - _width * _defaultScale) - FlxG.game.x);
+	}
+}
+#end
