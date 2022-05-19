@@ -46,6 +46,8 @@ class FlxSoundTray extends Sprite
 
 	var lastvolume:Int = 1;
 
+	// i will test something. -Luis
+
 	/**
 	 * Sets up the "sound tray", the little volume meter that pops down sometimes.
 	 */

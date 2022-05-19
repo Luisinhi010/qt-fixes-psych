@@ -164,7 +164,7 @@
           ["censory overload events", "12", ""],
           ["censory Chroma", "0.018", ""],
           ["notes modchart player", "10", "10"],
-          ["notes modchart opponent", "10", "0"]
+          ["notes modchart opponent", "10", "10"]
         ]
       ],
       [222947.368421053, [["Gas Effect", "burstloop", ""]]],
