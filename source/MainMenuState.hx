@@ -259,6 +259,7 @@ class MainMenuState extends MusicBeatState
 		if (!ClientPrefs.lowQuality)
 		{
 			iconBG = new FlxSprite().loadGraphic(Paths.image('luis/qt-fixes/iconbackground'));
+			iconBG.y = FlxG.height - iconBG.height;
 			iconBG.scrollFactor.set();
 			iconBG.updateHitbox();
 			iconBG.antialiasing = ClientPrefs.globalAntialiasing;
@@ -431,11 +432,6 @@ class MainMenuState extends MusicBeatState
 				selectedSomethin = true;
 				MusicBeatState.switchState(new MasterEditorMenu());
 			}
-			/*if (controls.RESET)
-				{
-					BrutalityGameOverSubstate.characterName = 'amelia';
-					openSubState(new BrutalityGameOverSubstate('health', (new PlayState())));
-			}*/
 			#end
 		}
 

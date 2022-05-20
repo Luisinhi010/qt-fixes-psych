@@ -3412,7 +3412,10 @@ class PlayState extends MusicBeatState
 				}
 
 				if (!daNote.haveCustomTexture && !ClientPrefs.lowQuality)
-					daNote.texture = daNote.mustPress ? boyfriend.noteSkinFile : dad.noteSkinFile;
+					if (daNote.gfNote)
+						daNote.texture = gf.noteSkinFile;
+					else
+						daNote.texture = daNote.mustPress ? boyfriend.noteSkinFile : dad.noteSkinFile;
 				// ayo i just love this
 
 				if (!daNote.mustPress && daNote.wasGoodHit && !daNote.hitByOpponent && !daNote.ignoreNote && !dad.stunned && !daNote.hitCausesMiss)
@@ -3443,7 +3446,8 @@ class PlayState extends MusicBeatState
 				if (strumGroup.members[daNote.noteData].sustainReduce
 					&& daNote.isSustainNote
 					&& (daNote.mustPress || !daNote.ignoreNote)
-					&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+					&& (!daNote.mustPress
+						|| ((daNote.wasGoodHit || !daNote.hitCausesMiss) || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 				{
 					if (strumScroll)
 					{
@@ -6869,23 +6873,7 @@ class PlayState extends MusicBeatState
 				char = gf;
 
 			if ((cameramove && char.curCharacter.startsWith("kb") && !char.curCharacter.startsWith("kb-classic")) || forcecameramove)
-			{
-				switch (Math.abs(note.noteData % 4))
-				{
-					case 0:
-						camX = -130;
-						camY = 20;
-					case 1:
-						camY = 30;
-						camX = -40;
-					case 2:
-						camY = -70;
-						camX = -50;
-					case 3:
-						camX = 65;
-						camY = -20;
-				} // custom camera movement :D -Luis
-			}
+				movecamera(Math.abs(note.noteData % 4), note);
 
 			char.playAnim(animToPlay, true);
 			char.holdTimer = 0;
@@ -7683,6 +7671,89 @@ class PlayState extends MusicBeatState
 	#end
 
 	// ported somethings to function down here cuz no code flood -Luis
+
+	public function movecamera(note:Float, danote:Note = null) // re-did the camera move code. whatever i will use array sometime in the future so yea
+	{
+		if (danote.isSustainNote)
+		{
+			if (danote.animation.curAnim.name.endsWith('end'))
+				switch (note)
+				{
+					case 0:
+						camX = -130;
+						camY = 20;
+					case 1:
+						camY = 30;
+						camX = -40;
+					case 2:
+						camY = -70;
+						camX = -50;
+					case 3:
+						camX = 65;
+						camY = -20;
+				}
+			else
+				switch (note)
+				{
+					case 0:
+						camX = -150;
+						camY = 25;
+					case 1:
+						camY = 50;
+						camX = -45;
+					case 2:
+						camY = -85;
+						camX = -53;
+					case 3:
+						camX = 84;
+						camY = -30;
+				} // custom camera movement :D -Luis
+		}
+		else if (!danote.isSustainNote)
+			switch (note)
+			{
+				case 0:
+					camX = -150;
+					camY = 25;
+					new FlxTimer().start(0.4, function(tmr:FlxTimer)
+					{
+						if (camX == -150)
+							camX = -130;
+						if (camY == 25)
+							camY = 20;
+					});
+				case 1:
+					camY = 50;
+					camX = -45;
+					new FlxTimer().start(0.4, function(tmr:FlxTimer)
+					{
+						if (camY == 50)
+							camY = 30;
+						if (camX == -45)
+							camX = -40;
+					});
+				case 2:
+					camY = -85;
+					camX = -53;
+					new FlxTimer().start(0.4, function(tmr:FlxTimer)
+					{
+						if (camY == -85)
+							camY = -70;
+						if (camX == -53)
+							camX = -50;
+					});
+				case 3:
+					camX = 84;
+					camY = -30;
+					new FlxTimer().start(0.4, function(tmr:FlxTimer)
+					{
+						if (camX == 84)
+							camX = 65;
+						if (camY == -30)
+							camY = -20;
+					});
+			}
+	}
 
 	public function Gas_Release(anim:String = 'burst')
 	{

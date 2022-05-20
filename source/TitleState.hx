@@ -446,6 +446,11 @@ class TitleState extends MusicBeatState
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT;
 
+		if (FlxG.mouse.justPressed)
+		{
+			pressedEnter = true;
+		}
+
 		#if mobile
 		for (touch in FlxG.touches.list)
 		{
@@ -465,6 +470,9 @@ class TitleState extends MusicBeatState
 
 			#if switch
 			if (gamepad.justPressed.B)
+				pressedEnter = true;
+			#else
+			if (gamepad.justPressed.A)
 				pressedEnter = true;
 			#end
 		}
