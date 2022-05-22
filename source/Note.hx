@@ -119,6 +119,9 @@ class Note extends FlxSprite
 					noAnimation = true;
 				case 'GF Sing':
 					gfNote = true;
+					colorSwap.hue = 0;
+					colorSwap.saturation = 0;
+					colorSwap.brightness = 0;
 				case 'Invisible Hurt Note':
 					ignoreNote = mustPress;
 					copyAlpha = false;
@@ -140,6 +143,9 @@ class Note extends FlxSprite
 					reloadNote('', 'NOTE_assets_Kb');
 					haveCustomTexture = true;
 					noteSplashTexture = 'noteSplashesKb';
+					colorSwap.hue = 0;
+					colorSwap.saturation = 0;
+					colorSwap.brightness = 0;
 				case 'Miss Note': // lmao
 					hitCausesMiss = !mustPress;
 			}

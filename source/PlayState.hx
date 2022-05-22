@@ -5934,19 +5934,6 @@ class PlayState extends MusicBeatState
 
 					trace('LOADING NEXT SONG');
 					trace(Paths.formatToSongPath(PlayState.storyPlaylist[0]) + difficulty);
-
-					var winterHorrorlandNext = (Paths.formatToSongPath(SONG.song) == "eggnog");
-					if (winterHorrorlandNext)
-					{
-						var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
-							-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-						blackShit.scrollFactor.set();
-						add(blackShit);
-						camHUD.visible = false;
-
-						FlxG.sound.play(Paths.sound('Lights_Shut_off'));
-					}
-
 					FlxTransitionableState.skipNextTransIn = true;
 					FlxTransitionableState.skipNextTransOut = true;
 
@@ -5956,19 +5943,8 @@ class PlayState extends MusicBeatState
 					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0] + difficulty, PlayState.storyPlaylist[0]);
 					FlxG.sound.music.stop();
 
-					if (winterHorrorlandNext)
-					{
-						new FlxTimer().start(1.5, function(tmr:FlxTimer)
-						{
-							cancelMusicFadeTween();
-							LoadingState.loadAndSwitchState(new PlayState());
-						});
-					}
-					else
-					{
-						cancelMusicFadeTween();
-						LoadingState.loadAndSwitchState(new PlayState());
-					}
+					cancelMusicFadeTween();
+					LoadingState.loadAndSwitchState(new PlayState());
 				}
 			}
 			else
@@ -6873,7 +6849,7 @@ class PlayState extends MusicBeatState
 				char = gf;
 
 			if ((cameramove && char.curCharacter.startsWith("kb") && !char.curCharacter.startsWith("kb-classic")) || forcecameramove)
-				movecamera(Math.abs(note.noteData % 4), note);
+				movecamera(note);
 
 			char.playAnim(animToPlay, true);
 			char.holdTimer = 0;
@@ -7672,87 +7648,69 @@ class PlayState extends MusicBeatState
 
 	// ported somethings to function down here cuz no code flood -Luis
 
-	public function movecamera(note:Float, danote:Note = null) // re-did the camera move code. whatever i will use array sometime in the future so yea
+	public function movecamera(danote:Note = null) // well i tried
 	{
+		var cameraposX:Array<Int> = [-130, -40, -50, 65];
+		var cameraposXextended:Array<Int> = [-150, -45, -53, 84];
+		var cameraposY:Array<Int> = [20, 30, -70, -20];
+		var cameraposYextended:Array<Int> = [25, 50, -85, -30];
+
+		if (danote == null)
+			return;
+
 		if (danote.isSustainNote)
 		{
 			if (danote.animation.curAnim.name.endsWith('end'))
-				switch (note)
-				{
-					case 0:
-						camX = -130;
-						camY = 20;
-					case 1:
-						camY = 30;
-						camX = -40;
-					case 2:
-						camY = -70;
-						camX = -50;
-					case 3:
-						camX = 65;
-						camY = -20;
-				}
+			{
+				camX = cameraposX[Std.int(Math.abs(danote.noteData))];
+				camY = cameraposY[Std.int(Math.abs(danote.noteData))];
+			}
 			else
-				switch (note)
-				{
-					case 0:
-						camX = -150;
-						camY = 25;
-					case 1:
-						camY = 50;
-						camX = -45;
-					case 2:
-						camY = -85;
-						camX = -53;
-					case 3:
-						camX = 84;
-						camY = -30;
-				} // custom camera movement :D -Luis
+			{
+				camX = cameraposXextended[Std.int(Math.abs(danote.noteData))];
+				camY = cameraposYextended[Std.int(Math.abs(danote.noteData))];
+			}
 		}
 		else if (!danote.isSustainNote)
-			switch (note)
+		{
+			camX = cameraposXextended[Std.int(Math.abs(danote.noteData))];
+			camY = cameraposYextended[Std.int(Math.abs(danote.noteData))];
+			switch (Math.abs(danote.noteData % 4)) // i'm stupid
 			{
 				case 0:
-					camX = -150;
-					camY = 25;
 					new FlxTimer().start(0.4, function(tmr:FlxTimer)
 					{
-						if (camX == -150)
-							camX = -130;
-						if (camY == 25)
-							camY = 20;
+						if (camX == cameraposXextended[0])
+							camX = cameraposX[0];
+						if (camY == cameraposYextended[0])
+							camY = cameraposY[0];
 					});
 				case 1:
-					camY = 50;
-					camX = -45;
 					new FlxTimer().start(0.4, function(tmr:FlxTimer)
 					{
-						if (camY == 50)
-							camY = 30;
-						if (camX == -45)
-							camX = -40;
+						if (camY == cameraposYextended[1])
+							camY = cameraposY[1];
+						if (camX == cameraposXextended[1])
+							camX = cameraposX[1];
 					});
 				case 2:
-					camY = -85;
-					camX = -53;
 					new FlxTimer().start(0.4, function(tmr:FlxTimer)
 					{
-						if (camY == -85)
-							camY = -70;
-						if (camX == -53)
-							camX = -50;
+						if (camY == cameraposYextended[2])
+							camY = cameraposY[2];
+						if (camX == cameraposXextended[2])
+							camX = cameraposX[2];
 					});
 				case 3:
-					camX = 84;
-					camY = -30;
 					new FlxTimer().start(0.4, function(tmr:FlxTimer)
 					{
-						if (camX == 84)
-							camX = 65;
-						if (camY == -30)
-							camY = -20;
+						if (camX == cameraposXextended[3])
+							camX = cameraposX[3];
+						if (camY == cameraposYextended[3])
+							camY = cameraposY[3];
 					});
 			}
+		}
 	}
 
 	public function Gas_Release(anim:String = 'burst')

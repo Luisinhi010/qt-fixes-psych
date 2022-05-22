@@ -90,9 +90,9 @@ class Main extends Sprite
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
 
-		/*#if (!debug && sys)
-			initialState = Cache;
-			#end */
+		#if (!debug && sys)
+		initialState = Cache;
+		#end
 
 		ClientPrefs.loadDefaultKeys();
 		// fuck you, persistent caching stays ON during sex

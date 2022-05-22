@@ -23,6 +23,7 @@ class Cache extends MusicBeatState
 {
 	var toBeDone = 0;
 	var done = 0;
+	var donefloat:Float = 0;
 
 	var bar:FlxBar;
 
@@ -43,14 +44,21 @@ class Cache extends MusicBeatState
 		FlxG.worldBounds.set(0, 0);
 		FlxG.mouse.visible = false;
 
-		FlxGraphic.defaultPersist = true;
-		// Note to self though, this will break "destroyOnNotUse" so remember to disable persist on any graphics you want to destroy when not being used.
-
 		bitmapData = new Map<String, FlxGraphic>();
 		bitmapData2 = new Map<String, FlxGraphic>();
 		bitmapData3 = new Map<String, FlxGraphic>();
 
-		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('modbanner'));
+		var menuBG:FlxSprite;
+		if (FlxG.random.bool(60))
+		{
+			menuBG = new FlxSprite();
+			menuBG.frames = Paths.getSparrowAtlas('Loading-Anim');
+			menuBG.animation.addByPrefix('idle', 'Loading', 24, true);
+			menuBG.animation.play('idle', true, FlxG.random.bool(10));
+		}
+		else
+			menuBG = new FlxSprite().loadGraphic(Paths.image('modbanner'));
+
 		menuBG.screenCenter();
 		add(menuBG);
 
@@ -83,8 +91,7 @@ class Cache extends MusicBeatState
 
 		toBeDone = Lambda.count(images) + Lambda.count(images1) + Lambda.count(images2) + Lambda.count(images3);
 
-		bar = new FlxBar(10, FlxG.height - 50, FlxBarFillDirection.LEFT_TO_RIGHT, FlxG.width - 20, 40, this, 'done', 0, toBeDone);
-		// bar.numDivisions = 800;
+		bar = new FlxBar(10, FlxG.height - 50, FlxBarFillDirection.LEFT_TO_RIGHT, FlxG.width - 20, 40, this, 'donefloat', 0, toBeDone);
 		bar.createFilledBar(FlxColor.BLACK, FlxColor.PURPLE, true);
 		add(bar);
 		text = new FlxText(0, bar.y + 2, 0, "Loading...", 34);
@@ -97,11 +104,6 @@ class Cache extends MusicBeatState
 		sys.thread.Thread.create(() ->
 		{
 			cache();
-			while (!loaded)
-			{
-				if (toBeDone != 0 && done != toBeDone)
-					text.text = "Loading... (" + done + "/" + toBeDone + ")";
-			}
 		});
 
 		super.create();
@@ -193,6 +195,7 @@ class Cache extends MusicBeatState
 
 	function createtxt(text:String)
 	{
+		FlxTween.tween(this, {donefloat: done}, 0.1, {ease: FlxEase.cubeOut});
 		trace(text);
 		var txt:FlxText = new FlxText(20, FlxG.height - 60, 400, text, 32);
 		txt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
