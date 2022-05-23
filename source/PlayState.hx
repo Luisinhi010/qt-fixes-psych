@@ -401,6 +401,7 @@ class PlayState extends MusicBeatState
 
 	// separating hud from PlayState because it's dumb as fuck to have it here
 	public static var gameHUD:GameHUD;
+
 	private var allUIs:Array<FlxCamera> = [];
 
 	override public function create()
@@ -1174,7 +1175,7 @@ class PlayState extends MusicBeatState
 
 		qt_gaskb.visible = (dad.curCharacter.startsWith("kb") && !dad.curCharacter.startsWith("kb-classic"));
 
-		// blueshader.shader.enabled.value = [true];
+		blueshader.shader.enabled.value = [true];
 		blueshader.shader.r.value = [1];
 		blueshader.shader.g.value = [0];
 		blueshader.shader.b.value = [0.1];
