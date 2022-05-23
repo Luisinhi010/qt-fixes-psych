@@ -20,7 +20,7 @@ import flixel.util.FlxTimer;
 using StringTools;
 
 /**
-*	usually this class would be way more simple in terms of the contents of it
+*	usually this class would be way more simple when it comes to objects
 *	but due to this mod being a literal giant in terms of content, I had to make it
 *	the way it currently is, while also transferring some PlayState stuff to here aside from the
 *	actual hud -BeastlyGhost
