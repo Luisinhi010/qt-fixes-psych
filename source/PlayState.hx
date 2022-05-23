@@ -60,7 +60,6 @@ import Shaders;
 #if sys
 import sys.FileSystem;
 #end
-
 import hud.*;
 
 using StringTools;
@@ -306,7 +305,9 @@ class PlayState extends MusicBeatState
 
 	var disableDefaultCamZooming:Bool = false;
 	var disableArrowIntro:Bool = false;
+
 	public var forceMiddleScroll:Bool = false;
+
 	var controlsPlayer2:Bool = false; // Set to true if you are doing modchart shit. Stops middle scroll from disabling player2's notes and the player can hit them as if they were player 1 notes (if that makes sense?)
 	var causeOfDeath:String = 'health';
 
@@ -413,6 +414,7 @@ class PlayState extends MusicBeatState
 
 	// separating hud from PlayState because it's dumb as fuck to have it here
 	public static var gameHUD:GameHUD;
+
 	private var allUIs:Array<FlxCamera> = [];
 
 	override public function create()
@@ -937,7 +939,8 @@ class PlayState extends MusicBeatState
 				hazardBlack.cameras = [camOther];
 				add(hazardBlack);
 
-				for (hud in allUIs) {
+				for (hud in allUIs)
+				{
 					hud.visible = true;
 					hud.alpha = 0;
 				}
@@ -2283,7 +2286,7 @@ class PlayState extends MusicBeatState
 		else if (!disableDefaultCamZooming && FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
 		{
 			FlxG.camera.zoom += 0.0075;
-			//camHUD.zoom += 0.015;
+			// camHUD.zoom += 0.015;
 			for (hud in allUIs)
 				hud.zoom += 0.015;
 		}
@@ -2852,34 +2855,6 @@ class PlayState extends MusicBeatState
 		super.closeSubState();
 	}
 
-	private function strumCameraRoll(cStrum:FlxTypedGroup<StrumNote>, mustHit:Bool)
-	{
-		if (!ClientPrefs.camMove)
-		{
-			var camDisplaceExtend:Float = 15;
-			if (PlayState.SONG.notes[Std.int(curStep / 16)] != null)
-			{
-				if ((PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && mustHit)
-					|| (!PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && !mustHit))
-				{
-					camDisplaceX = 0;
-					if (cStrum.members[0].animation.curAnim.name == 'confirm')
-						camDisplaceX -= camDisplaceExtend;
-					if (cStrum.members[3].animation.curAnim.name == 'confirm')
-						camDisplaceX += camDisplaceExtend;
-					
-					camDisplaceY = 0;
-					if (cStrum.members[1].animation.curAnim.name == 'confirm')
-						camDisplaceY += camDisplaceExtend;
-					if (cStrum.members[2].animation.curAnim.name == 'confirm')
-						camDisplaceY -= camDisplaceExtend;
-
-				}
-			}
-		}
-		//
-	}
-
 	override public function onFocus():Void
 	{
 		#if desktop
@@ -3421,9 +3396,6 @@ class PlayState extends MusicBeatState
 				var strumGroup:FlxTypedGroup<StrumNote> = playerStrums;
 				if (!daNote.mustPress)
 					strumGroup = opponentStrums;
-
-				// unoptimised asf camera control based on strums
-				strumCameraRoll(strumGroup, (strumGroup == playerStrums));
 
 				var strumX:Float = strumGroup.members[daNote.noteData].x;
 				var strumY:Float = strumGroup.members[daNote.noteData].y;
@@ -7701,57 +7673,60 @@ class PlayState extends MusicBeatState
 		if (danote == null)
 			return;
 
-		if (danote.isSustainNote)
+		if (!ClientPrefs.camMove)
 		{
-			if (danote.animation.curAnim.name.endsWith('end'))
+			if (danote.isSustainNote)
 			{
-				camX = cameraposX[Std.int(Math.abs(danote.noteData))];
-				camY = cameraposY[Std.int(Math.abs(danote.noteData))];
+				if (danote.animation.curAnim.name.endsWith('end'))
+				{
+					camX = cameraposX[Std.int(Math.abs(danote.noteData))];
+					camY = cameraposY[Std.int(Math.abs(danote.noteData))];
+				}
+				else
+				{
+					camX = cameraposXextended[Std.int(Math.abs(danote.noteData))];
+					camY = cameraposYextended[Std.int(Math.abs(danote.noteData))];
+				}
 			}
-			else
+			else if (!danote.isSustainNote)
 			{
 				camX = cameraposXextended[Std.int(Math.abs(danote.noteData))];
 				camY = cameraposYextended[Std.int(Math.abs(danote.noteData))];
-			}
-		}
-		else if (!danote.isSustainNote)
-		{
-			camX = cameraposXextended[Std.int(Math.abs(danote.noteData))];
-			camY = cameraposYextended[Std.int(Math.abs(danote.noteData))];
-			switch (Math.abs(danote.noteData % 4)) // i'm stupid
-			{
-				case 0:
-					new FlxTimer().start(0.4, function(tmr:FlxTimer)
-					{
-						if (camX == cameraposXextended[0])
-							camX = cameraposX[0];
-						if (camY == cameraposYextended[0])
-							camY = cameraposY[0];
-					});
-				case 1:
-					new FlxTimer().start(0.4, function(tmr:FlxTimer)
-					{
-						if (camY == cameraposYextended[1])
-							camY = cameraposY[1];
-						if (camX == cameraposXextended[1])
-							camX = cameraposX[1];
-					});
-				case 2:
-					new FlxTimer().start(0.4, function(tmr:FlxTimer)
-					{
-						if (camY == cameraposYextended[2])
-							camY = cameraposY[2];
-						if (camX == cameraposXextended[2])
-							camX = cameraposX[2];
-					});
-				case 3:
-					new FlxTimer().start(0.4, function(tmr:FlxTimer)
-					{
-						if (camX == cameraposXextended[3])
-							camX = cameraposX[3];
-						if (camY == cameraposYextended[3])
-							camY = cameraposY[3];
-					});
+				switch (Math.abs(danote.noteData % 4)) // i'm stupid
+				{
+					case 0:
+						new FlxTimer().start(0.4, function(tmr:FlxTimer)
+						{
+							if (camX == cameraposXextended[0])
+								camX = cameraposX[0];
+							if (camY == cameraposYextended[0])
+								camY = cameraposY[0];
+						});
+					case 1:
+						new FlxTimer().start(0.4, function(tmr:FlxTimer)
+						{
+							if (camY == cameraposYextended[1])
+								camY = cameraposY[1];
+							if (camX == cameraposXextended[1])
+								camX = cameraposX[1];
+						});
+					case 2:
+						new FlxTimer().start(0.4, function(tmr:FlxTimer)
+						{
+							if (camY == cameraposYextended[2])
+								camY = cameraposY[2];
+							if (camX == cameraposXextended[2])
+								camX = cameraposX[2];
+						});
+					case 3:
+						new FlxTimer().start(0.4, function(tmr:FlxTimer)
+						{
+							if (camX == cameraposXextended[3])
+								camX = cameraposX[3];
+							if (camY == cameraposYextended[3])
+								camY = cameraposY[3];
+						});
+				}
 			}
 		}
 	}
