@@ -165,12 +165,6 @@ class PlayState extends MusicBeatState
 	public var maxHealth:Float = 0; // Totally not stolen from Lullaby lol
 	public var combo:Int = 0;
 
-	var songPercent:Float = 0;
-
-	private var timeBarBG:AttachedSprite;
-
-	public var timeBar:FlxBar;
-
 	public var sicks:Int = 0;
 	public var goods:Int = 0;
 	public var bads:Int = 0;
@@ -181,8 +175,7 @@ class PlayState extends MusicBeatState
 	public var endingSong:Bool = false;
 
 	private var startingSong:Bool = false;
-	private var updateTime:Bool = true;
-
+	
 	public static var changedDifficulty:Bool = false;
 	public static var chartingMode:Bool = false;
 
@@ -212,11 +205,6 @@ class PlayState extends MusicBeatState
 	public var songHits:Int = 0;
 	public var songMisses:Int = 0;
 
-	var songNameTxt:FlxText;
-	var timeleftTxt:FlxText;
-	var timesongTxt:FlxText;
-	var fucktimer:Bool = false;
-
 	public static var campaignScore:Int = 0;
 	public static var campaignMisses:Int = 0;
 	public static var seenCutscene:Bool = false;
@@ -242,7 +230,7 @@ class PlayState extends MusicBeatState
 	public var inCutscene:Bool = false;
 	public var skipCountdown:Bool = false;
 
-	var songLength:Float = 0;
+	public var songLength:Float = 0;
 
 	#if desktop
 	// Discord RPC variables
@@ -1231,64 +1219,8 @@ class PlayState extends MusicBeatState
 
 		luisModChartDefaultStrumY = strumLine.y;
 
-		var showTime:Bool = ClientPrefs.timeBar;
-
 		inhumancolor1 = inhumanSong ? FlxColor.BLACK : FlxColor.WHITE;
 		inhumancolor2 = inhumanSong ? FlxColor.RED : FlxColor.BLACK;
-
-		songNameTxt = new FlxText(0, 10, 400, StringTools.replace(SONG.song, "-", " "), 24);
-		songNameTxt.setFormat(Paths.font("vcr.ttf"), 32, inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, inhumancolor2);
-		songNameTxt.scrollFactor.set();
-		songNameTxt.alpha = 0;
-		songNameTxt.borderSize = inhumanSong ? 2 : 1.5;
-		songNameTxt.visible = showTime;
-		if (ClientPrefs.downScroll)
-			songNameTxt.y = FlxG.height - 40;
-		songNameTxt.screenCenter(X);
-
-		timeBarBG = new AttachedSprite('timeBar');
-		timeBarBG.x = songNameTxt.x;
-		timeBarBG.y = songNameTxt.y + (songNameTxt.height / 4);
-		timeBarBG.scrollFactor.set();
-		timeBarBG.alpha = 0;
-		timeBarBG.visible = showTime;
-		timeBarBG.color = FlxColor.BLACK;
-		timeBarBG.xAdd = -4;
-		timeBarBG.yAdd = -4;
-
-		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
-			'songPercent', 0, 1);
-		timeBar.scrollFactor.set();
-		reloadSongPosBarColors(qtIsBlueScreened);
-		if (!ClientPrefs.lowQuality)
-			timeBar.numDivisions = 1000;
-		// if low quality will be 100
-		// else will be 1000
-		timeBar.alpha = 0;
-		timeBar.visible = showTime;
-		timeBarBG.sprTracker = timeBar;
-
-		timeleftTxt = new FlxText(timeBar.x + 260, songNameTxt.y, 400, "", 32);
-		timeleftTxt.setFormat(Paths.font("vcr.ttf"), 32, inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, inhumancolor2);
-		timeleftTxt.scrollFactor.set();
-		timeleftTxt.alpha = 0;
-		timeleftTxt.borderSize = inhumanSong ? 2 : 1.5;
-		timeleftTxt.visible = showTime;
-
-		timesongTxt = new FlxText(timeBar.x - 260, songNameTxt.y, 400, "", 32);
-		timesongTxt.setFormat(Paths.font("vcr.ttf"), 32, inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, inhumancolor2);
-		timesongTxt.scrollFactor.set();
-		timesongTxt.alpha = 0;
-		timesongTxt.borderSize = inhumanSong ? 2 : 1.5;
-		timesongTxt.visible = showTime;
-
-		add(timeBarBG);
-		add(timeBar);
-		add(songNameTxt);
-		add(timeleftTxt);
-		add(timesongTxt);
-
-		updateTime = showTime;
 
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		add(strumLineNotes);
@@ -1371,11 +1303,6 @@ class PlayState extends MusicBeatState
 		grpNoteSplashes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		gameHUD.cameras = [camHUD];
-		timeBar.cameras = [camHUD];
-		timeBarBG.cameras = [camHUD];
-		timeleftTxt.cameras = [camHUD];
-		timesongTxt.cameras = [camHUD];
-		songNameTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -1612,15 +1539,6 @@ class PlayState extends MusicBeatState
 		}
 		luaDebugGroup.insert(0, new DebugLuaText(text, luaDebugGroup));
 		#end
-	}
-
-	public function reloadSongPosBarColors(blue:Bool = false)
-	{
-		// timeBar.createFilledBar(FlxColor.BLUE, FlxColor.BLUE);
-		if (blue)
-			timeBar.createGradientBar([FlxColor.BLUE], [FlxColor.BLUE, FlxColor.BLUE, FlxColor.CYAN], 1, 90);
-		else
-			timeBar.createGradientBar([0xFF000000], [0xFFFFFFFF, 0xFFFFFFFF, 0x88222222], 1, 90);
 	}
 
 	public function addCharacterToList(newCharacter:String, type:Int)
@@ -2332,14 +2250,14 @@ class PlayState extends MusicBeatState
 		if (SONG.song.toLowerCase() == "terminate") // Fakes the timebar
 			songLength = 316219;
 		songLengthTxt = FlxStringUtil.formatTime(Math.floor((songLength) / 1000), false);
-		timeleftTxt.text = songLengthTxt; // :kachow:
+		gameHUD.timeleftTxt.text = songLengthTxt; // :kachow:
 		// trace("I wonder what the length of this song is? ", songLength);
 		// Termination returns 316219
 		// Tutorial returns 67213
-		FlxTween.tween(timeBar, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
-		FlxTween.tween(songNameTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
-		FlxTween.tween(timeleftTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
-		FlxTween.tween(timesongTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
+		FlxTween.tween(gameHUD.timeBar, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
+		FlxTween.tween(gameHUD.songNameTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
+		FlxTween.tween(gameHUD.timeleftTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
+		FlxTween.tween(gameHUD.timesongTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
 
 		#if desktop
 		// Updating Discord Rich Presence (with Time Left)
@@ -3204,20 +3122,6 @@ class PlayState extends MusicBeatState
 					Conductor.lastSongPos = Conductor.songPosition;
 					// Conductor.songPosition += FlxG.elapsed * 1000;
 					// trace('MISSED FRAME');
-				}
-				if (updateTime)
-				{
-					var curTime:Float = Conductor.songPosition - ClientPrefs.noteOffset;
-					if (curTime < 0)
-						curTime = 0;
-					songPercent = (curTime / songLength);
-					var secondsTotal:Int = Math.floor(curTime / 1000);
-					if (secondsTotal < 0)
-						secondsTotal = 0;
-					if (fucktimer)
-						timesongTxt.text = FlxG.random.int(0, 9) + ":" + FlxG.random.int(0, 99);
-					else
-						timesongTxt.text = FlxStringUtil.formatTime(secondsTotal, false);
 				}
 			}
 		}
@@ -4496,10 +4400,11 @@ class PlayState extends MusicBeatState
 					streetBG.visible = false;
 					streetBGerror.visible = false;
 					streetFrontError.visible = true;
-					songNameTxt.text = "SYSTEM ERROR";
-					timeleftTxt.text = "?:??";
-					fucktimer = true;
-					songNameTxt.screenCenter(X);
+
+					gameHUD.songNameTxt.text = "SYSTEM ERROR";
+					gameHUD.timeleftTxt.text = "?:??";
+					gameHUD.fucktimer = true;
+					gameHUD.songNameTxt.screenCenter(X);
 				}
 			case 0:
 				if (!ClientPrefs.lowQuality)
@@ -4507,13 +4412,14 @@ class PlayState extends MusicBeatState
 					qtIsBlueScreened = false;
 					streetBG.visible = true;
 					streetFrontError.visible = false;
-					songNameTxt.text = StringTools.replace(SONG.song, "-", " ");
-					timeleftTxt.text = songLengthTxt;
-					fucktimer = false;
-					songNameTxt.screenCenter(X);
+
+					gameHUD.songNameTxt.text = StringTools.replace(SONG.song, "-", " ");
+					gameHUD.timeleftTxt.text = songLengthTxt;
+					gameHUD.fucktimer = false;
+					gameHUD.songNameTxt.screenCenter(X);
 				}
 		}
-		reloadSongPosBarColors(qtIsBlueScreened);
+		gameHUD.reloadSongPosBarColors(qtIsBlueScreened);
 		gameHUD.reloadHealthBarColors(qtIsBlueScreened);
 	}
 
@@ -5794,7 +5700,7 @@ class PlayState extends MusicBeatState
 		{ // Done to ensure this only triggers once.
 			var finishCallback:Void->Void = startEndingDialogue;
 
-			updateTime = false;
+			gameHUD.updateTime = false;
 			FlxG.sound.music.volume = 0;
 			vocals.volume = 0;
 			vocals.pause();
@@ -5888,16 +5794,16 @@ class PlayState extends MusicBeatState
 				return;
 		}
 
-		timeBarBG.visible = false;
-		timeBar.visible = false;
-		songNameTxt.visible = false;
-		timeleftTxt.visible = false;
-		timesongTxt.visible = false;
+		gameHUD.timeBarBG.visible = false;
+		gameHUD.timeBar.visible = false;
+		gameHUD.songNameTxt.visible = false;
+		gameHUD.timeleftTxt.visible = false;
+		gameHUD.timesongTxt.visible = false;
 		canPause = false;
 		endingSong = true;
 		disableDefaultCamZooming = true;
 		inCutscene = false;
-		updateTime = false;
+		gameHUD.updateTime = false;
 		THISISFUCKINGDISGUSTINGPLEASESAVEME = false;
 
 		deathCounter = 0;
