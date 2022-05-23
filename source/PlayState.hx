@@ -2940,8 +2940,8 @@ class PlayState extends MusicBeatState
 
 	private function strumCameraRoll(cStrum:FlxTypedGroup<StrumNote>, mustHit:Bool)
 	{
-		//if (!ClientPrefs.cam)
-		//{
+		if (!ClientPrefs.camMove)
+		{
 			var camDisplaceExtend:Float = 15;
 			if (PlayState.SONG.notes[Std.int(curStep / 16)] != null)
 			{
@@ -2962,7 +2962,7 @@ class PlayState extends MusicBeatState
 
 				}
 			}
-		//}
+		}
 		//
 	}
 
