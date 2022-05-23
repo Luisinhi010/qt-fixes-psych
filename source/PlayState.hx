@@ -61,6 +61,8 @@ import Shaders;
 import sys.FileSystem;
 #end
 
+import hud.*;
+
 using StringTools;
 
 class PlayState extends MusicBeatState
@@ -163,12 +165,6 @@ class PlayState extends MusicBeatState
 	public var maxHealth:Float = 0; // Totally not stolen from Lullaby lol
 	public var combo:Int = 0;
 
-	private var healthBarBG:AttachedSprite;
-
-	public var healthBar:FlxBar;
-
-	private var healthBarFG:AttachedSprite;
-
 	var songPercent:Float = 0;
 
 	private var timeBarBG:AttachedSprite;
@@ -197,12 +193,6 @@ class PlayState extends MusicBeatState
 	public var cpuControlled:Bool = false;
 	public var practiceMode:Bool = false;
 
-	public var botplaySine:Float = 0;
-	public var botplayTxt:FlxText;
-
-	public var iconP1:HealthIcon;
-	public var iconP2:HealthIcon;
-
 	public var camHUD:FlxCamera;
 	public var camGame:FlxCamera;
 	public var camGAS:FlxCamera;
@@ -221,14 +211,11 @@ class PlayState extends MusicBeatState
 	public var songScore:Int = 0;
 	public var songHits:Int = 0;
 	public var songMisses:Int = 0;
-	public var scoreTxt:FlxText;
 
 	var songNameTxt:FlxText;
 	var timeleftTxt:FlxText;
 	var timesongTxt:FlxText;
 	var fucktimer:Bool = false;
-
-	var scoreTxtTween:FlxTween;
 
 	public static var campaignScore:Int = 0;
 	public static var campaignMisses:Int = 0;
@@ -314,10 +301,12 @@ class PlayState extends MusicBeatState
 	var discordDifficultyOverride:String = "???";
 
 	public var inhumanSong:Bool = false;
+	public var inhumancolor1:FlxColor;
+	public var inhumancolor2:FlxColor;
 
 	var disableDefaultCamZooming:Bool = false;
 	var disableArrowIntro:Bool = false;
-	var forceMiddleScroll:Bool = false;
+	public var forceMiddleScroll:Bool = false;
 	var controlsPlayer2:Bool = false; // Set to true if you are doing modchart shit. Stops middle scroll from disabling player2's notes and the player can hit them as if they were player 1 notes (if that makes sense?)
 	var causeOfDeath:String = 'health';
 
@@ -339,7 +328,7 @@ class PlayState extends MusicBeatState
 	var kb_attack_saw:FlxSprite;
 
 	// For changing the visuals -Haz
-	var qtIsBlueScreened:Bool = false; // lmao this var is back in here
+	public var qtIsBlueScreened:Bool = false; // lmao this var is back in here
 
 	public var pincer1:FlxSprite;
 	public var pincer2:FlxSprite;
@@ -422,6 +411,10 @@ class PlayState extends MusicBeatState
 	public var fancyModchartStrumY:Array<Float> = [0, 0];
 	public var moreStrumX:Bool = false; // i dont remember why i put this here...
 
+	// separating hud from PlayState because it's dumb as fuck to have it here
+	public static var gameHUD:GameHUD;
+	private var allUIs:Array<FlxCamera> = [];
+
 	override public function create()
 	{
 		Paths.clearStoredMemory();
@@ -470,6 +463,7 @@ class PlayState extends MusicBeatState
 		camHUD.bgColor.alpha = 0;
 		camGAS.bgColor.alpha = 0;
 		camOther.bgColor.alpha = 0;
+		allUIs.push(camHUD);
 
 		// FlxG.cameras.reset(camGame);
 		// FlxG.cameras.add(camHUD);
@@ -943,8 +937,10 @@ class PlayState extends MusicBeatState
 				hazardBlack.cameras = [camOther];
 				add(hazardBlack);
 
-				camHUD.visible = true;
-				camHUD.alpha = 0;
+				for (hud in allUIs) {
+					hud.visible = true;
+					hud.alpha = 0;
+				}
 		}
 
 		// Moved gas effect to be useable across all songs!
@@ -1235,10 +1231,10 @@ class PlayState extends MusicBeatState
 
 		luisModChartDefaultStrumY = strumLine.y;
 
-		var inhumancolor1:FlxColor = inhumanSong ? FlxColor.BLACK : FlxColor.WHITE;
-		var inhumancolor2:FlxColor = inhumanSong ? FlxColor.RED : FlxColor.BLACK;
-
 		var showTime:Bool = ClientPrefs.timeBar;
+
+		inhumancolor1 = inhumanSong ? FlxColor.BLACK : FlxColor.WHITE;
+		inhumancolor2 = inhumanSong ? FlxColor.RED : FlxColor.BLACK;
 
 		songNameTxt = new FlxText(0, 10, 400, StringTools.replace(SONG.song, "-", " "), 24);
 		songNameTxt.setFormat(Paths.font("vcr.ttf"), 32, inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, inhumancolor2);
@@ -1259,7 +1255,6 @@ class PlayState extends MusicBeatState
 		timeBarBG.color = FlxColor.BLACK;
 		timeBarBG.xAdd = -4;
 		timeBarBG.yAdd = -4;
-		add(timeBarBG);
 
 		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
 			'songPercent', 0, 1);
@@ -1271,7 +1266,6 @@ class PlayState extends MusicBeatState
 		// else will be 1000
 		timeBar.alpha = 0;
 		timeBar.visible = showTime;
-		add(timeBar);
 		timeBarBG.sprTracker = timeBar;
 
 		timeleftTxt = new FlxText(timeBar.x + 260, songNameTxt.y, 400, "", 32);
@@ -1287,6 +1281,9 @@ class PlayState extends MusicBeatState
 		timesongTxt.alpha = 0;
 		timesongTxt.borderSize = inhumanSong ? 2 : 1.5;
 		timesongTxt.visible = showTime;
+
+		add(timeBarBG);
+		add(timeBar);
 		add(songNameTxt);
 		add(timeleftTxt);
 		add(timesongTxt);
@@ -1367,94 +1364,18 @@ class PlayState extends MusicBeatState
 		FlxG.fixedTimestep = false;
 		moveCameraSection(0);
 
-		healthBarBG = new AttachedSprite('healthBarNew');
-		healthBarBG.y = FlxG.height * 0.89;
-		healthBarBG.screenCenter(X);
-		healthBarBG.scrollFactor.set();
-		healthBarBG.visible = !ClientPrefs.hideHud;
-		healthBarBG.xAdd = -4;
-		healthBarBG.yAdd = -4;
-		add(healthBarBG);
-		if (ClientPrefs.downScroll)
-			healthBarBG.y = 0.11 * FlxG.height;
-
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'health', 0, 2);
-		if (!ClientPrefs.downScroll)
-			healthBar.y += 18;
-		if (!ClientPrefs.lowQuality)
-			healthBar.numDivisions = 800;
-
-		healthBar.scrollFactor.set();
-		// healthBar
-		healthBar.visible = !ClientPrefs.hideHud;
-		healthBar.alpha = ClientPrefs.healthBarAlpha;
-		add(healthBar);
-		healthBarBG.sprTracker = healthBar;
-
-		healthBarFG = new AttachedSprite('healthBar');
-		healthBarFG.y = healthBarBG.y;
-		healthBarFG.x = healthBarBG.x;
-		healthBarFG.height = healthBarBG.height;
-		healthBarFG.width = healthBarBG.width; // same position, height and width than healthBarBG
-		healthBarFG.scrollFactor.set();
-		healthBarFG.visible = !ClientPrefs.hideHud;
-		healthBarFG.xAdd = -4;
-		healthBarFG.yAdd = -4;
-		add(healthBarFG);
-		healthBarFG.sprTracker = healthBar;
-
-		iconP1 = new HealthIcon(boyfriend.healthIcon, true);
-		iconP1.y = healthBar.y - 75;
-		iconP1.visible = !ClientPrefs.hideHud;
-		iconP1.alpha = ClientPrefs.healthBarAlpha;
-		add(iconP1);
-
-		iconP2 = new HealthIcon(dad.healthIcon, false);
-		iconP2.y = healthBar.y - 75;
-		iconP2.visible = !ClientPrefs.hideHud;
-		iconP2.alpha = ClientPrefs.healthBarAlpha;
-		add(iconP2);
-		reloadHealthBarColors(qtIsBlueScreened);
-
-		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 26);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, inhumancolor2);
-		scoreTxt.scrollFactor.set();
-		scoreTxt.borderSize = inhumanSong ? 1 : 1.5;
-		scoreTxt.y += ClientPrefs.downScroll ? 10 : -110;
-		scoreTxt.screenCenter(X);
-		if (!forceMiddleScroll)
-			scoreTxt.x += 140;
-		scoreTxt.visible = !cpuControlled;
-		if (ClientPrefs.hideHud)
-			scoreTxt.alpha = 0; // sorry
-		add(scoreTxt); // new scoreTxt code
-
-		botplayTxt = new FlxText(FlxG.width - 250, healthBarBG.y + (FlxG.save.data.downscroll ? 120 : -120), 0, "BOTPLAY", 20);
-		botplayTxt.setFormat(Paths.font("vcr.ttf"), 42, inhumancolor1, RIGHT, FlxTextBorderStyle.OUTLINE, inhumancolor2);
-		botplayTxt.scrollFactor.set();
-		if (forceMiddleScroll)
-			botplayTxt.screenCenter(X);
-		botplayTxt.borderSize = inhumanSong ? 2 : 4;
-		botplayTxt.borderQuality = 2;
-		botplayTxt.visible = cpuControlled;
-		add(botplayTxt);
+		gameHUD = new GameHUD();
+		add(gameHUD);
 
 		strumLineNotes.cameras = [camHUD];
 		grpNoteSplashes.cameras = [camHUD];
 		notes.cameras = [camHUD];
-		healthBar.cameras = [camHUD];
-		healthBarBG.cameras = [camHUD];
-		healthBarFG.cameras = [camHUD];
-		iconP1.cameras = [camHUD];
-		iconP2.cameras = [camHUD];
-		scoreTxt.cameras = [camHUD];
-		botplayTxt.cameras = [camHUD];
+		gameHUD.cameras = [camHUD];
 		timeBar.cameras = [camHUD];
 		timeBarBG.cameras = [camHUD];
-		songNameTxt.cameras = [camHUD];
 		timeleftTxt.cameras = [camHUD];
 		timesongTxt.cameras = [camHUD];
+		songNameTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -1545,9 +1466,9 @@ class PlayState extends MusicBeatState
 		#if desktop
 		// Updating Discord Rich Presence.
 		if (discordDifficultyOverrideShouldUse)
-			DiscordClient.changePresence(detailsText, SONG.song + " (" + discordDifficultyOverride + ")", iconP2.getCharacter());
+			DiscordClient.changePresence(detailsText, SONG.song + " (" + discordDifficultyOverride + ")", gameHUD.iconP2.getCharacter());
 		else
-			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", gameHUD.iconP2.getCharacter());
 		#end
 
 		if (!ClientPrefs.controllerMode)
@@ -1585,7 +1506,8 @@ class PlayState extends MusicBeatState
 			black.scrollFactor.set();
 			var senpaiEvil:FlxSprite = new FlxSprite();
 			var horrorStage:FlxSprite = new FlxSprite();
-			camHUD.visible = false;
+			for (hud in allUIs)
+				hud.visible = false;
 			// BG
 			horrorStage.frames = Paths.getSparrowAtlas('hazard/qt-port/stage/horrorbg');
 			horrorStage.animation.addByPrefix('idle', 'Symbol 10 instance ', 24, false);
@@ -1628,7 +1550,8 @@ class PlayState extends MusicBeatState
 							{
 								remove(senpaiEvil);
 								remove(horrorStage);
-								camHUD.visible = true;
+								for (hud in allUIs)
+									hud.visible = true;
 								FlxG.camera.fade(FlxColor.WHITE, 0.01, true, function()
 								{
 									startDialogue(dialogueJson);
@@ -1689,18 +1612,6 @@ class PlayState extends MusicBeatState
 		}
 		luaDebugGroup.insert(0, new DebugLuaText(text, luaDebugGroup));
 		#end
-	}
-
-	public function reloadHealthBarColors(blue:Bool = false)
-	{
-		var dadcolor:FlxColor = FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]);
-		var bfcolor:FlxColor = FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]);
-		if (blue)
-			healthBar.createGradientBar([FlxColor.BLUE, dadcolor, dadcolor], [FlxColor.BLUE, bfcolor, bfcolor], 1, 90);
-		else
-			healthBar.createFilledBar(dadcolor, bfcolor);
-
-		healthBar.updateBar();
 	}
 
 	public function reloadSongPosBarColors(blue:Bool = false)
@@ -2140,7 +2051,8 @@ class PlayState extends MusicBeatState
 				Conductor.songPosition = 0;
 				Conductor.songPosition -= Conductor.crochet;
 				swagCounter = 3;
-				camHUD.visible = true;
+				for (hud in allUIs)
+					hud.visible = true;
 			}
 			startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 			{
@@ -2371,7 +2283,9 @@ class PlayState extends MusicBeatState
 		else if (!disableDefaultCamZooming && FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
 		{
 			FlxG.camera.zoom += 0.0075;
-			camHUD.zoom += 0.015;
+			//camHUD.zoom += 0.015;
+			for (hud in allUIs)
+				hud.zoom += 0.015;
 		}
 		if (SONG.song.toLowerCase() == 'censory-overload')
 			gfSpeed = 2;
@@ -2430,9 +2344,9 @@ class PlayState extends MusicBeatState
 		#if desktop
 		// Updating Discord Rich Presence (with Time Left)
 		if (discordDifficultyOverrideShouldUse)
-			DiscordClient.changePresence(detailsText, SONG.song + " (" + discordDifficultyOverride + ")", iconP2.getCharacter(), true, songLength);
+			DiscordClient.changePresence(detailsText, SONG.song + " (" + discordDifficultyOverride + ")", gameHUD.iconP2.getCharacter(), true, songLength);
 		else
-			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), true, songLength);
+			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", gameHUD.iconP2.getCharacter(), true, songLength);
 		#end
 		setOnLuas('songLength', songLength);
 		callOnLuas('onSongStart', []);
@@ -2905,14 +2819,14 @@ class PlayState extends MusicBeatState
 					DiscordClient.changePresence(detailsText, SONG.song
 						+ " ("
 						+ discordDifficultyOverride
-						+ ")", iconP2.getCharacter(), true,
+						+ ")", gameHUD.iconP2.getCharacter(), true,
 						songLength
 						- Conductor.songPosition
 						- ClientPrefs.noteOffset);
 				}
 				else
 				{
-					DiscordClient.changePresence(detailsText, SONG.song + " (" + discordDifficultyOverride + ")", iconP2.getCharacter());
+					DiscordClient.changePresence(detailsText, SONG.song + " (" + discordDifficultyOverride + ")", gameHUD.iconP2.getCharacter());
 				}
 			}
 			else
@@ -2922,14 +2836,14 @@ class PlayState extends MusicBeatState
 					DiscordClient.changePresence(detailsText, SONG.song
 						+ " ("
 						+ storyDifficultyText
-						+ ")", iconP2.getCharacter(), true,
+						+ ")", gameHUD.iconP2.getCharacter(), true,
 						songLength
 						- Conductor.songPosition
 						- ClientPrefs.noteOffset);
 				}
 				else
 				{
-					DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+					DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", gameHUD.iconP2.getCharacter());
 				}
 			}
 			#end
@@ -2977,19 +2891,19 @@ class PlayState extends MusicBeatState
 					DiscordClient.changePresence(detailsText, SONG.song
 						+ " ("
 						+ discordDifficultyOverride
-						+ ")", iconP2.getCharacter(), true,
+						+ ")", gameHUD.iconP2.getCharacter(), true,
 						songLength
 						- Conductor.songPosition
 						- ClientPrefs.noteOffset);
 				else
-					DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+					DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", gameHUD.iconP2.getCharacter());
 			}
 			else
 			{
 				if (discordDifficultyOverrideShouldUse)
-					DiscordClient.changePresence(detailsText, SONG.song + " (" + discordDifficultyOverride + ")", iconP2.getCharacter());
+					DiscordClient.changePresence(detailsText, SONG.song + " (" + discordDifficultyOverride + ")", gameHUD.iconP2.getCharacter());
 				else
-					DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+					DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", gameHUD.iconP2.getCharacter());
 			}
 		}
 		#end
@@ -3003,9 +2917,9 @@ class PlayState extends MusicBeatState
 		if (health > 0 && !paused)
 		{
 			if (discordDifficultyOverrideShouldUse)
-				DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + discordDifficultyOverride + ")", iconP2.getCharacter());
+				DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + discordDifficultyOverride + ")", gameHUD.iconP2.getCharacter());
 			else
-				DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+				DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", gameHUD.iconP2.getCharacter());
 		}
 		#end
 
@@ -3213,18 +3127,9 @@ class PlayState extends MusicBeatState
 			else
 				boyfriendIdleTime = 0;
 		}
-		super.update(elapsed);
-		if (ratingName == '?')
-			scoreTxt.text = 'Score: ' + songScore + ' | Misses: ' + songMisses + ' | Rating: u need to press a note';
-		else
-			scoreTxt.text = 'Score: ' + songScore + ' | Misses: ' + songMisses + ' | Rating: ' + ratingName + ' ('
-				+ Highscore.floorDecimal(ratingPercent * 100, 2) + '%)' + ' - ' + ratingFC; // peeps wanted no integer rating
 
-		if (botplayTxt.visible)
-		{
-			botplaySine += 180 * elapsed;
-			botplayTxt.alpha = 1 - Math.sin((Math.PI * botplaySine) / 180);
-		}
+		super.update(elapsed);
+
 		if (controls.PAUSE) // Modified so that enter can skip the thanks for playing screen.
 		{
 			if (startedCountdown && canPause)
@@ -3243,9 +3148,9 @@ class PlayState extends MusicBeatState
 					openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 					#if desktop
 					if (discordDifficultyOverrideShouldUse)
-						DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + discordDifficultyOverride + ")", iconP2.getCharacter());
+						DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + discordDifficultyOverride + ")", gameHUD.iconP2.getCharacter());
 					else
-						DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+						DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", gameHUD.iconP2.getCharacter());
 					#end
 				}
 			}
@@ -3259,34 +3164,11 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		var mult:Float = FlxMath.lerp(1, iconP1.scale.x, CoolUtil.boundTo(1 - (elapsed * 9), 0, 1));
-		iconP1.scale.set(mult, mult);
-		iconP1.updateHitbox();
-		var mult:Float = FlxMath.lerp(1, iconP2.scale.x, CoolUtil.boundTo(1 - (elapsed * 9), 0, 1));
-		iconP2.scale.set(mult, mult);
-		iconP2.updateHitbox();
-		var iconOffset:Int = 26;
-		iconP1.x = healthBar.x
-			+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
-			+ (150 * iconP1.scale.x - 150) / 2
-			- iconOffset;
-		iconP2.x = healthBar.x
-			+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
-			- (150 * iconP2.scale.x) / 2
-			- iconOffset * 2;
 		if (health > 2)
 			health = 2;
 		else if (health < maxHealth && godMode)
 			health = 0;
 
-		if (healthBar.percent < 20)
-			iconP1.animation.curAnim.curFrame = 1;
-		else
-			iconP1.animation.curAnim.curFrame = 0;
-		if (healthBar.percent > 80)
-			iconP2.animation.curAnim.curFrame = 1;
-		else
-			iconP2.animation.curAnim.curFrame = 0;
 		if (FlxG.keys.anyJustPressed(debugKeysCharacter) && !endingSong && !inCutscene)
 		{
 			persistentUpdate = false;
@@ -3719,9 +3601,9 @@ class PlayState extends MusicBeatState
 			{
 				godMode = !godMode;
 				if (godMode)
-					scoreTxt.color = FlxColor.CYAN;
+					gameHUD.scoreTxt.color = FlxColor.CYAN;
 				else
-					scoreTxt.color = FlxColor.WHITE;
+					gameHUD.scoreTxt.color = FlxColor.WHITE;
 			}
 			if (FlxG.keys.justPressed.ONE)
 			{
@@ -3900,7 +3782,8 @@ class PlayState extends MusicBeatState
 				horror.antialiasing = ClientPrefs.globalAntialiasing;
 				horror.cameras = [camOther];
 				var visiblityShit:Bool = camHUD.visible; // In case the HUD starts invisible or visible, I do this shit instead.
-				camHUD.visible = false; // nah looks good, i would update to the Paths.imagerandom put idk anymore xd
+				for (hud in allUIs)
+					hud.visible = false; // nah looks good, i would update to the Paths.imagerandom put idk anymore xd
 				add(horror);
 
 				new FlxTimer().start(0.7, function(tmr:FlxTimer)
@@ -3971,9 +3854,9 @@ class PlayState extends MusicBeatState
 				#if desktop
 				// Game Over doesn't get his own variable because it's only used here
 				if (discordDifficultyOverrideShouldUse)
-					DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + discordDifficultyOverride + ")", iconP2.getCharacter());
+					DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + discordDifficultyOverride + ")", gameHUD.iconP2.getCharacter());
 				else
-					DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+					DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", gameHUD.iconP2.getCharacter());
 				#end
 				isDead = true;
 				return true;
@@ -4010,28 +3893,6 @@ class PlayState extends MusicBeatState
 		var pressed:Bool = Reflect.getProperty(controls, key);
 		// trace('Control result: ' + pressed);
 		return pressed;
-	}
-
-	// Code from the Lullaby mod. You should check it out if you haven't already.	=D
-	function reduceMaxHealth():Void
-	{
-		remove(healthBar);
-		healthBar = new FlxBar(healthBarBG.x
-			+ 4, healthBarBG.y
-			+ 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8)
-			- Std.int(healthBar.width * (maxHealth / 2)),
-			Std.int(healthBarBG.height - 8), this, 'health', maxHealth, 2);
-		healthBar.scrollFactor.set();
-		healthBar.visible = !ClientPrefs.hideHud;
-		remove(healthBarFG);
-		remove(iconP1);
-		remove(iconP2);
-		add(healthBar);
-		add(healthBarFG);
-		add(iconP1);
-		add(iconP2);
-		healthBar.cameras = [camHUD];
-		reloadHealthBarColors(qtIsBlueScreened);
 	}
 
 	public function kbATTACK_ALERT(alertType:Int = 1, playSound:Bool = true):Void
@@ -4183,7 +4044,7 @@ class PlayState extends MusicBeatState
 							if (health >= maxHealth + 0.51125)
 							{
 								maxHealth = maxHealth + 0.51125;
-								reduceMaxHealth();
+								gameHUD.reduceMaxHealth();
 								// Only reduce max health if possible. This is here to hopefully avoid a crash with the regerneating the bar or something.
 							}
 							// mmmmm I loved scuffed code. But it works!
@@ -4653,7 +4514,7 @@ class PlayState extends MusicBeatState
 				}
 		}
 		reloadSongPosBarColors(qtIsBlueScreened);
-		reloadHealthBarColors(qtIsBlueScreened);
+		gameHUD.reloadHealthBarColors(qtIsBlueScreened);
 	}
 
 	function terminateEndEarly():Void
@@ -5546,16 +5407,16 @@ class PlayState extends MusicBeatState
 					case 1:
 						FlxTween.tween(strumLineNotes.members[0], {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
 						FlxTween.tween(strumLineNotes.members[4], {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
-						FlxTween.tween(scoreTxt, {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
+						FlxTween.tween(gameHUD.scoreTxt, {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
 					case 2:
 						FlxTween.tween(strumLineNotes.members[1], {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
 						FlxTween.tween(strumLineNotes.members[5], {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
-						FlxTween.tween(iconP1, {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
-						FlxTween.tween(iconP2, {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
+						FlxTween.tween(gameHUD.iconP1, {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
+						FlxTween.tween(gameHUD.iconP2, {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
 					case 3:
 						FlxTween.tween(strumLineNotes.members[2], {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
 						FlxTween.tween(strumLineNotes.members[6], {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
-						FlxTween.tween(healthBar, {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
+						FlxTween.tween(gameHUD.healthBar, {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
 					case 4:
 						FlxTween.tween(strumLineNotes.members[3], {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
 						FlxTween.tween(strumLineNotes.members[7], {alpha: 0}, 0.2, {ease: FlxEase.sineInOut});
@@ -6262,16 +6123,16 @@ class PlayState extends MusicBeatState
 
 			if (ClientPrefs.scoreZoom)
 			{
-				if (scoreTxtTween != null)
+				if (gameHUD.scoreTxtTween != null)
 				{
-					scoreTxtTween.cancel();
+					gameHUD.scoreTxtTween.cancel();
 				}
-				scoreTxt.scale.x = 1.075;
-				scoreTxt.scale.y = 1.075;
-				scoreTxtTween = FlxTween.tween(scoreTxt.scale, {x: 1, y: 1}, 0.2, {
+				gameHUD.scoreTxt.scale.x = 1.075;
+				gameHUD.scoreTxt.scale.y = 1.075;
+				gameHUD.scoreTxtTween = FlxTween.tween(gameHUD.scoreTxt.scale, {x: 1, y: 1}, 0.2, {
 					onComplete: function(twn:FlxTween)
 					{
-						scoreTxtTween = null;
+						gameHUD.scoreTxtTween = null;
 					}
 				});
 			}
@@ -7445,11 +7306,7 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
-		iconP1.scale.set(1.2, 1.2);
-		iconP2.scale.set(1.2, 1.2);
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+		gameHUD.beatHit();
 
 		if (!gfScared
 			&& curBeat % gfSpeed == 0
@@ -7967,7 +7824,7 @@ class PlayState extends MusicBeatState
 					boyfriend.alpha = 0.00001;
 					boyfriend = boyfriendMap.get(value2);
 					boyfriend.alpha = lastAlpha;
-					iconP1.changeIcon(boyfriend.healthIcon);
+					gameHUD.iconP1.changeIcon(boyfriend.healthIcon);
 				}
 				setOnLuas('boyfriendName', boyfriend.curCharacter);
 
@@ -7990,7 +7847,7 @@ class PlayState extends MusicBeatState
 						gf.visible = false;
 
 					dad.alpha = lastAlpha;
-					iconP2.changeIcon(dad.healthIcon);
+					gameHUD.iconP2.changeIcon(dad.healthIcon);
 					qt_gaskb.visible = (value2.startsWith("kb") && !value2.startsWith("kb-classic"));
 				}
 				setOnLuas('dadName', dad.curCharacter);
@@ -8008,7 +7865,7 @@ class PlayState extends MusicBeatState
 				}
 				setOnLuas('gfName', gf.curCharacter);
 		}
-		reloadHealthBarColors(qtIsBlueScreened);
+		gameHUD.reloadHealthBarColors(qtIsBlueScreened);
 		if (!ClientPrefs.lowQuality)
 			reloadStaticsEvent();
 	}
