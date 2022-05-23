@@ -57,6 +57,9 @@ class CharacterEditorState extends MusicBeatState
 	var goToPlayState:Bool = true;
 	var camFollow:FlxObject;
 
+	var qt_gas:FlxSprite;
+	var gasOffset:Array<Int> = [];
+
 	public function new(daAnim:String = 'spooky', goToPlayState:Bool = true)
 	{
 		super();
@@ -135,6 +138,16 @@ class CharacterEditorState extends MusicBeatState
 		textAnim.scrollFactor.set();
 		textAnim.cameras = [camHUD];
 		add(textAnim);
+
+		qt_gas = new FlxSprite();
+		qt_gas.frames = Paths.getSparrowAtlas('hazard/qt-port/stage/Gas_Release');
+		qt_gas.animation.addByIndices('idle', 'Gas_Release', [12], "", 1);
+		qt_gas.setGraphicSize(Std.int(qt_gas.width * 1.6));
+		qt_gas.antialiasing = true;
+		qt_gas.alpha = 0.62;
+		qt_gas.animation.play('idle');
+		qt_gas.updateHitbox();
+		add(qt_gas);
 
 		genBoyOffsets();
 
@@ -987,6 +1000,20 @@ class CharacterEditorState extends MusicBeatState
 			daLoop++;
 		}
 
+		var text:FlxText = new FlxText(10, 20 + (18 * daLoop), 0, "gasOffset: " + gasOffset[0] + ', ' + gasOffset[1] + ', angle: ' + qt_gas.angle, 15);
+		text.setFormat(null, 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		text.scrollFactor.set();
+		text.borderSize = 1;
+		dumbTexts.add(text);
+		daLoop++;
+
+		var text:FlxText = new FlxText(10, 20 + (18 * daLoop), 0, "current frame: " + char.animation.curAnim.curFrame, 15);
+		text.setFormat(null, 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		text.scrollFactor.set();
+		text.borderSize = 1;
+		dumbTexts.add(text);
+		daLoop++;
+
 		textAnim.visible = true;
 		if (dumbTexts.length < 1)
 		{
@@ -1347,14 +1374,12 @@ class CharacterEditorState extends MusicBeatState
 						char.animationsArray[curAnim].offsets[1]);
 					genBoyOffsets();
 				}
-
 				var controlArray:Array<Bool> = [
 					FlxG.keys.justPressed.LEFT,
 					FlxG.keys.justPressed.RIGHT,
 					FlxG.keys.justPressed.UP,
 					FlxG.keys.justPressed.DOWN
 				];
-
 				for (i in 0...controlArray.length)
 				{
 					if (controlArray[i])
@@ -1385,6 +1410,65 @@ class CharacterEditorState extends MusicBeatState
 						}
 						genBoyOffsets();
 					}
+				}
+				// og code from lullaby mod, yes hypno, monkey gf, you should play is very good
+				var pendulumControlArray:Array<Bool> = [
+					FlxG.keys.justPressed.V,
+					FlxG.keys.justPressed.N,
+					FlxG.keys.justPressed.G,
+					FlxG.keys.justPressed.B
+				];
+				for (i in 0...pendulumControlArray.length)
+				{
+					if (pendulumControlArray[i])
+					{
+						var holdShift = FlxG.keys.pressed.SHIFT;
+						var multiplier = 1;
+						if (holdShift)
+							multiplier = 10;
+						switch (i)
+						{
+							case 0:
+								gasOffset[0] -= multiplier;
+							case 1:
+								gasOffset[0] += multiplier;
+							case 2:
+								gasOffset[1] -= multiplier;
+							case 3:
+								gasOffset[1] += multiplier;
+						}
+						qt_gas.x = char.x + gasOffset[0];
+						qt_gas.y = char.y + gasOffset[1];
+						genBoyOffsets();
+					}
+				}
+				if (FlxG.keys.pressed.M)
+				{
+					char.animation.pause();
+					char.animation.curAnim.curFrame = 0;
+					genBoyOffsets();
+				}
+
+				if (FlxG.keys.pressed.C)
+				{
+					qt_gas.angle++;
+					genBoyOffsets();
+				}
+
+				if (FlxG.keys.pressed.X)
+				{
+					qt_gas.angle--;
+					genBoyOffsets();
+				}
+				if (FlxG.keys.justPressed.COMMA)
+				{
+					char.animation.curAnim.curFrame--;
+					genBoyOffsets();
+				}
+				if (FlxG.keys.justPressed.PERIOD)
+				{
+					char.animation.curAnim.curFrame++;
+					genBoyOffsets();
 				}
 			}
 		}

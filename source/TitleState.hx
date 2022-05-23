@@ -68,10 +68,6 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
-	var easterEggEnabled:Bool = true; // Disable this to hide the easter egg
-	var easterEggKeyCombination:Array<FlxKey> = [FlxKey.B, FlxKey.B]; // bb stands for bbpanzu cuz he wanted this lmao
-	var lastKeysPressed:Array<FlxKey> = [];
-
 	var mustUpdate:Bool = false;
 
 	var titleJSON:TitleData;
@@ -236,6 +232,8 @@ class TitleState extends MusicBeatState
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
 	var qt:FlxSprite;
+	var faketransition:FlxSprite;
+
 	var swagShader:ColorSwap = null;
 
 	function startIntro()
@@ -418,7 +416,8 @@ class TitleState extends MusicBeatState
 		else
 			initialized = true;
 
-		// credGroup.add(credTextShit);
+		faketransition = new FlxSprite(-FlxG.width, -FlxG.height).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.WHITE);
+		faketransition.alpha = 0;
 	}
 
 	function getIntroTextShit():Array<Array<String>>
@@ -486,7 +485,7 @@ class TitleState extends MusicBeatState
 				if (titleText != null)
 					titleText.animation.play('press');
 
-				FlxG.camera.flash(FlxColor.GRAY, 1);
+				FlxG.camera.flash(FlxColor.WHITE, 1);
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
 				transitioning = true;
@@ -499,58 +498,10 @@ class TitleState extends MusicBeatState
 				});
 				// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 			}
-			else if (easterEggEnabled)
-			{
-				var finalKey:FlxKey = FlxG.keys.firstJustPressed();
-				if (finalKey != FlxKey.NONE)
-				{
-					lastKeysPressed.push(finalKey); // Convert int to FlxKey
-					if (lastKeysPressed.length > easterEggKeyCombination.length)
-					{
-						lastKeysPressed.shift();
-					}
-
-					if (lastKeysPressed.length == easterEggKeyCombination.length)
-					{
-						var isDifferent:Bool = false;
-						for (i in 0...lastKeysPressed.length)
-						{
-							if (lastKeysPressed[i] != easterEggKeyCombination[i])
-							{
-								isDifferent = true;
-								break;
-							}
-						}
-
-						/*if(!isDifferent) {
-							trace('Easter egg triggered!');
-							FlxG.save.data.psykaEasterEgg = !FlxG.save.data.psykaEasterEgg;
-							FlxG.sound.play(Paths.sound('secretSound'));
-
-							var black:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-							black.alpha = 0;
-							add(black);
-
-							FlxTween.tween(black, {alpha: 1}, 1, {onComplete:
-								function(twn:FlxTween) {
-									FlxTransitionableState.skipNextTransIn = true;
-									FlxTransitionableState.skipNextTransOut = true;
-									MusicBeatState.switchState(new TitleState());
-								}
-							});
-							lastKeysPressed = [];
-							closedState = true;
-							transitioning = true;
-						}*/
-					}
-				}
-			}
 		}
 
 		if (pressedEnter && !skippedIntro)
-		{
 			skipIntro();
-		}
 
 		if (swagShader != null)
 		{
@@ -698,12 +649,18 @@ class TitleState extends MusicBeatState
 
 				case 17:
 					if (!skippedIntro)
-						FlxG.camera.fade(FlxColor.GRAY, 0.435, false);
+						FlxG.camera.fade(FlxColor.WHITE, 0.435, false);
 
 				case 18:
 					skipIntro();
 			}
 		}
+
+		/*if (curBeat == 18)
+			{
+				deleteCoolText();
+				skipIntro();
+		}*/ // i tried something, didnt work.
 	}
 
 	var skippedIntro:Bool = false;
@@ -713,8 +670,8 @@ class TitleState extends MusicBeatState
 		if (!skippedIntro)
 		{
 			remove(ngSpr);
-			FlxG.camera.fade(FlxColor.GRAY, 0.01, true);
-			FlxG.camera.flash(FlxColor.GRAY, 4);
+			FlxG.camera.fade(FlxColor.WHITE, 0.01, true);
+			FlxG.camera.flash(FlxColor.WHITE, 4);
 			remove(credGroup);
 			skippedIntro = true;
 		}

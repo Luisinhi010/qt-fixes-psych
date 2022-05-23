@@ -171,7 +171,7 @@ class NoteOffsetState extends MusicBeatState
 			delayMax);
 		timeBar.scrollFactor.set();
 		timeBar.screenCenter(X);
-		timeBar.createFilledBar(0xFF000000, 0xFFFFFFFF);
+		timeBar.createGradientBar([0xFF000000], [0xFFFFFFFF, 0xFFFFFFFF, 0x88222222], 1, 90);
 		timeBar.numDivisions = 800; // How much lag this causes?? Should i tone it down to idk, 400 or 200?
 		timeBar.visible = false;
 		timeBar.cameras = [camHUD];

@@ -411,11 +411,12 @@ class PlayState extends MusicBeatState
 	var censoryChromaIntensity:Float = 0;
 	var qt_gas01:FlxSprite;
 	var qt_gas02:FlxSprite;
+	var qt_gaskb:FlxSprite; // haz had a ideia to make the gas came out of kb.
 
 	// for more modcharts
 	public var fancyModchartStrumX:Array<Float> = [0, 0];
 	public var fancyModchartStrumY:Array<Float> = [0, 0];
-	public var moreStrumX:Bool = false;
+	public var moreStrumX:Bool = false; // i dont remember why i put this here...
 
 	override public function create()
 	{
@@ -945,33 +946,31 @@ class PlayState extends MusicBeatState
 		// Moved gas effect to be useable across all songs!
 		if (!ClientPrefs.lowQuality)
 		{
-			// Left gas
 			qt_gas01 = new FlxSprite();
-			qt_gas01.frames = Paths.getSparrowAtlas('hazard/qt-port/stage/Gas_Release');
-			qt_gas01.animation.addByPrefix('burst', 'Gas_Release', 38, false);
-			qt_gas01.animation.addByPrefix('burstALT', 'Gas_Release', 49, false);
-			qt_gas01.animation.addByPrefix('burstFAST', 'Gas_Release', 76, false);
-			qt_gas01.animation.addByIndices('burstLoop', 'Gas_Release', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], "", 38, true);
-			qt_gas01.setGraphicSize(Std.int(qt_gas01.width * 2.5));
-			qt_gas01.antialiasing = true;
-			qt_gas01.scrollFactor.set();
-			qt_gas01.alpha = 0.62;
-			qt_gas01.setPosition(-495, -70);
-			qt_gas01.angle = -31;
-
-			// Right gas
 			qt_gas02 = new FlxSprite();
-			qt_gas02.frames = Paths.getSparrowAtlas('hazard/qt-port/stage/Gas_Release');
-			qt_gas02.animation.addByPrefix('burst', 'Gas_Release', 38, false);
-			qt_gas02.animation.addByPrefix('burstALT', 'Gas_Release', 49, false);
-			qt_gas02.animation.addByPrefix('burstFAST', 'Gas_Release', 76, false);
-			qt_gas02.animation.addByIndices('burstLoop', 'Gas_Release', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], "", 38, true);
-			qt_gas02.setGraphicSize(Std.int(qt_gas02.width * 2.5));
-			qt_gas02.antialiasing = true;
-			qt_gas02.scrollFactor.set();
-			qt_gas02.alpha = 0.62;
+			qt_gaskb = new FlxSprite();
+			for (gas in [qt_gas01, qt_gas02, qt_gaskb])
+			{
+				gas.frames = Paths.getSparrowAtlas('hazard/qt-port/stage/Gas_Release');
+				gas.animation.addByPrefix('burst', 'Gas_Release', 38, false);
+				gas.animation.addByPrefix('burstALT', 'Gas_Release', 49, false);
+				gas.animation.addByPrefix('burstFAST', 'Gas_Release', 76, false);
+				gas.animation.addByIndices('burstLoop', 'Gas_Release', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], "", 38, true);
+				gas.antialiasing = true;
+				gas.alpha = 0.62;
+			}
+			// qt_gaskb.screenCenter();
+			qt_gaskb.setGraphicSize(Std.int(qt_gaskb.width * 1.6));
+			qt_gaskb.updateHitbox();
+
+			qt_gas01.setPosition(-500, -70);
+			qt_gas01.setGraphicSize(Std.int(qt_gas01.width * 2.5));
+			qt_gas01.angle = -31;
+			qt_gas01.scrollFactor.set();
 			qt_gas02.setPosition(565, -70);
+			qt_gas02.setGraphicSize(Std.int(qt_gas02.width * 2.5));
 			qt_gas02.angle = 31;
+			qt_gas02.scrollFactor.set();
 		}
 
 		// Made Terminate have the same intro as Termination to freak even more people out LMAO.
@@ -1098,6 +1097,9 @@ class PlayState extends MusicBeatState
 			add(hazardAlarmRight);
 		}
 
+		if (!ClientPrefs.lowQuality)
+			add(qt_gaskb);
+
 		if (curStage != 'depths')
 		{
 			add(gfGroup);
@@ -1181,6 +1183,8 @@ class PlayState extends MusicBeatState
 		startCharacterPos(boyfriend);
 		boyfriendGroup.add(boyfriend);
 		startCharacterLua(boyfriend.curCharacter);
+
+		qt_gaskb.visible = (dad.curCharacter.startsWith("kb") && !dad.curCharacter.startsWith("kb-classic"));
 
 		// blueshader.shader.enabled.value = [true];
 		blueshader.shader.r.value = [1];
@@ -2692,7 +2696,7 @@ class PlayState extends MusicBeatState
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1[0], Obj2[0]);
 	}
 
-	function removeStatics()
+	function removeStatics():Void
 	{
 		playerStrums.forEach(function(todel:StrumNote)
 		{
@@ -2772,22 +2776,6 @@ class PlayState extends MusicBeatState
 			}
 			strumLineNotes.add(babyArrow);
 			babyArrow.postAddedToGroup();
-
-			if (!forceMiddleScroll && twens)
-			{
-				if (player == 1)
-				{
-					babyArrow.x -= 10;
-					// if (twens)
-					// FlxTween.tween(babyArrow, {x: babyArrow.x + 10}, 0.5, {ease: FlxEase.circOut, startDelay: 1.8 - (0.2 * i)});
-				}
-				else
-				{
-					babyArrow.x += 10;
-					// if (twens)
-					// FlxTween.tween(babyArrow, {x: babyArrow.x - 10}, 0.5, {ease: FlxEase.circOut, startDelay: 1 + (0.2 * i)});
-				} // i will put this later, looks good lmao
-			} // trolling
 		}
 	}
 
@@ -3334,6 +3322,169 @@ class PlayState extends MusicBeatState
 			causeOfDeath = 'reset';
 		}
 		doDeathCheck();
+
+		var gasOffset:Array<Int> = [];
+		if (dad.curCharacter.startsWith("kb")
+			&& !dad.curCharacter.startsWith("kb-classic")
+			&& qt_gaskb != null
+			&& !ClientPrefs.lowQuality)
+		{
+			switch (dad.animation.name)
+			{
+				case 'danceRight':
+					switch (dad.animation.curAnim.curFrame)
+					{
+						case 0:
+							gasOffset[0] = -948;
+							gasOffset[1] = -718;
+							gasOffset[2] = -34;
+						case 1:
+							gasOffset[0] = -945;
+							gasOffset[1] = -718;
+							gasOffset[2] = -33;
+						case 2:
+							gasOffset[0] = -960;
+							gasOffset[1] = -718;
+							gasOffset[2] = -33;
+						case 3 | 4:
+							gasOffset[0] = -958;
+							gasOffset[1] = -717;
+							gasOffset[2] = -33;
+						case 5:
+							gasOffset[0] = -946;
+							gasOffset[1] = -715;
+							gasOffset[2] = -32;
+						case 6 | 7 | 8 | 9:
+							gasOffset[0] = -939;
+							gasOffset[1] = -717;
+							gasOffset[2] = -32;
+					}
+				case 'danceLeft':
+					switch (dad.animation.curAnim.curFrame)
+					{
+						case 0:
+							gasOffset[0] = -914;
+							gasOffset[1] = -718;
+							gasOffset[2] = -29;
+						case 1:
+							gasOffset[0] = -912;
+							gasOffset[1] = -716;
+							gasOffset[2] = -29;
+						case 2 | 3 | 4 | 5:
+							gasOffset[0] = -903;
+							gasOffset[1] = -717;
+							gasOffset[2] = -28;
+						case 6 | 7 | 8 | 9:
+							gasOffset[0] = -920;
+							gasOffset[1] = -718;
+							gasOffset[2] = -28;
+					}
+				case 'idle-alt':
+					switch (dad.animation.curAnim.curFrame)
+					{
+						case 0:
+							gasOffset[0] = -785;
+							gasOffset[1] = -722;
+							gasOffset[2] = -13;
+						case 1:
+							gasOffset[0] = -785;
+							gasOffset[1] = -714;
+							gasOffset[2] = -13;
+						case 2 | 3 | 4 | 5:
+							gasOffset[0] = -782;
+							gasOffset[1] = -711;
+							gasOffset[2] = -13;
+						case 6:
+							gasOffset[0] = -784;
+							gasOffset[1] = -714;
+							gasOffset[2] = -13;
+						case 7 | 8 | 9:
+							gasOffset[0] = -787;
+							gasOffset[1] = -718;
+							gasOffset[2] = -13;
+					}
+				case 'idle':
+					gasOffset[0] = FlxG.random.int(-815, -819);
+					gasOffset[1] = FlxG.random.int(-738, -745);
+					gasOffset[2] = -13;
+				case 'singLEFT':
+					switch (dad.animation.curAnim.curFrame)
+					{
+						case 0 | 1:
+							gasOffset[0] = -1155;
+							gasOffset[1] = -514;
+							gasOffset[2] = -64;
+						case 2:
+							gasOffset[0] = -1120;
+							gasOffset[1] = -523;
+							gasOffset[2] = -64;
+						case 3 | 4:
+							gasOffset[0] = -1115;
+							gasOffset[1] = -522;
+							gasOffset[2] = -60;
+					}
+				case 'singRIGHT':
+					switch (dad.animation.curAnim.curFrame)
+					{
+						case 0 | 1:
+							gasOffset[0] = -731;
+							gasOffset[1] = -769;
+							gasOffset[2] = -8;
+						case 2:
+							gasOffset[0] = -758;
+							gasOffset[1] = -771;
+							gasOffset[2] = -9;
+						case 3 | 4:
+							gasOffset[0] = -767;
+							gasOffset[1] = -771;
+							gasOffset[2] = -11;
+					}
+				case 'singUP':
+					switch (dad.animation.curAnim.curFrame)
+					{
+						case 0:
+							gasOffset[0] = -850;
+							gasOffset[1] = -821;
+							gasOffset[2] = -14;
+						case 1:
+							gasOffset[0] = -844;
+							gasOffset[1] = -814;
+							gasOffset[2] = -13;
+						case 2:
+							gasOffset[0] = -843;
+							gasOffset[1] = -803;
+							gasOffset[2] = -13;
+						case 3:
+							gasOffset[0] = -840;
+							gasOffset[1] = -791;
+							gasOffset[2] = -13;
+						case 4:
+							gasOffset[0] = -837;
+							gasOffset[1] = -786;
+							gasOffset[2] = -13;
+					}
+				case 'singDOWN':
+					switch (dad.animation.curAnim.curFrame)
+					{
+						case 0 | 1:
+							gasOffset[0] = -909;
+							gasOffset[1] = -582;
+							gasOffset[2] = -30;
+						case 2:
+							gasOffset[0] = -910;
+							gasOffset[1] = -589;
+							gasOffset[2] = -30;
+						case 3 | 4:
+							gasOffset[0] = -905;
+							gasOffset[1] = -584;
+							gasOffset[2] = -30;
+					}
+			}
+			qt_gaskb.x = dad.x + gasOffset[0];
+			qt_gaskb.y = dad.y + gasOffset[1];
+			qt_gaskb.angle = gasOffset[2]; // Yoshubs, sorry.
+		}
+
 		if (unspawnNotes[0] != null)
 		{
 			var time:Float = 3000; // shit be werid on 4:3
@@ -5428,7 +5579,7 @@ class PlayState extends MusicBeatState
 
 					censoryChromaIntensity = force;
 					// remember 0.018
-					trace("force ", force);
+					// trace("force " + force);
 				}
 
 			case 'blue screen shader':
@@ -7721,6 +7872,8 @@ class PlayState extends MusicBeatState
 				qt_gas01.animation.play(anim);
 			if (qt_gas02 != null)
 				qt_gas02.animation.play(anim);
+			if (qt_gaskb != null)
+				qt_gaskb.animation.play(anim);
 		}
 	}
 
@@ -7803,6 +7956,7 @@ class PlayState extends MusicBeatState
 
 					dad.alpha = lastAlpha;
 					iconP2.changeIcon(dad.healthIcon);
+					qt_gaskb.visible = (value2.startsWith("kb") && !value2.startsWith("kb-classic"));
 				}
 				setOnLuas('dadName', dad.curCharacter);
 

@@ -93,6 +93,7 @@ class Cache extends MusicBeatState
 
 		bar = new FlxBar(10, FlxG.height - 50, FlxBarFillDirection.LEFT_TO_RIGHT, FlxG.width - 20, 40, this, 'donefloat', 0, toBeDone);
 		bar.createFilledBar(FlxColor.BLACK, FlxColor.PURPLE, true);
+		bar.numDivisions = 800;
 		add(bar);
 		text = new FlxText(0, bar.y + 2, 0, "Loading...", 34);
 		text.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);

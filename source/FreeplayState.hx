@@ -170,6 +170,14 @@ class FreeplayState extends MusicBeatState
 			// songText.screenCenter(X);
 		}
 		WeekData.setDirectoryFromWeek();
+		for (k => s in songs)
+		{
+			if (s.songName.toLowerCase() == FlxG.save.data.lastSelectedSong)
+			{
+				curSelected = k;
+				break;
+			}
+		}
 
 		#if PRELOAD_ALL
 		if (!ClientPrefs.lowQuality)
@@ -463,6 +471,11 @@ class FreeplayState extends MusicBeatState
 				PlayState.SONG = Song.loadFromJson(poop, songLowercase);
 				PlayState.isStoryMode = false;
 				PlayState.storyDifficulty = curDifficulty;
+
+				if (songs[curSelected].songName != "interlope")
+					FlxG.save.data.lastSelectedSong = songs[curSelected].songName.toLowerCase(); // dont kill me yoshi
+				else
+					FlxG.save.data.lastSelectedSong = 'tutorial';
 
 				trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
 				if (colorTween != null)
