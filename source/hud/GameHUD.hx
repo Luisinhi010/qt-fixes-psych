@@ -16,6 +16,7 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
+import flixel.util.FlxStringUtil;
 
 using StringTools;
 
@@ -35,6 +36,16 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
 
+	public var timeBarBG:AttachedSprite;
+	public var timeBar:FlxBar;
+
+	public var songNameTxt:FlxText;
+	public var timeleftTxt:FlxText;
+	public var timesongTxt:FlxText;
+	public var fucktimer:Bool = false;
+	public var updateTime:Bool = true;
+	public var songPercent:Float = 0;
+
 	public var scoreTxt:FlxText;
 	public var scoreTxtTween:FlxTween;
 
@@ -48,6 +59,66 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		super();
 
 		instance = this;
+
+		// set up the Time Bar
+
+		var showTime:Bool = ClientPrefs.timeBar;
+
+		songNameTxt = new FlxText(0, 10, 400, StringTools.replace(PlayState.SONG.song, "-", " "), 24);
+		songNameTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
+		songNameTxt.scrollFactor.set();
+		songNameTxt.alpha = 0;
+		songNameTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
+		songNameTxt.visible = showTime;
+		if (ClientPrefs.downScroll)
+			songNameTxt.y = FlxG.height - 40;
+		songNameTxt.screenCenter(X);
+
+		timeBarBG = new AttachedSprite('timeBar');
+		timeBarBG.x = songNameTxt.x;
+		timeBarBG.y = songNameTxt.y + (songNameTxt.height / 4);
+		timeBarBG.scrollFactor.set();
+		timeBarBG.alpha = 0;
+		timeBarBG.visible = showTime;
+		timeBarBG.color = FlxColor.BLACK;
+		timeBarBG.xAdd = -4;
+		timeBarBG.yAdd = -4;
+
+		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
+			'songPercent', 0, 1);
+		timeBar.scrollFactor.set();
+		reloadSongPosBarColors(PlayState.instance.qtIsBlueScreened);
+		if (!ClientPrefs.lowQuality)
+			timeBar.numDivisions = 1000;
+		// if low quality will be 100
+		// else will be 1000
+		timeBar.alpha = 0;
+		timeBar.visible = showTime;
+		timeBarBG.sprTracker = timeBar;
+
+		timeleftTxt = new FlxText(timeBar.x + 260, songNameTxt.y, 400, "", 32);
+		timeleftTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
+		timeleftTxt.scrollFactor.set();
+		timeleftTxt.alpha = 0;
+		timeleftTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
+		timeleftTxt.visible = showTime;
+
+		timesongTxt = new FlxText(timeBar.x - 260, songNameTxt.y, 400, "", 32);
+		timesongTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
+		timesongTxt.scrollFactor.set();
+		timesongTxt.alpha = 0;
+		timesongTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
+		timesongTxt.visible = showTime;
+
+		add(timeBarBG);
+		add(timeBar);
+		add(songNameTxt);
+		add(timeleftTxt);
+		add(timesongTxt);
+
+		updateTime = showTime;
+
+		// set up the Health Bar
 
 		healthBarBG = new AttachedSprite('healthBarNew');
 		healthBarBG.y = FlxG.height * 0.89;
@@ -98,6 +169,8 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP2);
 		reloadHealthBarColors(PlayState.instance.qtIsBlueScreened);
+
+		// set up Score
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 26);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
@@ -164,6 +237,24 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			botplayTxt.alpha = 1 - Math.sin((Math.PI * botplaySine) / 180);
 		}
 
+		if (updateTime)
+		{
+			var curTime:Float = Conductor.songPosition - ClientPrefs.noteOffset;
+			var secondsTotal:Int = Math.floor(curTime / 1000);
+			if (curTime < 0)
+				curTime = 0;
+
+			songPercent = (curTime / PlayState.instance.songLength);
+
+			if (secondsTotal < 0)
+				secondsTotal = 0;
+
+			if (fucktimer)
+				timesongTxt.text = FlxG.random.int(0, 9) + ":" + FlxG.random.int(0, 99);
+			else
+				timesongTxt.text = FlxStringUtil.formatTime(secondsTotal, false);
+		}
+
 		updateScore();
 	}
 
@@ -190,6 +281,15 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			healthBar.createFilledBar(dadcolor, bfcolor);
 
 		healthBar.updateBar();
+	}
+
+	public function reloadSongPosBarColors(blue:Bool = false)
+	{
+		// timeBar.createFilledBar(FlxColor.BLUE, FlxColor.BLUE);
+		if (blue)
+			timeBar.createGradientBar([FlxColor.BLUE], [FlxColor.BLUE, FlxColor.BLUE, FlxColor.CYAN], 1, 90);
+		else
+			timeBar.createGradientBar([0xFF000000], [0xFFFFFFFF, 0xFFFFFFFF, 0x88222222], 1, 90);
 	}
 
 	// Code from the Lullaby mod. You should check it out if you haven't already.	=D
