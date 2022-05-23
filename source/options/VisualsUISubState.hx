@@ -46,6 +46,9 @@ class VisualsUISubState extends BaseOptionsMenu
 		option.decimals = 1;
 		addOption(option);
 
+		var option:Option = new Option('Camera Movement', 'If unchecked, the camera won\'t move when you hit a note.', 'camMove', 'bool', true);
+		addOption(option);
+
 		var option:Option = new Option('Hide HUD', 'If checked, hides most HUD elements.', 'hideHud', 'bool', false);
 		addOption(option);
 

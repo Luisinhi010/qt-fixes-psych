@@ -8,6 +8,7 @@ import Controls;
 
 class ClientPrefs
 {
+	public static var camMove:Bool = true; // Camera Movement
 	public static var hitsoundVolume:Float = 0; // Here to make Interlope a bit easier, plus why not?
 	public static var qtOldVocals:Bool = false; // Here because some people (such as myself) prefer the old vocals from the original mod.
 	public static var qtSkipCutscene:Bool = false; // Because the cutscene caused problems in the original mod. This is here in case it causes problems still.
@@ -99,6 +100,7 @@ class ClientPrefs
 
 	public static function saveSettings()
 	{
+		FlxG.save.data.camMove = camMove;
 		FlxG.save.data.hitsoundVolume = hitsoundVolume;
 		FlxG.save.data.qtOldVocals = qtOldVocals;
 		FlxG.save.data.qtSkipCutscene = qtSkipCutscene;
@@ -151,6 +153,9 @@ class ClientPrefs
 
 	public static function loadPrefs()
 	{
+		if (FlxG.save.data.camMove != null)
+			camMove = FlxG.save.data.camMove;
+		
 		if (FlxG.save.data.hitsoundVolume != null)
 			hitsoundVolume = FlxG.save.data.hitsoundVolume;
 

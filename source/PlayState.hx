@@ -202,10 +202,14 @@ class PlayState extends MusicBeatState
 
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
+
 	public var camHUD:FlxCamera;
 	public var camGame:FlxCamera;
 	public var camGAS:FlxCamera;
 	public var camOther:FlxCamera;
+
+	public var camDisplaceX:Float = 0;
+	public var camDisplaceY:Float = 0; // might not use depending on result
 	public var cameraSpeed:Float = 1;
 
 	var camHudyshit:Float = 0;
@@ -2934,6 +2938,34 @@ class PlayState extends MusicBeatState
 		super.closeSubState();
 	}
 
+	private function strumCameraRoll(cStrum:FlxTypedGroup<StrumNote>, mustHit:Bool)
+	{
+		//if (!ClientPrefs.cam)
+		//{
+			var camDisplaceExtend:Float = 15;
+			if (PlayState.SONG.notes[Std.int(curStep / 16)] != null)
+			{
+				if ((PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && mustHit)
+					|| (!PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && !mustHit))
+				{
+					camDisplaceX = 0;
+					if (cStrum.members[0].animation.curAnim.name == 'confirm')
+						camDisplaceX -= camDisplaceExtend;
+					if (cStrum.members[3].animation.curAnim.name == 'confirm')
+						camDisplaceX += camDisplaceExtend;
+					
+					camDisplaceY = 0;
+					if (cStrum.members[1].animation.curAnim.name == 'confirm')
+						camDisplaceY += camDisplaceExtend;
+					if (cStrum.members[2].animation.curAnim.name == 'confirm')
+						camDisplaceY -= camDisplaceExtend;
+
+				}
+			}
+		//}
+		//
+	}
+
 	override public function onFocus():Void
 	{
 		#if desktop
@@ -3507,6 +3539,9 @@ class PlayState extends MusicBeatState
 				var strumGroup:FlxTypedGroup<StrumNote> = playerStrums;
 				if (!daNote.mustPress)
 					strumGroup = opponentStrums;
+
+				// unoptimised asf camera control based on strums
+				strumCameraRoll(strumGroup, (strumGroup == playerStrums));
 
 				var strumX:Float = strumGroup.members[daNote.noteData].x;
 				var strumY:Float = strumGroup.members[daNote.noteData].y;
