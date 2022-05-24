@@ -3665,6 +3665,8 @@ class PlayState extends MusicBeatState
 				new FlxTimer().start(0.7, function(tmr:FlxTimer)
 				{
 					camHUD.visible = visiblityShit;
+					for (hud in allUIs)
+						hud.visible = visiblityShit; // just to be sure
 					remove(horror);
 				});
 			}
