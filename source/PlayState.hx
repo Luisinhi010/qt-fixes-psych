@@ -174,7 +174,7 @@ class PlayState extends MusicBeatState
 	public var endingSong:Bool = false;
 
 	private var startingSong:Bool = false;
-	
+
 	public static var changedDifficulty:Bool = false;
 	public static var chartingMode:Bool = false;
 
@@ -1177,7 +1177,7 @@ class PlayState extends MusicBeatState
 
 		qt_gaskb.visible = (dad.curCharacter.startsWith("kb") && !dad.curCharacter.startsWith("kb-classic"));
 
-		blueshader.shader.enabled.value = [true];
+		// blueshader.shader.enabled.value = [true];
 		blueshader.shader.r.value = [1];
 		blueshader.shader.g.value = [0];
 		blueshader.shader.b.value = [0.1];
@@ -6543,80 +6543,47 @@ class PlayState extends MusicBeatState
 							if (health < 1.35)
 							{
 								if (health < 0.8)
-								{
-									// trace("0 - AWWW SHIT");
 									health -= dadDrainHealth / 8.1; // Massively nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-								}
 								else
-								{
-									// trace("0 - fuck you, you're above halfway now");
 									health -= dadDrainHealth / 5.7; // nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-								}
 							}
 							else
-							{
-								// trace("0 - Nah, no nerfing just yet");
 								health -= dadDrainHealth / 4.375;
-							}
+
 						case 1:
 							if (health < 1.5)
 							{
 								if (health < 1)
-								{
-									// trace("1 - AWWW SHIT");
 									health -= dadDrainHealth / 8.62; // Massively nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-								}
 								else
-								{
-									// trace("1 - fuck you, you're above halfway now");
 									health -= dadDrainHealth / 6.1; // nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-								}
 							}
 							else
-							{
-								// trace("1 - Nah, no nerfing just yet");
 								health -= dadDrainHealth / 4.38;
-							}
+
 						case 2:
 							if (health < 1.8125)
 							{
 								if (health < 1.43)
-								{
-									// trace("2 - AWWW SHIT");
 									health -= dadDrainHealth / 9.3; // Massively nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-								}
 								else
-								{
-									// trace("2 - fuck you, you're above halfway now");
 									health -= dadDrainHealth / 6.65; // nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-								}
 							}
 							else
-							{
-								// trace("2 - Nah, no nerfing just yet");
 								health -= dadDrainHealth / 4.46;
-							}
+
 						default:
 							// This shouldn't trigger in normal circumstances.
 							if (health < 1.6)
-							{
-								// trace("DEFAULT - AWWW SHIT");
 								health -= dadDrainHealth / 8.25; // Massively nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-							}
 							else
-							{
-								// trace("DEFAULT - fuck you, you're above halfway now");
 								health -= dadDrainHealth / 6.25; // nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-							}
 					}
 				}
 				else if (!note.isSustainNote)
 				{
 					if (sawbladeHits > 3)
-					{
 						health -= dadDrainHealth / 3.15; // At this point, just constantly nerf the opponent.
-						// trace("+3 - You're completely fucked.");
-					}
 					else
 					{
 						switch (sawbladeHits)
@@ -6625,82 +6592,47 @@ class PlayState extends MusicBeatState
 								if (health < 1.35)
 								{
 									if (health < 0.8)
-									{
-										// trace("0 - AWWW SHIT");
 										health -= dadDrainHealth / 3; // Massively nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-									}
 									else
-									{
-										// trace("0 - fuck you, you're above halfway now");
 										health -= dadDrainHealth / 1.75; // nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-									}
 								}
 								else
-								{
-									// trace("0 - Nah, no nerfing just yet");
 									health -= dadDrainHealth;
-								}
+
 							case 1:
 								if (health < 1.5)
 								{
 									if (health < 1)
-									{
-										// trace("1 - AWWW SHIT");
 										health -= dadDrainHealth / 3; // Massively nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-									}
 									else
-									{
-										// trace("1 - fuck you, you're above halfway now");
 										health -= dadDrainHealth / 1.77; // nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-									}
 								}
 								else
-								{
-									// trace("1 - Nah, no nerfing just yet");
 									health -= dadDrainHealth / 1.1;
-								}
+
 							case 2:
 								if (health < 1.8125)
 								{
 									if (health < 1.45)
-									{
-										// trace("2 - AWWW SHIT");
 										health -= dadDrainHealth / 3.1; // Massively nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-									}
 									else
-									{
-										// trace("2 - fuck you, you're above halfway now");
 										health -= dadDrainHealth / 2; // nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-									}
 								}
 								else
-								{
-									// trace("2 - Nah, no nerfing just yet");
 									health -= dadDrainHealth / 1.2;
-								}
+
 							case 3:
 								if (health < 1.82)
-								{
-									// trace("3 - AWWW SHIT");
 									health -= dadDrainHealth / 3.3; // Massively nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-								}
 								else
-								{
-									// trace("3 - fuck you, you're above halfway now");
 									health -= dadDrainHealth / 2.4; // nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-								}
+
 							default:
 								// This shouldn't trigger in normal circumstances.
 								if (health < 1.6)
-								{
-									// trace("DEFAULT - AWWW SHIT");
 									health -= dadDrainHealth / 3; // Massively nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-								}
 								else
-								{
-									// trace("DEFAULT - fuck you, you're above halfway now");
 									health -= dadDrainHealth / 1.5; // nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
-								}
 						}
 					}
 				}
@@ -7579,7 +7511,7 @@ class PlayState extends MusicBeatState
 		if (danote == null)
 			return;
 
-		if (!ClientPrefs.camMove)
+		if (ClientPrefs.camMove)
 		{
 			if (danote.isSustainNote)
 			{

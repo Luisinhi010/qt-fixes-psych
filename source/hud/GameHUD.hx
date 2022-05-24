@@ -21,17 +21,17 @@ import flixel.util.FlxStringUtil;
 using StringTools;
 
 /**
-*	usually this class would be way more simple when it comes to objects
-*	but due to this mod being a literal giant in terms of content, I had to make it
-*	the way it currently is, while also transferring some PlayState stuff to here aside from the
-*	actual hud -BeastlyGhost
+ *	usually this class would be way more simple when it comes to objects
+ *	but due to this mod being a literal giant in terms of content, I had to make it
+ *	the way it currently is, while also transferring some PlayState stuff to here aside from the
+ *	actual hud -BeastlyGhost
 **/
-
 class GameHUD extends FlxTypedGroup<FlxBasic>
 {
 	// health
 	public var healthBarBG:AttachedSprite;
 	public var healthBar:FlxBar;
+	public var health:Float = 1;
 	public var healthBarFG:AttachedSprite;
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
@@ -65,7 +65,8 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		var showTime:Bool = ClientPrefs.timeBar;
 
 		songNameTxt = new FlxText(0, 10, 400, StringTools.replace(PlayState.SONG.song, "-", " "), 24);
-		songNameTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
+		songNameTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
+			PlayState.instance.inhumancolor2);
 		songNameTxt.scrollFactor.set();
 		songNameTxt.alpha = 0;
 		songNameTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
@@ -97,14 +98,16 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		timeBarBG.sprTracker = timeBar;
 
 		timeleftTxt = new FlxText(timeBar.x + 260, songNameTxt.y, 400, "", 32);
-		timeleftTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
+		timeleftTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
+			PlayState.instance.inhumancolor2);
 		timeleftTxt.scrollFactor.set();
 		timeleftTxt.alpha = 0;
 		timeleftTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
 		timeleftTxt.visible = showTime;
 
 		timesongTxt = new FlxText(timeBar.x - 260, songNameTxt.y, 400, "", 32);
-		timesongTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
+		timesongTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
+			PlayState.instance.inhumancolor2);
 		timesongTxt.scrollFactor.set();
 		timesongTxt.alpha = 0;
 		timesongTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
@@ -202,7 +205,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	{
 		super.update(elapsed);
 
-		healthBar.percent = (PlayState.instance.health * 50);
+		health = PlayState.instance.health;
 
 		var mult:Float = FlxMath.lerp(1, iconP1.scale.x, CoolUtil.boundTo(1 - (elapsed * 9), 0, 1));
 		iconP1.scale.set(mult, mult);
@@ -267,14 +270,25 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		if (PlayState.instance.ratingName == '?')
 			scoreTxt.text = 'Score: ' + score + ' | Misses: ' + misses + ' | Rating: ?';
 		else
-			scoreTxt.text = 'Score: ' + score + ' | Misses: ' + misses + ' | Rating: ' + rating + ' ('
-				+ Highscore.floorDecimal(PlayState.instance.ratingPercent * 100, 2) + '%)' + ' - ' + PlayState.instance.ratingFC; // peeps wanted no integer rating
+			scoreTxt.text = 'Score: '
+				+ score
+				+ ' | Misses: '
+				+ misses
+				+ ' | Rating: '
+				+ rating
+				+ ' ('
+				+ Highscore.floorDecimal(PlayState.instance.ratingPercent * 100, 2)
+				+ '%)'
+				+ ' - '
+				+ PlayState.instance.ratingFC; // peeps wanted no integer rating
 	}
 
 	public function reloadHealthBarColors(blue:Bool = false)
 	{
-		var dadcolor:FlxColor = FlxColor.fromRGB(PlayState.instance.dad.healthColorArray[0], PlayState.instance.dad.healthColorArray[1], PlayState.instance.dad.healthColorArray[2]);
-		var bfcolor:FlxColor = FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1], PlayState.instance.boyfriend.healthColorArray[2]);
+		var dadcolor:FlxColor = FlxColor.fromRGB(PlayState.instance.dad.healthColorArray[0], PlayState.instance.dad.healthColorArray[1],
+			PlayState.instance.dad.healthColorArray[2]);
+		var bfcolor:FlxColor = FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1],
+			PlayState.instance.boyfriend.healthColorArray[2]);
 		if (blue)
 			healthBar.createGradientBar([FlxColor.BLUE, dadcolor, dadcolor], [FlxColor.BLUE, bfcolor, bfcolor], 1, 90);
 		else
@@ -298,9 +312,10 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		remove(healthBar);
 		healthBar = new FlxBar(healthBarBG.x
 			+ 4, healthBarBG.y
-			+ 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8)
-			- Std.int(healthBar.width * (PlayState.instance.maxHealth / 2)),
-			Std.int(healthBarBG.height - 8), this, 'health', PlayState.instance.maxHealth, 2);
+			+ 4, RIGHT_TO_LEFT,
+			Std.int(healthBarBG.width - 8)
+			- Std.int(healthBar.width * (PlayState.instance.maxHealth / 2)), Std.int(healthBarBG.height - 8), this, 'health',
+			PlayState.instance.maxHealth, 2);
 		healthBar.scrollFactor.set();
 		healthBar.visible = !ClientPrefs.hideHud;
 		remove(healthBarFG);
