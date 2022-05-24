@@ -3659,14 +3659,12 @@ class PlayState extends MusicBeatState
 				horror.cameras = [camOther];
 				var visiblityShit:Bool = camHUD.visible; // In case the HUD starts invisible or visible, I do this shit instead.
 				for (hud in allUIs)
-					hud.visible = false; // nah looks good, i would update to the Paths.imagerandom put idk anymore xd
+					hud.visible = false; // nah looks good, i would update to use the Paths.imagerandom but idk anymore xd
 				add(horror);
 
 				new FlxTimer().start(0.7, function(tmr:FlxTimer)
 				{
 					camHUD.visible = visiblityShit;
-					for (hud in allUIs)
-						hud.visible = visiblityShit; // just to be sure
 					remove(horror);
 				});
 			}
