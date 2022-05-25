@@ -61,6 +61,7 @@ class Note extends FlxSprite
 	public var copyY:Bool = true;
 	public var copyAngle:Bool = true;
 	public var copyAlpha:Bool = true;
+	public var copyHurtNoteAlpha:Bool = false;
 
 	// public var hitHealth:Float = 0.023;
 	// public var missHealth:Float = 0.0475;
@@ -102,6 +103,7 @@ class Note extends FlxSprite
 			switch (value)
 			{
 				case 'Hurt Note':
+					copyHurtNoteAlpha = true;
 					ignoreNote = mustPress;
 					reloadNote('', 'HURTNOTE_assets');
 					haveCustomTexture = true;

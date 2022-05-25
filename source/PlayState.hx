@@ -231,6 +231,10 @@ class PlayState extends MusicBeatState
 
 	public var songLength:Float = 0;
 
+	public var boyfriendCameraOffset:Array<Float> = null;
+	public var opponentCameraOffset:Array<Float> = null;
+	public var girlfriendCameraOffset:Array<Float> = null;
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -455,10 +459,6 @@ class PlayState extends MusicBeatState
 		camOther.bgColor.alpha = 0;
 		allUIs.push(camHUD);
 
-		// FlxG.cameras.reset(camGame);
-		// FlxG.cameras.add(camHUD);
-		// FlxG.cameras.add(camGAS);
-		// FlxG.cameras.add(camOther);
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 		FlxG.cameras.add(camHUD);
@@ -469,9 +469,7 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.setDefaultDrawTarget(camOther, false);
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
 
-		// FlxCamera.defaultCameras = [camGame];
 		CustomFadeTransition.nextCamera = camOther;
-		// FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
 		camGAS.flashSprite.scaleY *= ClientPrefs.downScroll ? -1 : 1;
 		// this is lazy but works ;) -Luis
@@ -542,7 +540,13 @@ class PlayState extends MusicBeatState
 
 				boyfriend: [770, 100],
 				girlfriend: [400, 130],
-				opponent: [100, 100]
+				opponent: [100, 100],
+				hide_girlfriend: false,
+
+				camera_boyfriend: [0, 0],
+				camera_opponent: [0, 0],
+				camera_girlfriend: [0, 0],
+				camera_speed: 1
 			};
 		}
 
@@ -553,6 +557,21 @@ class PlayState extends MusicBeatState
 		GF_Y = stageData.girlfriend[1];
 		DAD_X = stageData.opponent[0];
 		DAD_Y = stageData.opponent[1];
+
+		if (stageData.camera_speed != null)
+			cameraSpeed = stageData.camera_speed;
+
+		boyfriendCameraOffset = stageData.camera_boyfriend;
+		if (boyfriendCameraOffset == null) // Fucks sake should have done it since the start :rolling_eyes:
+			boyfriendCameraOffset = [0, 0];
+
+		opponentCameraOffset = stageData.camera_opponent;
+		if (opponentCameraOffset == null)
+			opponentCameraOffset = [0, 0];
+
+		girlfriendCameraOffset = stageData.camera_girlfriend;
+		if (girlfriendCameraOffset == null)
+			girlfriendCameraOffset = [0, 0];
 
 		boyfriendGroup = new FlxSpriteGroup(BF_X, BF_Y);
 		dadGroup = new FlxSpriteGroup(DAD_X, DAD_Y);
@@ -2237,9 +2256,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.playMusic(Paths.instOLD(PlayState.SONG.song), 1, false);
 		else
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
-
-		// FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
-		FlxG.sound.music.onComplete = finishSong;
+		FlxG.sound.music.onComplete = onSongComplete;
 		vocals.play();
 
 		if (paused)
@@ -5532,6 +5549,13 @@ class PlayState extends MusicBeatState
 						}
 					});
 				}
+
+			case 'Set Property':
+				var killMe:Array<String> = value1.split('.');
+				if (killMe.length > 1)
+					Reflect.setProperty(FunkinLua.getPropertyLoopThingWhatever(killMe, true, true), killMe[killMe.length - 1], value2);
+				else
+					Reflect.setProperty(this, value1, value2);
 		}
 		callOnLuas('onEvent', [eventName, value1, value2]);
 	}
@@ -5544,8 +5568,8 @@ class PlayState extends MusicBeatState
 		if (SONG.notes[id].gfSection)
 		{
 			camFollow.set(gf.getMidpoint().x, gf.getMidpoint().y);
-			camFollow.x += gf.cameraPosition[0];
-			camFollow.y += gf.cameraPosition[1];
+			camFollow.x += gf.cameraPosition[0] + girlfriendCameraOffset[0];
+			camFollow.y += gf.cameraPosition[1] + girlfriendCameraOffset[1];
 			tweenCamIn();
 			callOnLuas('onMoveCamera', ['gf']);
 			return;
@@ -5570,12 +5594,12 @@ class PlayState extends MusicBeatState
 		if (isDad || forcecameratoplayer2)
 		{
 			camFollow.set(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
-			camFollow.x += dad.cameraPosition[0];
-			camFollow.y += dad.cameraPosition[1];
+			camFollow.x += dad.cameraPosition[0] + opponentCameraOffset[0];
+			camFollow.y += dad.cameraPosition[1] + opponentCameraOffset[1];
+
 			if ((cameramove && dad.curCharacter.startsWith("kb")) || forcecameramove)
 			{
 				camFollow.y += camY;
-
 				camFollow.x += camX;
 			}
 
@@ -5586,8 +5610,8 @@ class PlayState extends MusicBeatState
 		else
 		{
 			camFollow.set(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
-			camFollow.x -= boyfriend.cameraPosition[0];
-			camFollow.y += boyfriend.cameraPosition[1];
+			camFollow.x -= boyfriend.cameraPosition[0] - boyfriendCameraOffset[0];
+			camFollow.y += boyfriend.cameraPosition[1] + boyfriendCameraOffset[1];
 
 			tweenCamOut();
 		}
@@ -5666,27 +5690,31 @@ class PlayState extends MusicBeatState
 			endSong(); // trace("endSong triggerd from ending dialogue FAIL");
 	}
 
-	function finishSong():Void
+	// Any way to do this without using a different function? kinda dumb
+	private function onSongComplete()
 	{
-		if (!endingSong)
-		{ // Done to ensure this only triggers once.
-			var finishCallback:Void->Void = startEndingDialogue;
+		finishSong(false);
+	}
 
-			gameHUD.updateTime = false;
-			FlxG.sound.music.volume = 0;
-			vocals.volume = 0;
-			vocals.pause();
-			endingSong = true; // So that the dialogue knows what to do after the dialogue is over.
+	public function finishSong(?ignoreNoteOffset:Bool = false):Void
+	{
+		var finishCallback:Void->Void = startEndingDialogue;
 
-			if (ClientPrefs.noteOffset <= 0)
-				finishCallback();
-			else
+		gameHUD.updateTime = false;
+		FlxG.sound.music.volume = 0;
+		vocals.volume = 0;
+		vocals.pause();
+		endingSong = true; // So that the dialogue knows what to do after the dialogue is over.
+		if (ClientPrefs.noteOffset <= 0 || ignoreNoteOffset)
+		{
+			finishCallback();
+		}
+		else
+		{
+			finishTimer = new FlxTimer().start(ClientPrefs.noteOffset / 1000, function(tmr:FlxTimer)
 			{
-				finishTimer = new FlxTimer().start(ClientPrefs.noteOffset / 1000, function(tmr:FlxTimer)
-				{
-					finishCallback();
-				});
-			}
+				finishCallback();
+			});
 		}
 	}
 
@@ -6035,7 +6063,6 @@ class PlayState extends MusicBeatState
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
-		rating.visible = !ClientPrefs.hideHud;
 		rating.x += ClientPrefs.comboOffset[0];
 		rating.y -= ClientPrefs.comboOffset[1];
 
@@ -6045,7 +6072,6 @@ class PlayState extends MusicBeatState
 		comboSpr.x = coolText.x;
 		comboSpr.acceleration.y = 600;
 		comboSpr.velocity.y -= 150;
-		comboSpr.visible = !ClientPrefs.hideHud;
 		comboSpr.x += ClientPrefs.comboOffset[0];
 		comboSpr.y -= ClientPrefs.comboOffset[1];
 
@@ -6090,7 +6116,6 @@ class PlayState extends MusicBeatState
 			numScore.acceleration.y = FlxG.random.int(200, 300);
 			numScore.velocity.y -= FlxG.random.int(140, 160);
 			numScore.velocity.x = FlxG.random.float(-5, 5);
-			numScore.visible = !ClientPrefs.hideHud;
 
 			// if (combo >= 10 || combo == 0)
 			insert(members.indexOf(strumLineNotes), numScore);

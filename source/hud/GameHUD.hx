@@ -127,7 +127,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		healthBarBG.y = FlxG.height * 0.89;
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
-		healthBarBG.visible = !ClientPrefs.hideHud;
+		healthBarBG.visible = !PlayState.instance.cpuControlled;
 		healthBarBG.xAdd = -4;
 		healthBarBG.yAdd = -4;
 		add(healthBarBG);
@@ -143,7 +143,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 		healthBar.scrollFactor.set();
 		// healthBar
-		healthBar.visible = !ClientPrefs.hideHud;
+		healthBar.visible = !PlayState.instance.cpuControlled;
 		healthBar.alpha = ClientPrefs.healthBarAlpha;
 		add(healthBar);
 		healthBarBG.sprTracker = healthBar;
@@ -154,7 +154,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		healthBarFG.height = healthBarBG.height;
 		healthBarFG.width = healthBarBG.width; // same position, height and width than healthBarBG
 		healthBarFG.scrollFactor.set();
-		healthBarFG.visible = !ClientPrefs.hideHud;
+		healthBarFG.visible = !PlayState.instance.cpuControlled;
 		healthBarFG.xAdd = -4;
 		healthBarFG.yAdd = -4;
 		add(healthBarFG);
@@ -162,13 +162,13 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 		iconP1 = new HealthIcon(PlayState.instance.boyfriend.healthIcon, true);
 		iconP1.y = healthBar.y - 75;
-		iconP1.visible = !ClientPrefs.hideHud;
+		iconP1.visible = !PlayState.instance.cpuControlled;
 		iconP1.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP1);
 
 		iconP2 = new HealthIcon(PlayState.instance.dad.healthIcon, false);
 		iconP2.y = healthBar.y - 75;
-		iconP2.visible = !ClientPrefs.hideHud;
+		iconP2.visible = !PlayState.instance.cpuControlled;
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP2);
 		reloadHealthBarColors(PlayState.instance.qtIsBlueScreened);
@@ -184,8 +184,6 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		if (!PlayState.instance.forceMiddleScroll)
 			scoreTxt.x += 140;
 		scoreTxt.visible = !PlayState.instance.cpuControlled;
-		if (ClientPrefs.hideHud)
-			scoreTxt.alpha = 0; // sorry
 		add(scoreTxt); // new scoreTxt code
 
 		botplayTxt = new FlxText(FlxG.width - 250, healthBarBG.y + (FlxG.save.data.downscroll ? 120 : -120), 0, "BOTPLAY", 20);
@@ -317,7 +315,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			- Std.int(healthBar.width * (PlayState.instance.maxHealth / 2)), Std.int(healthBarBG.height - 8), this, 'health',
 			PlayState.instance.maxHealth, 2);
 		healthBar.scrollFactor.set();
-		healthBar.visible = !ClientPrefs.hideHud;
+		healthBar.visible = !PlayState.instance.cpuControlled;
 		remove(healthBarFG);
 		remove(iconP1);
 		remove(iconP2);

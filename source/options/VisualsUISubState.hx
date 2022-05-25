@@ -49,9 +49,6 @@ class VisualsUISubState extends BaseOptionsMenu
 		var option:Option = new Option('Camera Movement', 'If unchecked, the camera won\'t move when you hit a note.', 'camMove', 'bool', true);
 		addOption(option);
 
-		var option:Option = new Option('Hide HUD', 'If checked, hides most HUD elements.', 'hideHud', 'bool', false);
-		addOption(option);
-
 		var option:Option = new Option('Show Time Bar', 'If checked, will show the bar showing\n how much time was elapsed/song name/song length.', 'timeBar',
 			'bool', true);
 		addOption(option);
@@ -79,6 +76,12 @@ class VisualsUISubState extends BaseOptionsMenu
 		addOption(option);
 		option.onChange = onChangeFPSCounter;
 		#end
+
+		/*#if sys
+			var option:Option = new Option("Use username", "If checked, this mod will\nuse your computer's username \nin some menus", 'usePlayerUsername', 'bool',
+				false);
+			addOption(option);
+			#end */
 
 		super();
 	}

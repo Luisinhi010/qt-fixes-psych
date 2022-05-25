@@ -1,5 +1,6 @@
 package;
 
+import flixel.system.scaleModes.RatioScaleMode;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.addons.ui.FlxUIState;
@@ -26,6 +27,41 @@ class MusicBeatState extends FlxUIState
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
+
+	public static function getUsername()
+	{
+		#if sys
+		if (ClientPrefs.usePlayerUsername)
+		{
+			var envs = Sys.environment();
+			if (envs.exists("USERNAME"))
+				return envs["USERNAME"];
+			if (envs.exists("USER"))
+				return envs["USER"];
+		}
+		#end
+		return null;
+	}
+
+	public static function getUsernameOption()
+	{
+		#if sys
+		if (MusicBeatState.getUsername() != null && ClientPrefs.usePlayerUsername && FlxG.save.data.usePlayerUsername != null)
+			return true;
+		#end
+		return false;
+	}
+
+	public static function updatescreenratio()
+	{
+		#if !android
+		@:privateAccess
+		FlxG.width = 1280;
+		@:privateAccess
+		FlxG.height = 720;
+		#end
+		FlxG.scaleMode = new RatioScaleMode();
+	}
 
 	override function create()
 	{
@@ -95,6 +131,8 @@ class MusicBeatState extends FlxUIState
 	{
 		Main.initialState = Type.getClass(nextState);
 		FlxG.switchState(nextState);
+		updatescreenratio();
+		return;
 	}
 
 	public static function switchState(nextState:FlxState)
@@ -103,6 +141,7 @@ class MusicBeatState extends FlxUIState
 		Main.initialState = Type.getClass(nextState);
 		var curState:Dynamic = FlxG.state;
 		var leState:MusicBeatState = curState;
+		updatescreenratio();
 		if (!FlxTransitionableState.skipNextTransIn)
 		{
 			leState.openSubState(new CustomFadeTransition(0.6, false));

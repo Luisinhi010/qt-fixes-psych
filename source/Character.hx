@@ -336,9 +336,7 @@ class Character extends FlxSprite
 					playAnim('danceLeft' + idleSuffix);
 			}
 			else if (animation.getByName('idle' + idleSuffix) != null)
-			{
 				playAnim('idle' + idleSuffix);
-			}
 		}
 	}
 
@@ -358,18 +356,12 @@ class Character extends FlxSprite
 		if (curCharacter.startsWith('gf'))
 		{
 			if (AnimName == 'singLEFT')
-			{
 				danced = true;
-			}
 			else if (AnimName == 'singRIGHT')
-			{
 				danced = false;
-			}
 
 			if (AnimName == 'singUP' || AnimName == 'singDOWN')
-			{
 				danced = !danced;
-			}
 		}
 	}
 

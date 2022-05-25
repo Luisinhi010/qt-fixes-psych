@@ -259,6 +259,7 @@ class FreeplayState extends MusicBeatState
 		text.scrollFactor.set();
 		add(text);
 		super.create();
+		FlxG.camera.zoom = 1.1;
 	}
 
 	override function closeSubState()
@@ -824,23 +825,17 @@ class FreeplayState extends MusicBeatState
 					if (curBeat >= 192 && curBeat <= 320) // 1st drop
 					{
 						if (FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
-						{
 							FlxG.camera.zoom += 0.0075;
-						}
 					}
 					else if (curBeat >= 512 && curBeat <= 640) // 1st drop
 					{
 						if (FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
-						{
 							FlxG.camera.zoom += 0.0075;
-						}
 					}
 					else if (curBeat >= 832 && curBeat <= 1088) // last drop
 					{
 						if (FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
-						{
 							FlxG.camera.zoom += 0.0075;
-						}
 					}
 				case 'censory-overload':
 					if (curBeat == 241 || curBeat == 249 || curBeat == 257 || curBeat == 265 || curBeat == 273 || curBeat == 281 || curBeat == 289
@@ -848,41 +843,29 @@ class FreeplayState extends MusicBeatState
 						|| curBeat == 529 || curBeat == 537 || curBeat == 545 || curBeat == 549 || curBeat == 553 || curBeat == 557)
 					{
 						if (FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
-						{
 							FlxG.camera.zoom += 0.0075;
-						}
 					}
 					if (curBeat >= 80 && curBeat <= 208) // first drop
 					{
 						if (FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
-						{
 							FlxG.camera.zoom += 0.0075;
-						}
-						// Gas Release effect
 						if (curBeat % 16 == 0)
-						{
 							Gas_Release('burst');
-						}
 					}
 					else if (curBeat >= 304 && curBeat <= 432) // second drop
 					{
 						if (FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
-						{
 							FlxG.camera.zoom += 0.0075;
-						}
 
 						// Gas Release effect
 						if (curBeat % 8 == 0)
-						{
 							Gas_Release('burstALT');
-						}
 					}
 					else if (curBeat >= 560 && curBeat <= 688)
 					{ // third drop
 						if (FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
-						{
 							FlxG.camera.zoom += 0.0075;
-						}
+
 						// Gas Release effect
 						if (curBeat % 4 == 0)
 							Gas_Release('burstFAST');
@@ -892,9 +875,7 @@ class FreeplayState extends MusicBeatState
 					else if (curBeat >= 832 && curBeat <= 960)
 					{ // final drop
 						if (FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
-						{
 							FlxG.camera.zoom += 0.0075;
-						}
 
 						// Gas Release effect
 						if (curBeat % 4 == 2)

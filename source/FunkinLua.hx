@@ -169,7 +169,6 @@ class FunkinLua
 		set('middlescroll', ClientPrefs.middleScroll);
 		set('framerate', ClientPrefs.framerate);
 		set('ghostTapping', ClientPrefs.ghostTapping);
-		set('hideHud', ClientPrefs.hideHud);
 		set('timeBar', ClientPrefs.timeBar);
 		set('scoreZoom', ClientPrefs.scoreZoom);
 		set('cameraZoomOnBeat', ClientPrefs.camZooms);
@@ -2474,9 +2473,9 @@ class FunkinLua
 		return Function_Continue;
 	}
 
-	function getPropertyLoopThingWhatever(killMe:Array<String>, ?checkForTextsToo:Bool = true):Dynamic
+	public static function getPropertyLoopThingWhatever(killMe:Array<String>, ?checkForTextsToo:Bool = true, ?noGameOver:Bool = false):Dynamic
 	{
-		var coverMeInPiss:Dynamic = getObjectDirectly(killMe[0], checkForTextsToo);
+		var coverMeInPiss:Dynamic = getObjectDirectly(killMe[0], checkForTextsToo, noGameOver);
 		for (i in 1...killMe.length - 1)
 		{
 			coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
@@ -2484,7 +2483,7 @@ class FunkinLua
 		return coverMeInPiss;
 	}
 
-	function getObjectDirectly(objectName:String, ?checkForTextsToo:Bool = true):Dynamic
+	public static function getObjectDirectly(objectName:String, ?checkForTextsToo:Bool = true, ?noGameOver:Bool = false):Dynamic
 	{
 		var coverMeInPiss:Dynamic = null;
 		if (PlayState.instance.modchartSprites.exists(objectName))
@@ -2497,7 +2496,7 @@ class FunkinLua
 		}
 		else
 		{
-			coverMeInPiss = Reflect.getProperty(getInstance(), objectName);
+			coverMeInPiss = Reflect.getProperty(noGameOver ? PlayState.instance : getInstance(), objectName);
 		}
 		return coverMeInPiss;
 	}
@@ -2564,10 +2563,20 @@ class FunkinLua
 		#end
 	}
 
-	inline function getInstance()
+	public static inline function getInstance()
 	{
 		return PlayState.instance.isDead ? GameOverSubstate.instance : PlayState.instance;
 	}
+
+	static inline var CLENSE:String = "
+		os.execute = nil;
+		os.exit = nil;
+		package.loaded.os.execute = nil;
+		package.loaded.os.exit = nil;
+		process = nil;
+		package.loaded.process = nil;
+	
+		"; // Fuck this, I can't figure out linc_lua, so I'mma set everything in Lua itself - Super
 }
 
 class ModchartSprite extends FlxSprite

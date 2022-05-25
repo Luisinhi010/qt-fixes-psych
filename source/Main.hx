@@ -12,6 +12,7 @@ import openfl.display.StageScaleMode;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxBasic;
+import flixel.system.scaleModes.*;
 
 class Main extends Sprite
 {
@@ -30,20 +31,6 @@ class Main extends Sprite
 	public static var fpsVar:FPS;
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
-
-	public static function getUsername()
-	{
-		#if sys
-		var envs = Sys.environment();
-		if (envs.exists("USERNAME"))
-			return envs["USERNAME"];
-
-		if (envs.exists("USER"))
-			return envs["USER"];
-		#end
-
-		return 'player';
-	}
 
 	public static function main():Void
 	{

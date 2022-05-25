@@ -58,6 +58,10 @@ class TitleState extends MusicBeatState
 
 	public static var initialized:Bool = false;
 
+	#if sys
+	public static var getplayernameoption:Bool = false;
+	#end
+
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
 	var credTextShit:Alphabet;
@@ -80,6 +84,10 @@ class TitleState extends MusicBeatState
 	{
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
+
+		#if sys
+		getplayernameoption = false;
+		#end
 
 		#if LUA_ALLOWED
 		trace("lua");
@@ -210,6 +218,11 @@ class TitleState extends MusicBeatState
 		}
 		else
 		{
+			#if sys
+			/*if (FlxG.save.data.usePlayerUsername == null)
+				getplayernameoption = true; */
+			FlxG.save.data.usePlayerUsername = null;
+			#end
 			#if desktop
 			DiscordClient.initialize();
 			Application.current.onExit.add(function(exitCode)

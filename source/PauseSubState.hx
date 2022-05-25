@@ -185,6 +185,12 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.changedDifficulty = true;
 					hud.GameHUD.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
 					hud.GameHUD.instance.scoreTxt.visible = !PlayState.instance.cpuControlled;
+					hud.GameHUD.instance.healthBarBG.visible = !PlayState.instance.cpuControlled;
+					hud.GameHUD.instance.healthBar.visible = !PlayState.instance.cpuControlled;
+					hud.GameHUD.instance.healthBarFG.visible = !PlayState.instance.cpuControlled;
+					hud.GameHUD.instance.iconP1.visible = !PlayState.instance.cpuControlled;
+					hud.GameHUD.instance.iconP2.visible = !PlayState.instance.cpuControlled;
+					hud.GameHUD.instance.scoreTxt.visible = !PlayState.instance.cpuControlled;
 					hud.GameHUD.instance.botplayTxt.alpha = 1;
 					hud.GameHUD.instance.botplaySine = 0;
 				case "Exit to menu":

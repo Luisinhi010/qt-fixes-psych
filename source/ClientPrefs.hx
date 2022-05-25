@@ -8,7 +8,6 @@ import Controls;
 
 class ClientPrefs
 {
-	public static var camMove:Bool = true; // Camera Movement
 	public static var hitsoundVolume:Float = 0; // Here to make Interlope a bit easier, plus why not?
 	public static var qtOldVocals:Bool = false; // Here because some people (such as myself) prefer the old vocals from the original mod.
 	public static var qtSkipCutscene:Bool = false; // Because the cutscene caused problems in the original mod. This is here in case it causes problems still.
@@ -17,6 +16,10 @@ class ClientPrefs
 	public static var noShaders:Bool = true; // V2.2 added shaders to Interlope, however these shaders cause crashes. As a result, they now start disabled in the hotfix update.
 
 	public static var showState:Bool = false;
+	public static var camMove:Bool = true; // Camera Movement
+	#if sys
+	public static var usePlayerUsername:Bool = false;
+	#end
 
 	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
@@ -29,7 +32,6 @@ class ClientPrefs
 	public static var cursing:Bool = true;
 	public static var violence:Bool = true;
 	public static var camZooms:Bool = true;
-	public static var hideHud:Bool = false;
 	public static var noteOffset:Int = 0;
 	public static var arrowHSV:Array<Array<Int>> = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
 	public static var imagesPersist:Bool = false;
@@ -100,7 +102,6 @@ class ClientPrefs
 
 	public static function saveSettings()
 	{
-		FlxG.save.data.camMove = camMove;
 		FlxG.save.data.hitsoundVolume = hitsoundVolume;
 		FlxG.save.data.qtOldVocals = qtOldVocals;
 		FlxG.save.data.qtSkipCutscene = qtSkipCutscene;
@@ -109,6 +110,10 @@ class ClientPrefs
 		FlxG.save.data.noShaders = noShaders;
 
 		FlxG.save.data.showState = showState;
+		FlxG.save.data.camMove = camMove;
+		#if sys
+		FlxG.save.data.usePlayerUsername = usePlayerUsername;
+		#end
 
 		FlxG.save.data.downScroll = downScroll;
 		FlxG.save.data.middleScroll = middleScroll;
@@ -122,7 +127,6 @@ class ClientPrefs
 		// FlxG.save.data.violence = violence;
 		FlxG.save.data.camZooms = camZooms;
 		FlxG.save.data.noteOffset = noteOffset;
-		FlxG.save.data.hideHud = hideHud;
 		FlxG.save.data.arrowHSV = arrowHSV;
 		FlxG.save.data.imagesPersist = imagesPersist;
 		FlxG.save.data.ghostTapping = ghostTapping;
@@ -153,9 +157,6 @@ class ClientPrefs
 
 	public static function loadPrefs()
 	{
-		if (FlxG.save.data.camMove != null)
-			camMove = FlxG.save.data.camMove;
-		
 		if (FlxG.save.data.hitsoundVolume != null)
 			hitsoundVolume = FlxG.save.data.hitsoundVolume;
 
@@ -176,6 +177,14 @@ class ClientPrefs
 
 		if (FlxG.save.data.showState != null)
 			showState = FlxG.save.data.showState;
+
+		if (FlxG.save.data.camMove != null)
+			camMove = FlxG.save.data.camMove;
+
+		#if sys
+		if (FlxG.save.data.usePlayerUsername != null)
+			usePlayerUsername = FlxG.save.data.usePlayerUsername;
+		#end
 
 		if (FlxG.save.data.downScroll != null)
 			downScroll = FlxG.save.data.downScroll;
@@ -225,9 +234,6 @@ class ClientPrefs
 		}*/
 		if (FlxG.save.data.camZooms != null)
 			camZooms = FlxG.save.data.camZooms;
-
-		if (FlxG.save.data.hideHud != null)
-			hideHud = FlxG.save.data.hideHud;
 
 		if (FlxG.save.data.noteOffset != null)
 			noteOffset = FlxG.save.data.noteOffset;
