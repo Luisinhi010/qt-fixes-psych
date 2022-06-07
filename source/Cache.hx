@@ -39,8 +39,19 @@ class Cache extends MusicBeatState
 	var images2 = [];
 	var images3 = [];
 
+	var cachefolders:Array<String> = [];
+
+	var thevars = [];
+
 	override function create()
 	{
+		cachefolders = [
+			"assets/shared/images/characters",
+			"assets/shared/images/hazard/qt-port",
+			"assets/shared/images/hazard/qt-port/stage",
+			"assets/shared/images/luis/qt-fixes"
+		];
+		thevars = [images, images1, images2, images3];
 		FlxG.worldBounds.set(0, 0);
 		FlxG.mouse.visible = false;
 
@@ -63,42 +74,28 @@ class Cache extends MusicBeatState
 		add(menuBG);
 
 		#if cpp
-		for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/shared/images/characters")))
+		for (o in 0...thevars.length)
 		{
-			if (!i.endsWith(".png"))
-				continue;
-			images.push(i);
-		}
-		for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/shared/images/hazard/qt-port")))
-		{
-			if (!i.endsWith(".png"))
-				continue;
-			images1.push(i);
-		}
-		for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/shared/images/hazard/qt-port/stage")))
-		{
-			if (!i.endsWith(".png"))
-				continue;
-			images2.push(i);
-		}
-		for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/shared/images/luis/qt-fixes")))
-		{
-			if (!i.endsWith(".png"))
-				continue;
-			images3.push(i);
+			for (i in FileSystem.readDirectory(FileSystem.absolutePath(cachefolders[o])))
+			{
+				if (!i.endsWith(".png"))
+					continue;
+				thevars[o].push(i);
+			}
+			toBeDone += Lambda.count(thevars[o]); // now i'm doing the right way
 		}
 		#end
 
-		toBeDone = Lambda.count(images) + Lambda.count(images1) + Lambda.count(images2) + Lambda.count(images3);
+		for (i in 0...cachefolders.length)
+			cachefolders[i] += '/';
 
-		bar = new FlxBar(10, FlxG.height - 50, FlxBarFillDirection.LEFT_TO_RIGHT, FlxG.width - 20, 40, this, 'donefloat', 0, toBeDone);
+		bar = new FlxBar(10, FlxG.height - 50, FlxBarFillDirection.HORIZONTAL_INSIDE_OUT, FlxG.width - 20, 40, this, 'donefloat', 0, toBeDone);
 		bar.createFilledBar(FlxColor.BLACK, FlxColor.PURPLE, true);
 		bar.numDivisions = 800;
 		add(bar);
 		text = new FlxText(0, bar.y + 2, 0, "Loading...", 34);
 		text.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		text.screenCenter(X);
-		text.x -= 90;
 		add(text);
 
 		// cache thread
@@ -118,17 +115,6 @@ class Cache extends MusicBeatState
 	function cache()
 	{
 		#if !linux
-		playsound('termination', 'inst');
-		playsound('termination', 'voice');
-		playsound('termination', 'voice-classic');
-		playsound('termination', 'inst-old');
-		playsound('termination', 'voice-old');
-		playsound('censory-overload', 'inst');
-		playsound('censory-overload', 'voice');
-		playsound('censory-overload', 'voice-classic');
-		playsound('careless', 'inst');
-		playsound('careless', 'voice');
-		playsound('careless', 'voice-classic'); // this is fucking lame -Luis
 		CoolUtil.precacheSound('missnote1');
 		CoolUtil.precacheSound('missnote2');
 		CoolUtil.precacheSound('missnote3');
@@ -140,53 +126,22 @@ class Cache extends MusicBeatState
 		CoolUtil.precacheSound('hazard/attack-double');
 		CoolUtil.precacheSound('hazard/attack-triple');
 		CoolUtil.precacheSound('hazard/attack-quadruple');
-		for (i in images)
+		for (o in 0...thevars.length)
 		{
-			var replaced = i.replace(".png", "");
-			var data:BitmapData = BitmapData.fromFile("assets/shared/images/characters/" + i);
-			var graph = FlxGraphic.fromBitmapData(data);
-			graph.persist = true;
-			graph.destroyOnNoUse = false;
-			bitmapData.set(replaced, graph);
-			done++;
-			createtxt(i + ' loaded part 1');
+			for (i in thevars[o])
+			{
+				var replaced = i.replace(".png", "");
+				var data:BitmapData = BitmapData.fromFile(cachefolders[o] + i);
+				var graph = FlxGraphic.fromBitmapData(data);
+				graph.persist = true;
+				graph.destroyOnNoUse = false;
+				bitmapData.set(replaced, graph);
+				done++;
+				createtxt(i + ' cached');
+			}
 		}
-		for (i in images1)
-		{
-			var replaced = i.replace(".png", "");
-			var data:BitmapData = BitmapData.fromFile("assets/shared/images/hazard/qt-port/" + i);
-			var graph = FlxGraphic.fromBitmapData(data);
-			graph.persist = true;
-			graph.destroyOnNoUse = false;
-			bitmapData2.set(replaced, graph);
-			done++;
-			createtxt(i + ' loaded part 2');
-		}
-		for (i in images2)
-		{
-			var replaced = i.replace(".png", "");
-			var data:BitmapData = BitmapData.fromFile("assets/shared/images/hazard/qt-port/stage/" + i);
-			var graph = FlxGraphic.fromBitmapData(data);
-			graph.persist = true;
-			graph.destroyOnNoUse = false;
-			bitmapData3.set(replaced, graph);
-			done++;
-			createtxt(i + ' loaded part 3');
-		}
-		for (i in images3)
-		{
-			var replaced = i.replace(".png", "");
-			var data:BitmapData = BitmapData.fromFile("assets/shared/images/luis/qt-fixes/" + i);
-			var graph = FlxGraphic.fromBitmapData(data);
-			graph.persist = true;
-			graph.destroyOnNoUse = false;
-			bitmapData3.set(replaced, graph);
-			done++;
-			createtxt(i + ' loaded part 4');
-		} // 4 parts
 
 		trace("Finished caching...");
-		// text.text = "Loading... (" + done + "/" + toBeDone + ")";
 
 		loaded = true;
 		#end
@@ -198,40 +153,16 @@ class Cache extends MusicBeatState
 	{
 		FlxTween.tween(this, {donefloat: done}, 0.1, {ease: FlxEase.cubeOut});
 		trace(text);
-		var txt:FlxText = new FlxText(20, FlxG.height - 60, 400, text, 32);
+		var txt:FlxText = new FlxText(FlxG.random.int(18, 25), FlxG.height - FlxG.random.int(56, 65), 400, text, 32);
 		txt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(txt);
-		FlxTween.tween(txt, {y: txt.y - 40, alpha: 0}, 2, {
+		FlxTween.tween(txt, {y: txt.y - FlxG.random.int(36, 46), x: txt.y + FlxG.random.int(-26, 36), alpha: 0}, FlxG.random.float(1.6, 3), {
 			ease: FlxEase.circOut,
 			onComplete: function(twn:FlxTween)
 			{
 				txt.kill();
 			}
 		});
-	}
-
-	/*public static*/
-	function playsound(song:String, whattype:String) // :Void
-	{
-		var sound:FlxSound;
-		switch (whattype.toLowerCase())
-		{
-			case 'inst':
-				sound = new FlxSound().loadEmbedded(Paths.inst(song));
-			case 'inst-old':
-				sound = new FlxSound().loadEmbedded(Paths.instOLD(song));
-			case 'voice':
-				sound = new FlxSound().loadEmbedded(Paths.voices(song));
-			case 'voice-classic':
-				sound = new FlxSound().loadEmbedded(Paths.voicesCLASSIC(song));
-			case 'voice-old':
-				sound = new FlxSound().loadEmbedded(Paths.voicesOLD(song));
-			default:
-				sound = new FlxSound().loadEmbedded(Paths.music(song));
-		}
-		sound.play();
-		sound.volume = 0.00001;
-		FlxG.sound.list.add(sound);
 	}
 }
 #end

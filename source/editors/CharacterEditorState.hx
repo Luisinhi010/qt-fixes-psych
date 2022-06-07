@@ -143,7 +143,7 @@ class CharacterEditorState extends MusicBeatState
 		qt_gas.frames = Paths.getSparrowAtlas('hazard/qt-port/stage/Gas_Release');
 		qt_gas.animation.addByIndices('idle', 'Gas_Release', [12], "", 1);
 		qt_gas.setGraphicSize(Std.int(qt_gas.width * 1.6));
-		qt_gas.antialiasing = true;
+		qt_gas.antialiasing = ClientPrefs.globalAntialiasing;
 		qt_gas.alpha = 0.62;
 		qt_gas.animation.play('idle');
 		qt_gas.updateHitbox();

@@ -54,6 +54,19 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		super();
 
+		var red:FlxSprite = new FlxSprite(-FlxG.width, -FlxG.height).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.RED);
+		red.alpha = 1;
+		add(red);
+		FlxTween.tween(red, {alpha: 0}, 0.3, {ease: FlxEase.linear});
+
+		var luisOverlayShit:BGSprite = new BGSprite('luis/qt-fixes/vignette');
+		luisOverlayShit.setGraphicSize(FlxG.width, FlxG.height);
+		luisOverlayShit.screenCenter();
+		luisOverlayShit.x += (FlxG.width / 2) - 60;
+		luisOverlayShit.y += (FlxG.height / 2) - 20;
+		luisOverlayShit.updateHitbox();
+		FlxTween.tween(luisOverlayShit, {alpha: 0}, 0.5, {ease: FlxEase.linear});
+
 		PlayState.instance.setOnLuas('inGameOver', true);
 
 		Conductor.songPosition = 0;
@@ -72,7 +85,8 @@ class GameOverSubstate extends MusicBeatSubstate
 			// UPDATE - Tutorial text on TV screens now. This isn't necessary, but might as well reuse this for a custom "funny death" animation. -Haz
 			TerminationText = new FlxSprite();
 			TerminationText.frames = Paths.getSparrowAtlas('hazard/qt-port/sawkillanimation2');
-			TerminationText.animation.addByPrefix('normal', 'kb_attack_animation_kill_idle', 24, true);
+			// TerminationText.animation.addByPrefix('normal', 'kb_attack_animation_kill_idle', 24, true);
+			TerminationText.animation.addByIndices('normal', 'kb_attack_animation_kill_moving', [0], "", 24, false);
 			TerminationText.animation.addByPrefix('animate', 'kb_attack_animation_kill_moving', 24, true);
 			TerminationText.x = x - 1175; // negative = left
 			TerminationText.y = y + 500; // positive = down
@@ -97,6 +111,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		camFollowPos = new FlxObject(0, 0, 1, 1);
 		camFollowPos.setPosition(FlxG.camera.scroll.x + (FlxG.camera.width / 2), FlxG.camera.scroll.y + (FlxG.camera.height / 2));
 		add(camFollowPos);
+		add(luisOverlayShit);
 	}
 
 	var isFollowingAlready:Bool = false;
@@ -229,6 +244,8 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (!isEnding)
 		{
 			isEnding = true;
+			if (killedByGAMEOVER == "sawblade")
+				TerminationText.animation.stop();
 			displayDeathText(true);
 			boyfriend.playAnim('deathConfirm', true);
 			FlxG.sound.music.stop();

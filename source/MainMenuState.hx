@@ -355,7 +355,7 @@ class MainMenuState extends MusicBeatState
 		vignette1.scrollFactor.set(0, 0);
 		vignette1.updateHitbox();
 		vignette1.screenCenter();
-		vignette1.antialiasing = true;
+		vignette1.antialiasing = ClientPrefs.globalAntialiasing;
 		add(vignette1);
 
 		switch (FlxG.random.int(1, 5))

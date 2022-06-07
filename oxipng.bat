@@ -1,3 +1,3 @@
 @REM Download oxipng from https://github.com/shssoichiro/oxipng/releases/latest, copy it in the root folder of the project, then run this bat file.
-oxipng -o 4 -r assets/
+oxipng -o 6 -r assets/
 oxipng -r example_mods/

@@ -14,6 +14,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.FlxCamera;
 import Song.SwagSong;
+import hud.GameHUD;
 
 class PauseSubState extends MusicBeatSubstate
 {
@@ -183,16 +184,16 @@ class PauseSubState extends MusicBeatSubstate
 				case 'Toggle Botplay':
 					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
 					PlayState.changedDifficulty = true;
-					hud.GameHUD.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
-					hud.GameHUD.instance.scoreTxt.visible = !PlayState.instance.cpuControlled;
-					hud.GameHUD.instance.healthBarBG.visible = !PlayState.instance.cpuControlled;
-					hud.GameHUD.instance.healthBar.visible = !PlayState.instance.cpuControlled;
-					hud.GameHUD.instance.healthBarFG.visible = !PlayState.instance.cpuControlled;
-					hud.GameHUD.instance.iconP1.visible = !PlayState.instance.cpuControlled;
-					hud.GameHUD.instance.iconP2.visible = !PlayState.instance.cpuControlled;
-					hud.GameHUD.instance.scoreTxt.visible = !PlayState.instance.cpuControlled;
-					hud.GameHUD.instance.botplayTxt.alpha = 1;
-					hud.GameHUD.instance.botplaySine = 0;
+					GameHUD.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
+					GameHUD.instance.scoreTxt.visible = !PlayState.instance.cpuControlled;
+					GameHUD.instance.healthBarBG.visible = !PlayState.instance.cpuControlled;
+					GameHUD.instance.healthBar.visible = !PlayState.instance.cpuControlled;
+					GameHUD.instance.healthBarFG.visible = !PlayState.instance.cpuControlled;
+					GameHUD.instance.iconP1.visible = !PlayState.instance.cpuControlled;
+					GameHUD.instance.iconP2.visible = !PlayState.instance.cpuControlled;
+					GameHUD.instance.scoreTxt.visible = !PlayState.instance.cpuControlled;
+					GameHUD.instance.botplayTxt.alpha = 1;
+					GameHUD.instance.botplaySine = 0;
 				case "Exit to menu":
 					PlayState.deathCounter = 0;
 					PlayState.seenCutscene = false;

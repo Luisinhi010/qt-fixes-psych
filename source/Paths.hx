@@ -172,6 +172,11 @@ class Paths
 		return getPath('$key.lua', TEXT, library);
 	}
 
+	inline static public function getHaxeScript(string:String)
+	{
+		return Assets.getText('assets/data/$string/haxeModchart.hx');
+	}
+
 	static public function video(key:String)
 	{
 		#if MODS_ALLOWED
@@ -243,11 +248,9 @@ class Paths
 		return returnAsset;
 	}
 
-	inline static public function imageRandom(key:String, min:Int, max:Int, ?library:String):FlxGraphic
+	inline static public function imageRandom(key:String, min:Int, max:Int, ?library:String)
 	{
-		var thekey:String = key + FlxG.random.int(min, max);
-		var returnAsset:FlxGraphic = returnGraphic(thekey, library);
-		return returnAsset;
+		return image(key + FlxG.random.int(min, max), library);
 	}
 
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String

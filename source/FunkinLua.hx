@@ -45,6 +45,8 @@ class FunkinLua
 	public static var Function_Stop = 1;
 	public static var Function_Continue = 0;
 
+	public var errorHandler:String->Void;
+
 	#if LUA_ALLOWED
 	public var lua:State = null;
 	#end
@@ -65,13 +67,26 @@ class FunkinLua
 		// trace('Lua version: ' + Lua.version());
 		// trace("LuaJIT version: " + Lua.versionJIT());
 
-		var result:Dynamic = LuaL.dofile(lua, script);
-		var resultStr:String = Lua.tostring(lua, result);
-		if (resultStr != null && result != 0)
+		LuaL.dostring(lua, CLENSE);
+		try
 		{
-			lime.app.Application.current.window.alert(resultStr, 'Error on .LUA script!');
-			trace('Error on .LUA script! ' + resultStr);
-			lua = null;
+			var result:Dynamic = LuaL.dofile(lua, script);
+			var resultStr:String = Lua.tostring(lua, result);
+			if (resultStr != null && result != 0)
+			{
+				trace('Error on lua script! ' + resultStr);
+				#if windows
+				lime.app.Application.current.window.alert(resultStr, 'Error on lua script!');
+				#else
+				luaTrace('Error loading lua script: "$script"\n' + resultStr, true, false);
+				#end
+				lua = null;
+				return;
+			}
+		}
+		catch (e:Dynamic)
+		{
+			trace(e);
 			return;
 		}
 		scriptName = script;
@@ -162,7 +177,7 @@ class FunkinLua
 		// Character shit
 		set('boyfriendName', PlayState.SONG.player1);
 		set('dadName', PlayState.SONG.player2);
-		set('gfName', PlayState.SONG.player3);
+		set('gfName', PlayState.SONG.gfVersion);
 
 		// Some settings, no jokes
 		set('downscroll', ClientPrefs.downScroll);
@@ -185,13 +200,278 @@ class FunkinLua
 		set('qtSkipCutscene', ClientPrefs.qtSkipCutscene);
 		set('qtSawbladeBonk', ClientPrefs.qtBonk);
 
+		Lua_helper.add_callback(lua, "getGlobalFromScript", function(?luaFile:String, ?global:String)
+		{ // returns the global from a script
+			if (luaFile == null)
+			{
+				LuaL.error(lua, "Bad argument #1 to 'getGlobalFromScript' (string expected, got nil)");
+				return;
+			}
+			if (global == null)
+			{
+				LuaL.error(lua, "Bad argument #2 to 'getGlobalFromScript' (string expected, got nil)");
+				return;
+			}
+			var cervix = luaFile + ".lua";
+			if (luaFile.endsWith(".lua"))
+				cervix = luaFile;
+			var doPush = false;
+			#if MODS_ALLOWED
+			if (FileSystem.exists(Paths.modFolders(cervix)))
+			{
+				cervix = Paths.modFolders(cervix);
+				doPush = true;
+			}
+			else if (FileSystem.exists(cervix))
+			{
+				doPush = true;
+			}
+			else
+			{
+				cervix = Paths.getPreloadPath(cervix);
+				if (FileSystem.exists(cervix))
+				{
+					doPush = true;
+				}
+			}
+			#else
+			cervix = Paths.getPreloadPath(cervix);
+			if (Assets.exists(cervix))
+			{
+				doPush = true;
+			}
+			#end
+			if (doPush)
+			{
+				for (luaInstance in PlayState.instance.luaArray)
+				{
+					if (luaInstance.scriptName == cervix)
+					{
+						Lua.getglobal(luaInstance.lua, global);
+						if (Lua.isnumber(luaInstance.lua, -1))
+						{
+							Lua.pushnumber(lua, Lua.tonumber(luaInstance.lua, -1));
+						}
+						else if (Lua.isstring(luaInstance.lua, -1))
+						{
+							Lua.pushstring(lua, Lua.tostring(luaInstance.lua, -1));
+						}
+						else if (Lua.isboolean(luaInstance.lua, -1))
+						{
+							Lua.pushboolean(lua, Lua.toboolean(luaInstance.lua, -1));
+						}
+						else
+						{
+							Lua.pushnil(lua);
+						}
+						// TODO: table
+
+						Lua.pop(luaInstance.lua, 1); // remove the global
+
+						return;
+					}
+				}
+			}
+			Lua.pushnil(lua);
+		});
+		Lua_helper.add_callback(lua, "setGlobalFromScript", function(luaFile:String, global:String, val:Dynamic)
+		{ // returns the global from a script
+			var cervix = luaFile + ".lua";
+			if (luaFile.endsWith(".lua"))
+				cervix = luaFile;
+			var doPush = false;
+			#if MODS_ALLOWED
+			if (FileSystem.exists(Paths.modFolders(cervix)))
+			{
+				cervix = Paths.modFolders(cervix);
+				doPush = true;
+			}
+			else if (FileSystem.exists(cervix))
+			{
+				doPush = true;
+			}
+			else
+			{
+				cervix = Paths.getPreloadPath(cervix);
+				if (FileSystem.exists(cervix))
+				{
+					doPush = true;
+				}
+			}
+			#else
+			cervix = Paths.getPreloadPath(cervix);
+			if (Assets.exists(cervix))
+			{
+				doPush = true;
+			}
+			#end
+			if (doPush)
+			{
+				for (luaInstance in PlayState.instance.luaArray)
+				{
+					if (luaInstance.scriptName == cervix)
+					{
+						luaInstance.set(global, val);
+					}
+				}
+			}
+			Lua.pushnil(lua);
+		});
+		Lua_helper.add_callback(lua, "getGlobals", function(luaFile:String)
+		{ // returns a copy of the specified file's globals
+			var cervix = luaFile + ".lua";
+			if (luaFile.endsWith(".lua"))
+				cervix = luaFile;
+			var doPush = false;
+			#if MODS_ALLOWED
+			if (FileSystem.exists(Paths.modFolders(cervix)))
+			{
+				cervix = Paths.modFolders(cervix);
+				doPush = true;
+			}
+			else if (FileSystem.exists(cervix))
+			{
+				doPush = true;
+			}
+			else
+			{
+				cervix = Paths.getPreloadPath(cervix);
+				if (FileSystem.exists(cervix))
+				{
+					doPush = true;
+				}
+			}
+			#else
+			cervix = Paths.getPreloadPath(cervix);
+			if (Assets.exists(cervix))
+			{
+				doPush = true;
+			}
+			#end
+			if (doPush)
+			{
+				for (luaInstance in PlayState.instance.luaArray)
+				{
+					if (luaInstance.scriptName == cervix)
+					{
+						Lua.newtable(lua);
+						var tableIdx = Lua.gettop(lua);
+
+						Lua.pushvalue(luaInstance.lua, Lua.LUA_GLOBALSINDEX);
+						Lua.pushnil(luaInstance.lua);
+						while (Lua.next(luaInstance.lua, -2) != 0)
+						{
+							// key = -2
+							// value = -1
+
+							var pop:Int = 0;
+
+							// Manual conversion
+							// first we convert the key
+							if (Lua.isnumber(luaInstance.lua, -2))
+							{
+								Lua.pushnumber(lua, Lua.tonumber(luaInstance.lua, -2));
+								pop++;
+							}
+							else if (Lua.isstring(luaInstance.lua, -2))
+							{
+								Lua.pushstring(lua, Lua.tostring(luaInstance.lua, -2));
+								pop++;
+							}
+							else if (Lua.isboolean(luaInstance.lua, -2))
+							{
+								Lua.pushboolean(lua, Lua.toboolean(luaInstance.lua, -2));
+								pop++;
+							}
+							// TODO: table
+
+							// then the value
+							if (Lua.isnumber(luaInstance.lua, -1))
+							{
+								Lua.pushnumber(lua, Lua.tonumber(luaInstance.lua, -1));
+								pop++;
+							}
+							else if (Lua.isstring(luaInstance.lua, -1))
+							{
+								Lua.pushstring(lua, Lua.tostring(luaInstance.lua, -1));
+								pop++;
+							}
+							else if (Lua.isboolean(luaInstance.lua, -1))
+							{
+								Lua.pushboolean(lua, Lua.toboolean(luaInstance.lua, -1));
+								pop++;
+							}
+							// TODO: table
+
+							if (pop == 2)
+								Lua.rawset(lua, tableIdx); // then set it
+							Lua.pop(luaInstance.lua, 1); // for the loop
+						}
+						Lua.pop(luaInstance.lua, 1); // end the loop entirely
+						Lua.pushvalue(lua, tableIdx); // push the table onto the stack so it gets returned
+
+						return;
+					}
+				}
+			}
+			Lua.pushnil(lua);
+		});
+		Lua_helper.add_callback(lua, "isRunning", function(luaFile:String)
+		{
+			var cervix = luaFile + ".lua";
+			if (luaFile.endsWith(".lua"))
+				cervix = luaFile;
+			var doPush = false;
+			#if MODS_ALLOWED
+			if (FileSystem.exists(Paths.modFolders(cervix)))
+			{
+				cervix = Paths.modFolders(cervix);
+				doPush = true;
+			}
+			else if (FileSystem.exists(cervix))
+			{
+				doPush = true;
+			}
+			else
+			{
+				cervix = Paths.getPreloadPath(cervix);
+				if (FileSystem.exists(cervix))
+				{
+					doPush = true;
+				}
+			}
+			#else
+			cervix = Paths.getPreloadPath(cervix);
+			if (Assets.exists(cervix))
+			{
+				doPush = true;
+			}
+			#end
+
+			if (doPush)
+			{
+				for (luaInstance in PlayState.instance.luaArray)
+				{
+					if (luaInstance.scriptName == cervix)
+						return true;
+				}
+			}
+			return false;
+		});
+
 		Lua_helper.add_callback(lua, "addLuaScript", function(luaFile:String, ?ignoreAlreadyRunning:Bool = false)
 		{ // would be dope asf.
 			var cervix = luaFile + ".lua";
+			if (luaFile.endsWith(".lua"))
+				cervix = luaFile;
 			var doPush = false;
 			if (FileSystem.exists(Paths.modFolders(cervix)))
 			{
 				cervix = Paths.modFolders(cervix);
+				doPush = true;
+			}
+			else if (FileSystem.exists(cervix))
+			{
 				doPush = true;
 			}
 			else
@@ -224,10 +504,16 @@ class FunkinLua
 		Lua_helper.add_callback(lua, "removeLuaScript", function(luaFile:String, ?ignoreAlreadyRunning:Bool = false)
 		{ // would be dope asf.
 			var cervix = luaFile + ".lua";
+			if (luaFile.endsWith(".lua"))
+				cervix = luaFile;
 			var doPush = false;
 			if (FileSystem.exists(Paths.modFolders(cervix)))
 			{
 				cervix = Paths.modFolders(cervix);
+				doPush = true;
+			}
+			else if (FileSystem.exists(cervix))
+			{
 				doPush = true;
 			}
 			else
@@ -793,6 +1079,18 @@ class FunkinLua
 			PlayState.instance.RecalculateRating();
 		});
 
+		Lua_helper.add_callback(lua, "getScore", function()
+		{
+			return PlayState.instance.songScore;
+		});
+		Lua_helper.add_callback(lua, "getMisses", function()
+		{
+			return PlayState.instance.songMisses;
+		});
+		Lua_helper.add_callback(lua, "getHits", function()
+		{
+			return PlayState.instance.songHits;
+		});
 		Lua_helper.add_callback(lua, "setHealth", function(value:Float = 0)
 		{
 			PlayState.instance.health = value;
@@ -910,13 +1208,15 @@ class FunkinLua
 		{
 			PlayState.instance.KillNotes();
 			PlayState.instance.endSong();
+			return true;
 		});
-		Lua_helper.add_callback(lua, "restartSong", function(skipTransition:Bool)
+		Lua_helper.add_callback(lua, "restartSong", function(?skipTransition:Bool = false)
 		{
 			PlayState.instance.persistentUpdate = false;
 			PauseSubState.restartSong(skipTransition);
+			return true;
 		});
-		Lua_helper.add_callback(lua, "exitSong", function(skipTransition:Bool)
+		Lua_helper.add_callback(lua, "exitSong", function(?skipTransition:Bool = false)
 		{
 			if (skipTransition)
 			{
@@ -938,6 +1238,7 @@ class FunkinLua
 			PlayState.changedDifficulty = false;
 			PlayState.chartingMode = false;
 			PlayState.instance.transitioning = true;
+			return true;
 		});
 		Lua_helper.add_callback(lua, "getSongPosition", function()
 		{
@@ -2151,6 +2452,16 @@ class FunkinLua
 
 		Discord.DiscordClient.addLuaCallbacks(lua);
 
+		// Other stuff
+		Lua_helper.add_callback(lua, "stringStartsWith", function(str:String, start:String)
+		{
+			return str.startsWith(start);
+		});
+		Lua_helper.add_callback(lua, "stringEndsWith", function(str:String, end:String)
+		{
+			return str.endsWith(end);
+		});
+
 		call('onCreate', []);
 		#end
 	}
@@ -2435,39 +2746,72 @@ class FunkinLua
 		#end
 	}
 
-	public function call(event:String, args:Array<Dynamic>):Dynamic
+	/*public function call(event:String, args:Array<Dynamic>):Dynamic {
+			#if LUA_ALLOWED
+			if(lua == null) {
+				return Function_Continue;
+		@@ -2099,9 +2341,6 @@ class FunkinLua {
+			var result:Null<Int> = Lua.pcall(lua, args.length, 1, 0);
+			if(result != null && resultIsAllowed(lua, result)) {
+				if(Lua.type(lua, -1) == Lua.LUA_TSTRING) {
+					var error:String = Lua.tostring(lua, -1);
+					Lua.pop(lua, 1);
+		@@ -2116,6 +2355,41 @@ class FunkinLua {
+			}
+			#end
+			return Function_Continue;
+	}*/
+	function getErrorMessage()
 	{
 		#if LUA_ALLOWED
-		if (lua == null)
-		{
-			return Function_Continue;
-		}
+		var v:String = Lua.tostring(lua, -1);
+		Lua.pop(lua, 1);
+		return v;
+		#end
+	}
 
-		Lua.getglobal(lua, event);
-
-		for (arg in args)
+	public function call(func:String, args:Array<Dynamic>):Dynamic
+	{
+		#if LUA_ALLOWED
+		try
 		{
-			Convert.toLua(lua, arg);
-		}
-
-		var result:Null<Int> = Lua.pcall(lua, args.length, 1, 0);
-		if (result != null && resultIsAllowed(lua, result))
-		{
-			/*var resultStr:String = Lua.tostring(lua, result);
-				var error:String = Lua.tostring(lua, -1);
-				Lua.pop(lua, 1); */
-			if (Lua.type(lua, -1) == Lua.LUA_TSTRING)
+			if (lua == null)
+				return Function_Continue;
+			Lua.getglobal(lua, func);
+			if (Lua.isfunction(lua, -1) == true)
 			{
-				var error:String = Lua.tostring(lua, -1);
-				Lua.pop(lua, 1);
-				if (error == 'attempt to call a nil value')
-				{ // Makes it ignore warnings and not break stuff if you didn't put the functions on your lua file
-					return Function_Continue;
+				for (arg in args)
+					Convert.toLua(lua, arg);
+				var result:Dynamic = Lua.pcall(lua, args.length, 1, 0);
+				if (result != 0)
+				{
+					var err = getErrorMessage();
+					if (errorHandler != null)
+					{
+						errorHandler(err);
+					}
+					else
+					{
+						trace("ERROR: " + err);
+					}
+					// LuaL.error(state,err);
+				}
+				else
+				{
+					var conv:Dynamic = Convert.fromLua(lua, -1);
+					Lua.pop(lua, 1);
+					return conv;
 				}
 			}
-
-			var conv:Dynamic = Convert.fromLua(lua, result);
-			return conv;
+			else
+			{
+				Lua.pop(lua, 1);
+				return null;
+			}
+		}
+		catch (e:Dynamic)
+		{
+			trace(e);
 		}
 		#end
 		return Function_Continue;

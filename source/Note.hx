@@ -12,6 +12,8 @@ using StringTools;
 
 class Note extends FlxSprite
 {
+	public var extraData:Map<String, Dynamic> = [];
+
 	public var strumTime:Float = 0;
 
 	public var mustPress:Bool = false;
@@ -68,14 +70,27 @@ class Note extends FlxSprite
 	// Changing the values to make this mod more unforgiving (less health gain then usual and way more health loss on miss)
 	public var hitHealth:Float = 0.02;
 	public var missHealth:Float = 0.125;
+	public var rating:String = 'unknown';
+	public var ratingMod:Float = 0; // 9 = unknown, 0.25 = shit, 0.5 = bad, 0.75 = good, 1 = sick
+	public var ratingDisabled:Bool = false;
 
 	public var texture(default, set):String = null;
 
 	public var haveCustomTexture:Bool = false;
 
 	public var noAnimation:Bool = false;
+	public var noMissAnimation:Bool = false;
 	public var hitCausesMiss:Bool = false;
 	public var distance:Float = 2000; // plan on doing scroll directions soon -bb
+
+	var ogW:Float;
+	var ogH:Float;
+
+	public var isParent:Bool; // ke input shits//plan to port ke input from psych extra keys -Luis
+	public var childs:Array<Note> = [];
+	public var parent:Note;
+	public var susActive:Bool = true;
+	public var spotInLine:Int = 0;
 
 	public var isPlayer:Bool = false;
 
@@ -119,6 +134,7 @@ class Note extends FlxSprite
 					hitCausesMiss = true;
 				case 'No Animation':
 					noAnimation = true;
+					noMissAnimation = true;
 				case 'GF Sing':
 					gfNote = true;
 					colorSwap.hue = 0;
@@ -340,6 +356,8 @@ class Note extends FlxSprite
 			animation.addByPrefix('bluehold', 'blue hold piece');
 		}
 
+		ogW = width;
+		ogH = height;
 		setGraphicSize(Std.int(width * 0.7));
 		updateHitbox();
 	}
@@ -371,6 +389,9 @@ class Note extends FlxSprite
 					wasGoodHit = true;
 			}
 		}
+
+		if (isSustainNote && !susActive)
+			multAlpha = 0.2;
 
 		if (tooLate && !inEditor)
 		{

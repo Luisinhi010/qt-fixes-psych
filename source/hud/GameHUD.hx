@@ -36,16 +36,15 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
 
+	// timer
 	public var timeBarBG:AttachedSprite;
 	public var timeBar:FlxBar;
-
 	public var songNameTxt:FlxText;
-	public var timeleftTxt:FlxText;
-	public var timesongTxt:FlxText;
 	public var fucktimer:Bool = false;
 	public var updateTime:Bool = true;
 	public var songPercent:Float = 0;
 
+	// score bla bla bla
 	public var scoreTxt:FlxText;
 	public var scoreTxtTween:FlxTween;
 
@@ -64,19 +63,16 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 		var showTime:Bool = ClientPrefs.timeBar;
 
-		songNameTxt = new FlxText(0, 10, 400, StringTools.replace(PlayState.SONG.song, "-", " "), 24);
+		songNameTxt = new FlxText(0, ClientPrefs.downScroll ? FlxG.height - 40 : 10, FlxG.width, StringTools.replace(PlayState.SONG.song, "-", " "), 32);
 		songNameTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
 			PlayState.instance.inhumancolor2);
 		songNameTxt.scrollFactor.set();
 		songNameTxt.alpha = 0;
 		songNameTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
 		songNameTxt.visible = showTime;
-		if (ClientPrefs.downScroll)
-			songNameTxt.y = FlxG.height - 40;
 		songNameTxt.screenCenter(X);
 
 		timeBarBG = new AttachedSprite('timeBar');
-		timeBarBG.x = songNameTxt.x;
 		timeBarBG.y = songNameTxt.y + (songNameTxt.height / 4);
 		timeBarBG.scrollFactor.set();
 		timeBarBG.alpha = 0;
@@ -85,8 +81,9 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		timeBarBG.xAdd = -4;
 		timeBarBG.yAdd = -4;
 
-		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
+		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, HORIZONTAL_INSIDE_OUT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
 			'songPercent', 0, 1);
+		timeBar.screenCenter(X);
 		timeBar.scrollFactor.set();
 		reloadSongPosBarColors(PlayState.instance.qtIsBlueScreened);
 		if (!ClientPrefs.lowQuality)
@@ -97,27 +94,9 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		timeBar.visible = showTime;
 		timeBarBG.sprTracker = timeBar;
 
-		timeleftTxt = new FlxText(timeBar.x + 260, songNameTxt.y, 400, "", 32);
-		timeleftTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
-			PlayState.instance.inhumancolor2);
-		timeleftTxt.scrollFactor.set();
-		timeleftTxt.alpha = 0;
-		timeleftTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
-		timeleftTxt.visible = showTime;
-
-		timesongTxt = new FlxText(timeBar.x - 260, songNameTxt.y, 400, "", 32);
-		timesongTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
-			PlayState.instance.inhumancolor2);
-		timesongTxt.scrollFactor.set();
-		timesongTxt.alpha = 0;
-		timesongTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
-		timesongTxt.visible = showTime;
-
 		add(timeBarBG);
 		add(timeBar);
 		add(songNameTxt);
-		add(timeleftTxt);
-		add(timesongTxt);
 
 		updateTime = showTime;
 
@@ -142,7 +121,6 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			healthBar.numDivisions = 800;
 
 		healthBar.scrollFactor.set();
-		// healthBar
 		healthBar.visible = !PlayState.instance.cpuControlled;
 		healthBar.alpha = ClientPrefs.healthBarAlpha;
 		add(healthBar);
@@ -186,7 +164,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		scoreTxt.visible = !PlayState.instance.cpuControlled;
 		add(scoreTxt); // new scoreTxt code
 
-		botplayTxt = new FlxText(FlxG.width - 250, healthBarBG.y + (FlxG.save.data.downscroll ? 120 : -120), 0, "BOTPLAY", 20);
+		botplayTxt = new FlxText(FlxG.width - 250, (ClientPrefs.downScroll ? 120 : FlxG.height - 120), 0, "BOTPLAY", 20);
 		botplayTxt.setFormat(Paths.font("vcr.ttf"), 42, PlayState.instance.inhumancolor1, RIGHT, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
 		botplayTxt.scrollFactor.set();
 		if (PlayState.instance.forceMiddleScroll)
@@ -203,7 +181,9 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	{
 		super.update(elapsed);
 
-		health = PlayState.instance.health;
+		health = (Math.abs(health - PlayState.instance.health) < .1)
+			&& healthBar.visible ? PlayState.instance.health : FlxMath.lerp(health, PlayState.instance.health,
+				CoolUtil.boundTo(1 - (elapsed * 2), 0, 1)); // kinda inspired by andromeda smooth health bar
 
 		var mult:Float = FlxMath.lerp(1, iconP1.scale.x, CoolUtil.boundTo(1 - (elapsed * 9), 0, 1));
 		iconP1.scale.set(mult, mult);
@@ -227,6 +207,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			iconP1.animation.curAnim.curFrame = 1;
 		else
 			iconP1.animation.curAnim.curFrame = 0;
+
 		if (healthBar.percent > 80)
 			iconP2.animation.curAnim.curFrame = 1;
 		else
@@ -251,9 +232,12 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 				secondsTotal = 0;
 
 			if (fucktimer)
-				timesongTxt.text = FlxG.random.int(0, 9) + ":" + FlxG.random.int(0, 99);
+				songNameTxt.text = FlxG.random.int(0, 9) + ":" + FlxG.random.int(0, 99) + '  ' + "SYSTEM ERROR" + '  ' + "?:??";
 			else
-				timesongTxt.text = FlxStringUtil.formatTime(secondsTotal, false);
+				songNameTxt.text = FlxStringUtil.formatTime(secondsTotal, false) + '  ' + StringTools.replace(PlayState.SONG.song, "-", " ") + '  '
+					+ PlayState.instance.songLengthTxt;
+
+			songNameTxt.screenCenter(X);
 		}
 
 		updateScore();
@@ -264,8 +248,9 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		var score = PlayState.instance.songScore;
 		var misses = PlayState.instance.songMisses;
 		var rating = PlayState.instance.ratingName;
+		var ratingFC = PlayState.instance.ratingFC;
 
-		if (PlayState.instance.ratingName == '?')
+		if (rating == '?')
 			scoreTxt.text = 'Score: ' + score + ' | Misses: ' + misses + ' | Rating: ?';
 		else
 			scoreTxt.text = 'Score: '
@@ -278,7 +263,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 				+ Highscore.floorDecimal(PlayState.instance.ratingPercent * 100, 2)
 				+ '%)'
 				+ ' - '
-				+ PlayState.instance.ratingFC; // peeps wanted no integer rating
+				+ ratingFC; // peeps wanted no integer rating
 	}
 
 	public function reloadHealthBarColors(blue:Bool = false)

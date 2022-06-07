@@ -76,6 +76,7 @@ class Main extends Sprite
 			gameWidth = Math.ceil(stageWidth / zoom);
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
+		trace(zoom + ' ' + gameWidth + ' ' + gameHeight);
 
 		#if (!debug && sys)
 		initialState = Cache;

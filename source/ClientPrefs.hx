@@ -20,6 +20,8 @@ class ClientPrefs
 	#if sys
 	public static var usePlayerUsername:Bool = false;
 	#end
+	public static var laneunderlay:Bool = false;
+	public static var laneunderlayAlpha:Float = 0.5;
 
 	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
@@ -114,6 +116,8 @@ class ClientPrefs
 		#if sys
 		FlxG.save.data.usePlayerUsername = usePlayerUsername;
 		#end
+		FlxG.save.data.laneunderlay = laneunderlay;
+		FlxG.save.data.laneunderlayAlpha = laneunderlayAlpha;
 
 		FlxG.save.data.downScroll = downScroll;
 		FlxG.save.data.middleScroll = middleScroll;
@@ -185,6 +189,12 @@ class ClientPrefs
 		if (FlxG.save.data.usePlayerUsername != null)
 			usePlayerUsername = FlxG.save.data.usePlayerUsername;
 		#end
+
+		if (FlxG.save.data.laneunderlay != null)
+			laneunderlay = FlxG.save.data.laneunderlay;
+
+		if (FlxG.save.data.laneunderlayAlpha != null)
+			laneunderlayAlpha = FlxG.save.data.laneunderlayAlpha;
 
 		if (FlxG.save.data.downScroll != null)
 			downScroll = FlxG.save.data.downScroll;

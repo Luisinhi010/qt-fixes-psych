@@ -194,8 +194,14 @@ class TitleState extends MusicBeatState
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
-		if (!initialized && FlxG.save.data != null && FlxG.save.data.fullscreen)
-			FlxG.fullscreen = FlxG.save.data.fullscreen;
+		if (!initialized)
+		{
+			if (FlxG.save.data != null && FlxG.save.data.fullscreen)
+				FlxG.fullscreen = FlxG.save.data.fullscreen;
+
+			persistentUpdate = true;
+			persistentDraw = true;
+		}
 
 		ClientPrefs.loadPrefs();
 
@@ -360,7 +366,7 @@ class TitleState extends MusicBeatState
 		qt.frames = Paths.getSparrowAtlas('qt_titlescreen');
 		qt.animation.addByPrefix('idle', 'titleanimation', 24, false);
 		qt.setGraphicSize(Std.int(qt.width * 0.25));
-		qt.antialiasing = true;
+		qt.antialiasing = ClientPrefs.globalAntialiasing;
 		qt.y -= 200;
 		add(qt);
 		qt.shader = swagShader.shader;

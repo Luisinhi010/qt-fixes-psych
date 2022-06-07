@@ -46,6 +46,18 @@ class VisualsUISubState extends BaseOptionsMenu
 		option.decimals = 1;
 		addOption(option);
 
+		var option:Option = new Option('Lane Underlay', 'If unchecked, will appear a Lane Underlay.', 'laneunderlay', 'bool', false);
+		addOption(option);
+
+		var option:Option = new Option('Lane Underlay transparency', "Allows you to customise how opaque the Lane Underlay are.", 'laneunderlayAlpha',
+			'percent', 0.6);
+		option.scrollSpeed = 1.6;
+		option.minValue = 0.1;
+		option.maxValue = 1;
+		option.changeValue = 0.1;
+		option.decimals = 1;
+		addOption(option);
+
 		var option:Option = new Option('Camera Movement', 'If unchecked, the camera won\'t move when you hit a note.', 'camMove', 'bool', true);
 		addOption(option);
 
