@@ -28,6 +28,8 @@ using StringTools;
 class MainMenuState extends MusicBeatState
 {
 	public static var psychEngineVersion:String = '0.5.1'; // This is also used for Discord RPC
+	public static var qtmodVersion:String = '2.2';
+	public static var qtfixesVersion:String = '1.0';
 	public static var curSelected:Int = 0;
 
 	/*#if sys
@@ -308,13 +310,13 @@ class MainMenuState extends MusicBeatState
 		versionShitfnf.screenCenter(X);
 		add(versionShitfnf);
 
-		var qtVersion:FlxText = new FlxText(FlxG.width - 270, FlxG.height - 44, 0, "QT Mod Version - v2.2", 12);
+		var qtVersion:FlxText = new FlxText(FlxG.width - 270, FlxG.height - 44, 0, "QT Mod Version - v" + qtmodVersion, 12);
 		qtVersion.x -= qtVersion.width;
 		qtVersion.scrollFactor.set();
 		qtVersion.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(qtVersion);
 
-		var fixesVersion:FlxText = new FlxText(qtVersion.x, FlxG.height - 24, 0, "QT Fixes Version - 1.0", 12);
+		var fixesVersion:FlxText = new FlxText(qtVersion.x, FlxG.height - 24, 0, "QT Fixes Version - v" + qtfixesVersion, 12);
 		fixesVersion.scrollFactor.set();
 		fixesVersion.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(fixesVersion);

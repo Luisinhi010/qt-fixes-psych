@@ -67,4 +67,27 @@ class HealthIcon extends FlxSprite
 	{
 		return char;
 	}
+
+	public function getDiscordCharacter():String
+	{
+		var thechar:String = char;
+		// To avoid having duplicate images in Discord assets
+		switch (char)
+		{
+			case 'kb' | 'kb-404' | 'kb-404-angry' | 'kb-angry' | 'kb-classic-placeholder' | 'kb-classic-placeholder-404':
+				if (char.contains('classic-placeholder'))
+					thechar = 'kb-classic';
+				else
+					thechar = 'kb';
+			case 'bf' | 'bf-404' | 'bf-invis':
+				thechar = 'bf';
+			case 'gf' | 'gf-404':
+				thechar = 'gf';
+			case 'qt' | 'qt-nervous' | 'q':
+				thechar = 'qt';
+			case 'qt-kb':
+				thechar = 'qt-kb';
+		}
+		return thechar == null ? 'placeholder' : thechar;
+	}
 }

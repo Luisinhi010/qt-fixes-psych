@@ -1476,7 +1476,8 @@ class PlayState extends MusicBeatState
 			SONG.song
 			+ " ("
 			+ (discordDifficultyOverrideShouldUse ? discordDifficultyOverride : storyDifficultyText)
-			+ ")", gameHUD.iconP2.getCharacter());
+			+ ")",
+			gameHUD.iconP2.getDiscordCharacter());
 		#end
 
 		if (!ClientPrefs.controllerMode)
@@ -2297,8 +2298,8 @@ class PlayState extends MusicBeatState
 			SONG.song
 			+ " ("
 			+ (discordDifficultyOverrideShouldUse ? discordDifficultyOverride : storyDifficultyText)
-			+ ")", gameHUD.iconP2.getCharacter(),
-			true, songLength);
+			+ ")",
+			gameHUD.iconP2.getDiscordCharacter(), true, songLength);
 		#end
 		setOnLuas('songLength', songLength);
 		callOnLuas('onSongStart', []);
@@ -2787,7 +2788,7 @@ class PlayState extends MusicBeatState
 					+ " ("
 					+ (discordDifficultyOverrideShouldUse ? discordDifficultyOverride : storyDifficultyText)
 					+ ")",
-					gameHUD.iconP2.getCharacter(), true, songLength
+					gameHUD.iconP2.getDiscordCharacter(), true, songLength
 					- Conductor.songPosition
 					- ClientPrefs.noteOffset);
 			}
@@ -2798,7 +2799,7 @@ class PlayState extends MusicBeatState
 					+ " ("
 					+ (discordDifficultyOverrideShouldUse ? discordDifficultyOverride : storyDifficultyText)
 					+ ")",
-					gameHUD.iconP2.getCharacter());
+					gameHUD.iconP2.getDiscordCharacter());
 			}
 			#end
 		}
@@ -2818,7 +2819,7 @@ class PlayState extends MusicBeatState
 					+ " ("
 					+ (discordDifficultyOverrideShouldUse ? discordDifficultyOverride : storyDifficultyText)
 					+ ")",
-					gameHUD.iconP2.getCharacter(), true, songLength
+					gameHUD.iconP2.getDiscordCharacter(), true, songLength
 					- Conductor.songPosition
 					- ClientPrefs.noteOffset);
 			}
@@ -2829,7 +2830,7 @@ class PlayState extends MusicBeatState
 					+ " ("
 					+ (discordDifficultyOverrideShouldUse ? discordDifficultyOverride : storyDifficultyText)
 					+ ")",
-					gameHUD.iconP2.getCharacter());
+					gameHUD.iconP2.getDiscordCharacter());
 			}
 		}
 		#end
@@ -2845,7 +2846,8 @@ class PlayState extends MusicBeatState
 				SONG.song
 				+ " ("
 				+ (discordDifficultyOverrideShouldUse ? discordDifficultyOverride : storyDifficultyText)
-				+ ")", gameHUD.iconP2.getCharacter());
+				+ ")",
+				gameHUD.iconP2.getDiscordCharacter());
 		#end
 
 		super.onFocusLost();
@@ -3086,7 +3088,7 @@ class PlayState extends MusicBeatState
 						+ " ("
 						+ (discordDifficultyOverrideShouldUse ? discordDifficultyOverride : storyDifficultyText)
 						+ ")",
-						gameHUD.iconP2.getCharacter());
+						gameHUD.iconP2.getDiscordCharacter());
 					#end
 				}
 			}
@@ -3760,7 +3762,7 @@ class PlayState extends MusicBeatState
 					+ " ("
 					+ (discordDifficultyOverrideShouldUse ? discordDifficultyOverride : storyDifficultyText)
 					+ ")",
-					gameHUD.iconP2.getCharacter());
+					gameHUD.iconP2.getDiscordCharacter());
 				#end
 				isDead = true;
 				return true;
