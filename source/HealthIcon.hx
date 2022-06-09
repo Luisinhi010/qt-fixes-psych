@@ -74,20 +74,22 @@ class HealthIcon extends FlxSprite
 		// To avoid having duplicate images in Discord assets
 		switch (char)
 		{
-			case 'kb' | 'kb-404' | 'kb-404-angry' | 'kb-angry' | 'kb-classic-placeholder' | 'kb-classic-placeholder-404':
-				if (char.contains('classic-placeholder'))
-					thechar = 'kb-classic';
-				else
-					thechar = 'kb';
+			case 'kb' | 'kb-404' | 'kb-404-angry' | 'kb-angry':
+				thechar = 'kb';
+			case 'kb-classic-placeholder' | 'kb-classic-placeholder-404':
+				thechar = 'kb-classic';
 			case 'bf' | 'bf-404' | 'bf-invis':
 				thechar = 'bf';
 			case 'gf' | 'gf-404':
 				thechar = 'gf';
-			case 'qt' | 'qt-nervous' | 'q':
+			case 'qt' | 'qt-nervous' | 'q' | 'qt-classic-placeholder':
 				thechar = 'qt';
 			case 'qt-kb':
 				thechar = 'qt-kb';
+			default:
+				if (!char.endswith('-invis'))
+					thechar = 'placeholder';
 		}
-		return thechar == null ? 'placeholder' : thechar;
+		return thechar;
 	}
 }
