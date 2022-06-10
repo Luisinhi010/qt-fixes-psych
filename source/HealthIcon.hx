@@ -78,11 +78,11 @@ class HealthIcon extends FlxSprite
 				thechar = 'kb';
 			case 'kb-classic-placeholder' | 'kb-classic-placeholder-404':
 				thechar = 'kb-classic';
-			case 'bf' | 'bf-404' | 'bf-invis':
+			case 'bf' | 'bf-404' | 'bf-pixel' | 'bf-invis':
 				thechar = 'bf';
 			case 'gf' | 'gf-404':
 				thechar = 'gf';
-			case 'qt' | 'qt-nervous' | 'q' | 'qt-classic-placeholder':
+			case 'qt' | 'qt-nervous' | 'qt_annoyed' | 'q' | 'qt-classic-placeholder':
 				thechar = 'qt';
 			case 'qt-kb':
 				thechar = 'qt-kb';
