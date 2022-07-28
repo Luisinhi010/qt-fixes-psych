@@ -102,9 +102,7 @@ class StrumNote extends FlxSprite
 		updateHitbox();
 
 		if (lastAnim != null)
-		{
 			playAnim(lastAnim, true);
-		}
 	}
 
 	public function postAddedToGroup()
@@ -127,12 +125,8 @@ class StrumNote extends FlxSprite
 				resetAnim = 0;
 			}
 		}
-		// if(animation.curAnim != null){ //my bad i was upset
 		if (animation.curAnim.name == 'confirm')
-		{
 			centerOrigin();
-			// }
-		}
 
 		super.update(elapsed);
 	}
@@ -158,9 +152,7 @@ class StrumNote extends FlxSprite
 			}
 
 			if (animation.curAnim.name == 'confirm')
-			{
 				centerOrigin();
-			}
 		}
 	}
 }

@@ -63,7 +63,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 		var showTime:Bool = ClientPrefs.timeBar;
 
-		songNameTxt = new FlxText(0, ClientPrefs.downScroll ? FlxG.height - 40 : 10, FlxG.width, StringTools.replace(PlayState.SONG.song, "-", " "), 32);
+		songNameTxt = new FlxText(0, ClientPrefs.downScroll ? FlxG.height - 40 : 10, 0, StringTools.replace(PlayState.SONG.song, "-", " "), 32);
 		songNameTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
 			PlayState.instance.inhumancolor2);
 		songNameTxt.scrollFactor.set();

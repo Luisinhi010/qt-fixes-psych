@@ -158,9 +158,12 @@ class Note extends FlxSprite
 					hitCausesMiss = true;
 				case 'Kb Note' | 'Kb Note No Animation': // for cessation
 					noAnimation = value == 'Kb Note No Animation';
-					reloadNote('', 'NOTE_assets_Kb');
-					haveCustomTexture = true;
-					noteSplashTexture = 'noteSplashesKb';
+					if (!ClientPrefs.lowQuality)
+					{
+						reloadNote('', 'NOTE_assets_Kb');
+						haveCustomTexture = true;
+						noteSplashTexture = 'noteSplashesKb';
+					}
 					colorSwap.hue = 0;
 					colorSwap.saturation = 0;
 					colorSwap.brightness = 0;

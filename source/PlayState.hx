@@ -410,9 +410,8 @@ class PlayState extends MusicBeatState
 	// for more modcharts
 	public var fancyModchartStrumX:Array<Float> = [0, 0];
 	public var fancyModchartStrumY:Array<Float> = [0, 0];
-	public var moreStrumX:Bool = false; // i dont remember why i put this here...
 
-	// separating hud from PlayState because it's dumb as fuck to have it here
+	// separating hud from PlayState because it's dumb as fuck to have it here //thank you so much beastlyGhost
 	public static var gameHUD:GameHUD;
 
 	private var allUIs:Array<FlxCamera> = [];
@@ -501,6 +500,12 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.setDefaultDrawTarget(camGAS, false);
 		FlxG.cameras.add(camOther);
 		FlxG.cameras.setDefaultDrawTarget(camOther, false);
+		// camHUD.x -= 100;
+		// camHUD.y -= 100;
+		camHUD.width += 200;
+		camHUD.height += 200;
+		camHUD.follow(camHUD.target, LOCKON, camHUD.followLerp); // testing
+
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
 
 		CustomFadeTransition.nextCamera = camOther;
@@ -2406,7 +2411,8 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 				var swagNote:Note;
 
-				swagNote = new Note(daStrumTime, daNoteData, oldNote, false, false, gottaHitNote, gottaHitNote ? boyfriend.noteSkinFile : dad.noteSkinFile);
+				swagNote = new Note(daStrumTime, daNoteData, oldNote, false, false, gottaHitNote,
+					ClientPrefs.lowQuality ? 'NOTE_assets' : gottaHitNote ? boyfriend.noteSkinFile : dad.noteSkinFile);
 				swagNote.mustPress = gottaHitNote;
 				swagNote.sustainLength = songNotes[2];
 				swagNote.gfNote = (section.gfSection && (songNotes[1] < 4));
@@ -2428,7 +2434,8 @@ class PlayState extends MusicBeatState
 						var sustainNote:Note;
 
 						sustainNote = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet / FlxMath.roundDecimal(songSpeed, 2)),
-							daNoteData, oldNote, true, false, gottaHitNote, gottaHitNote ? boyfriend.noteSkinFile : dad.noteSkinFile);
+							daNoteData, oldNote, true, false, gottaHitNote,
+							ClientPrefs.lowQuality ? 'NOTE_assets' : gottaHitNote ? boyfriend.noteSkinFile : dad.noteSkinFile);
 						sustainNote.mustPress = gottaHitNote;
 						sustainNote.gfNote = (section.gfSection && (songNotes[1] < 4));
 						sustainNote.noteType = swagNote.noteType;
@@ -2664,16 +2671,14 @@ class PlayState extends MusicBeatState
 			removeStatics();
 			removeLaneUnderlay();
 		}
-		generateStaticArrows(0, twens, dad.noteSkinFile);
-		generateStaticArrows(1, twens, boyfriend.noteSkinFile);
+		generateStaticArrows(0, twens, ClientPrefs.lowQuality ? 'NOTE_assets' : dad.noteSkinFile);
+		generateStaticArrows(1, twens, ClientPrefs.lowQuality ? 'NOTE_assets' : boyfriend.noteSkinFile);
 		generateLane(true);
 		generateLane(false);
 	}
 
 	private function reloadStaticsEvent()
-	{
 		reloadStatics(true, false);
-	}
 
 	private function generateLane(isPlayer:Bool = false)
 	{
@@ -6007,7 +6012,8 @@ class PlayState extends MusicBeatState
 
 		if (daRating.noteSplash && !note.noteSplashDisabled)
 		{
-			spawnNoteSplashOnNote(note, true, note.noteSplashTexture == 'noteSplashes' ? boyfriend.splashSkinFile : note.noteSplashTexture);
+			spawnNoteSplashOnNote(note,
+				true, note.noteSplashTexture == 'noteSplashes' && !ClientPrefs.lowQuality ? boyfriend.splashSkinFile : note.noteSplashTexture);
 
 			// Makes KB's strums move back a bit to show his power... or something idfk it looks cool okay? -Haz
 			// Ported for BF. I don't know but it feels pretty buggy ngl
@@ -6030,9 +6036,8 @@ class PlayState extends MusicBeatState
 			if (ClientPrefs.scoreZoom)
 			{
 				if (gameHUD.scoreTxtTween != null)
-				{
 					gameHUD.scoreTxtTween.cancel();
-				}
+
 				gameHUD.scoreTxt.scale.x = 1.075;
 				gameHUD.scoreTxt.scale.y = 1.075;
 				gameHUD.scoreTxtTween = FlxTween.tween(gameHUD.scoreTxt.scale, {x: 1, y: 1}, 0.2, {
@@ -6081,9 +6086,8 @@ class PlayState extends MusicBeatState
 		var seperatedScore:Array<Int> = [];
 
 		if (combo >= 1000)
-		{
 			seperatedScore.push(Math.floor(combo / 1000) % 10);
-		}
+
 		seperatedScore.push(Math.floor(combo / 100) % 10);
 		seperatedScore.push(Math.floor(combo / 10) % 10);
 		seperatedScore.push(combo % 10);
@@ -6122,13 +6126,8 @@ class PlayState extends MusicBeatState
 
 			daLoop++;
 		}
-		/* 
-		trace(combo);
-		trace(seperatedScore);
-	 */
 
 		coolText.text = Std.string(seperatedScore);
-		// add(coolText);
 
 		FlxTween.tween(rating, {alpha: 0}, 0.2, {
 			startDelay: Conductor.crochet * 0.001
@@ -6240,7 +6239,6 @@ class PlayState extends MusicBeatState
 			}
 			callOnLuas('onKeyPress', [key]);
 		}
-		// trace('pressed: ' + controlArray);
 	}
 
 	private function onKeyRelease(event:KeyboardEvent):Void
@@ -6325,9 +6323,7 @@ class PlayState extends MusicBeatState
 		{
 			// FlxG.keys.justPressed.SPACE
 			if (FlxG.keys.anyJustPressed(dodgeKey) && !bfDodging && bfCanDodge)
-			{
 				bfDodge();
-			}
 		}
 
 		// HOLDING
@@ -6724,14 +6720,15 @@ class PlayState extends MusicBeatState
 
 			// Makes KB's strums move back a bit to show his power... or something idfk it looks cool okay? -Haz
 			// alr xd
-			if ((dad.curCharacter.startsWith('kb') || note.noteType.startsWith('Kb Note')))
+			if (hazardModChartDefaultStrumY[note.noteData] != 0
+				&& fancyModchartStrumY[0] == 0
+				&& (dad.noteSkinFile.startsWith('NOTE_assets_Kb') || note.noteType.startsWith('Kb Note')))
 			{
 				opponentStrums.members[note.noteData].y = hazardModChartDefaultStrumY[note.noteData] + (ClientPrefs.downScroll ? 23 : -23);
 				FlxTween.tween(opponentStrums.members[note.noteData], {y: hazardModChartDefaultStrumY[note.noteData]}, 0.126, {ease: FlxEase.cubeOut});
 			}
-			if ((dad.noteSkinFile.startsWith('NOTE_assets_Kb')
-				|| note.noteType.startsWith('Kb Note')
-				|| dad.noteSkinFile == 'NOTE_assets_Qt')) // the new qt's note skin dont need to have custom scale anim
+			if ((dad.noteSkinFile.startsWith('NOTE_assets_Kb') || note.noteType.startsWith('Kb Note') || dad.noteSkinFile == 'NOTE_assets_Qt')
+				&& !ClientPrefs.lowQuality) // the new qt's note skin dont need to have custom scale anim
 			{
 				var scalex:Float = 0.694267515923567;
 				var scaley:Float = 0.694267515923567;
@@ -7231,16 +7228,13 @@ class PlayState extends MusicBeatState
 		else
 			spr = playerStrums.members[id];
 
-		var animToPlay:String = (usekb ? 'kbconfirm' : 'confirm');
 		if (spr != null)
 		{
-			if (spr.texture.startsWith('NOTE_assets_Qt'))
-				spr.playAnim(animToPlay, true);
+			if (usekb && (spr.texture.startsWith('NOTE_assets_Qt') && spr.animation.exists('kbconfirm')))
+				spr.playAnim('kbconfirm', true);
 			else
 				spr.playAnim('confirm', true);
 			spr.resetAnim = time;
-			// i know what i'm doing, relax -Luis
-			// btw now is 5 am
 		}
 	}
 
