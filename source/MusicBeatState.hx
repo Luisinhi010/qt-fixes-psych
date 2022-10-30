@@ -29,8 +29,7 @@ class MusicBeatState extends FlxUIState
 
 	public static var camBeat:FlxCamera;
 
-	public static var commitHash:String = getGitCommitHash();
-
+	// public static var commitHash:String = getGitCommitHash();
 	public static var multAnims:Bool = false; // animations multiplyed by Playstate's PlaybackRate
 
 	inline function get_controls():Controls
@@ -60,29 +59,28 @@ class MusicBeatState extends FlxUIState
 		return false;
 	}
 
-	public static function getGitCommitHash() // BeastlyGhost said to me to put this here. -Luis
-	{
-		#if sys
-		var process:sys.io.Process = new sys.io.Process('git', ['rev-parse', 'HEAD']);
-
-		var commitHash:String;
-
-		try // read the output of the process
+	/*public static function getGitCommitHash() // BeastlyGhost said to me to put this here. -Luis
 		{
-			commitHash = process.stdout.readLine();
-		}
-		catch (e) // leave it as blank in the event of an error
-		{
-			commitHash = '';
-		}
-		var trimmedCommitHash:String = commitHash.substr(0, 7);
+			#if sys
+			var process:sys.io.Process = new sys.io.Process('git', ['rev-parse', 'HEAD']);
 
-		// Generates a string expression
-		return trimmedCommitHash;
-		#end
-		return '';
-	}
+			var commitHash:String;
 
+			try // read the output of the process
+			{
+				commitHash = process.stdout.readLine();
+			}
+			catch (e) // leave it as blank in the event of an error
+			{
+				commitHash = '';
+			}
+			var trimmedCommitHash:String = commitHash.substr(0, 7);
+
+			// Generates a string expression
+			return trimmedCommitHash;
+			#end
+			return '';
+	}*/
 	public static function getFramerate(Int:Int, multiply:Bool = false)
 	{
 		var frame:Int = 24;

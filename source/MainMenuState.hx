@@ -317,7 +317,7 @@ class MainMenuState extends MusicBeatState
 		add(qtVersion);
 
 		var fixesVersion:FlxText = new FlxText(qtVersion.x, FlxG.height - 24, 0,
-			"QT Fixes Version - v" + qtfixesVersion + ' (' + MusicBeatState.commitHash + ')', 12);
+			"QT Fixes Version - v" + qtfixesVersion /*+ ' (' + MusicBeatState.commitHash + ')'*/, 12);
 		fixesVersion.scrollFactor.set();
 		fixesVersion.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(fixesVersion);
