@@ -1,91 +1,63 @@
 {
-	"animations": [
-		{
-			"offsets": [
-				249,
-				244
-			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singLEFT",
-			"indices": [],
-			"name": "KB_Left"
-		},
-		{
-			"offsets": [
-				-114,
-				50
-			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singRIGHT",
-			"indices": [],
-			"name": "KB_Right"
-		},
-		{
-			"offsets": [
-				186,
-				33
-			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singDOWN",
-			"indices": [],
-			"name": "KB_Down"
-		},
-		{
-			"offsets": [
-				160,
-				265
-			],
-			"loop": false,
-			"anim": "singUP",
-			"fps": 24,
-			"name": "KB_Up",
-			"indices": []
-		},
-		{
-			"loop": true,
-			"offsets": [
-				148,
-				74
-			],
-			"anim": "idle",
-			"fps": 24,
-			"name": "KB_idleBabyRage",
-			"indices": []
-		},
-		{
-			"offsets": [
-				76,
-				90
-			],
-			"loop": false,
-			"fps": 24,
-			"anim": "idle-alt",
-			"indices": [],
-			"name": "KB_idleTired"
-		}
-	],
-	"no_antialiasing": false,
-	"splashSkin": "noteSplashesKb",
-	"image": "characters/qt-fixes/robot-rage",
-	"position": [
-		-160,
-		210
-	],
-	"healthicon": "kb",
-	"flip_x": false,
-	"healthbar_colors": [
-		255,
-		0,
-		0
-	],
-	"camera_position": [
-		-160,
-		-70
-	],
-	"noteSkin": "NOTE_assets_Kb",
-	"sing_duration": 4,
-	"scale": 1
+  "animations": [
+    {
+      "offsets": [249, 244],
+      "loop": false,
+      "fps": 24,
+      "anim": "singLEFT",
+      "indices": [],
+      "name": "KB_Left"
+    },
+    {
+      "offsets": [-114, 50],
+      "loop": false,
+      "fps": 24,
+      "anim": "singRIGHT",
+      "indices": [],
+      "name": "KB_Right"
+    },
+    {
+      "offsets": [186, 33],
+      "loop": false,
+      "fps": 24,
+      "anim": "singDOWN",
+      "indices": [],
+      "name": "KB_Down"
+    },
+    {
+      "offsets": [160, 265],
+      "loop": false,
+      "anim": "singUP",
+      "fps": 24,
+      "name": "KB_Up",
+      "indices": []
+    },
+    {
+      "loop": true,
+      "offsets": [148, 74],
+      "anim": "idle",
+      "fps": 24,
+      "name": "KB_idleBabyRage",
+      "indices": []
+    },
+    {
+      "offsets": [76, 90],
+      "loop": false,
+      "fps": 24,
+      "anim": "idle-alt",
+      "indices": [],
+      "name": "KB_idleTired"
+    }
+  ],
+  "no_antialiasing": false,
+  "splashSkin": "noteSplashesKb",
+  "image": "characters/qt-fixes/robot-rage",
+  "position": [-160, 210],
+  "healthicon": "kb",
+  "flip_x": false,
+  "healthbar_colors": [255, 0, 0],
+  "camera_position": [-160, -70],
+  "noteSkin": "NOTE_assets_Kb",
+  "sing_duration": 4,
+  "scale": 1
 }

@@ -1,10 +1,15 @@
 import flixel.system.FlxAssets.FlxShader;
+import openfl.display3D.Program3D;
 import openfl.display3D._internal.GLRenderbuffer;
 import openfl.display3D._internal.GLFramebuffer;
 import openfl.display._internal.ShaderBuffer;
 
 using StringTools;
 
+@:access(openfl.display3D.Context3D)
+@:access(openfl.display3D.Program3D)
+@:access(openfl.display.ShaderInput)
+@:access(openfl.display.ShaderParameter)
 // goddamn prefix
 // this is yoshi engine shader code, id recommend to check it https://github.com/YoshiCrafter29/YoshiEngine
 // btw i have permision to use this so :D
@@ -38,9 +43,7 @@ class FlxFixedShader extends FlxShader
 		}
 
 		if (__context != null && program == null)
-		{
 			initGLforce();
-		}
 	}
 
 	public function initGLforce()
@@ -51,19 +54,10 @@ class FlxFixedShader extends FlxShader
 
 	public function initGood(glFragmentSource:String, glVertexSource:String)
 	{
-		// try {
-
-		// } catch(e:Exception) {
-		//     trace(e);
-		//     trace(e.message);
-		//     trace(e.stack);
-		//     trace(e.details());
-		// }
-
 		@:privateAccess
 		var gl = __context.gl;
 
-		#if android
+		#if mobile
 		var prefix = "#version 300 es\n";
 		#else
 		var prefix = "#version 120\n";
@@ -81,7 +75,7 @@ class FlxFixedShader extends FlxShader
 			+ "#endif\n\n";
 		#end
 
-		#if android
+		#if mobile
 		prefix += 'out vec4 output_FragColor;\n';
 		var vertex = prefix
 			+ glVertexSource.replace("attribute", "in")
@@ -96,9 +90,7 @@ class FlxFixedShader extends FlxShader
 
 		var id = vertex + fragment;
 
-		#if trace_everything
-		trace('Should save: $save');
-		#end
+		// trace('Should save: $save');
 
 		@:privateAccess
 		if (__context.__programs.exists(id) && save)
@@ -120,17 +112,13 @@ class FlxFixedShader extends FlxShader
 			if (save)
 				__context.__programs.set(id, program);
 		}
-
-		#if trace_everything
 		/*
 			@:privateAccess
 			trace(__context);
 			@:privateAccess
 			trace(__context.__programs);
 			@:privateAccess
-			trace(program.__glProgram);
-		 */
-		#end
+			trace(program.__glProgram); */
 
 		if (program != null)
 		{

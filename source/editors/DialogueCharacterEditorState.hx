@@ -111,8 +111,8 @@ class DialogueCharacterEditorState extends MusicBeatState
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
 		box.antialiasing = ClientPrefs.globalAntialiasing;
-		box.animation.addByPrefix('normal', 'speech bubble normal', 24);
-		box.animation.addByPrefix('center', 'speech bubble middle', 24);
+		box.animation.addByPrefix('normal', 'speech bubble normal', MusicBeatState.getFramerate(24));
+		box.animation.addByPrefix('center', 'speech bubble middle', MusicBeatState.getFramerate(24));
 		box.animation.play('normal', true);
 		box.setGraphicSize(Std.int(box.width * 0.9));
 		box.updateHitbox();
@@ -569,9 +569,9 @@ class DialogueCharacterEditorState extends MusicBeatState
 
 		if (!blockInput && !animationDropDown.dropPanel.visible)
 		{
-			FlxG.sound.muteKeys = TitleState.muteKeys;
-			FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
-			FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
+			FlxG.sound.muteKeys = ClientPrefs.muteKeys;
+			FlxG.sound.volumeDownKeys = ClientPrefs.volumeDownKeys;
+			FlxG.sound.volumeUpKeys = ClientPrefs.volumeUpKeys;
 			if (FlxG.keys.justPressed.SPACE && UI_mainbox.selected_tab_id == 'Character')
 			{
 				character.playAnim();

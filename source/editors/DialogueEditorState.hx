@@ -65,6 +65,7 @@ class DialogueEditorState extends MusicBeatState
 		};
 
 		character = new DialogueCharacter();
+		character.antialiasing = ClientPrefs.globalAntialiasing;
 		character.scrollFactor.set();
 		add(character);
 
@@ -72,10 +73,10 @@ class DialogueEditorState extends MusicBeatState
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
 		box.antialiasing = ClientPrefs.globalAntialiasing;
-		box.animation.addByPrefix('normal', 'speech bubble normal', 24);
-		box.animation.addByPrefix('angry', 'AHH speech bubble', 24);
-		box.animation.addByPrefix('center', 'speech bubble middle', 24);
-		box.animation.addByPrefix('center-angry', 'AHH Speech Bubble middle', 24);
+		box.animation.addByPrefix('normal', 'speech bubble normal', MusicBeatState.getFramerate(24));
+		box.animation.addByPrefix('angry', 'AHH speech bubble', MusicBeatState.getFramerate(24));
+		box.animation.addByPrefix('center', 'speech bubble middle', MusicBeatState.getFramerate(24));
+		box.animation.addByPrefix('center-angry', 'AHH Speech Bubble middle', MusicBeatState.getFramerate(24));
 		box.animation.play('normal', true);
 		box.setGraphicSize(Std.int(box.width * 0.9));
 		box.updateHitbox();
@@ -398,9 +399,9 @@ class DialogueEditorState extends MusicBeatState
 
 		if (!blockInput)
 		{
-			FlxG.sound.muteKeys = TitleState.muteKeys;
-			FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
-			FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
+			FlxG.sound.muteKeys = ClientPrefs.muteKeys;
+			FlxG.sound.volumeDownKeys = ClientPrefs.volumeDownKeys;
+			FlxG.sound.volumeUpKeys = ClientPrefs.volumeUpKeys;
 			if (FlxG.keys.justPressed.SPACE)
 			{
 				reloadText(speedStepper.value);

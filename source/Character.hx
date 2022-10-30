@@ -81,7 +81,11 @@ class Character extends FlxSprite
 	public var noteSkinFile:String = "NOTE_assets";
 	public var splashSkinFile:String = "noteSplashes";
 
+	public var blueshader = new Shaders.CustomBlueShader(); // its 'blue' shader but you can put any color for it, but default is blue
+
 	public static var DEFAULT_CHARACTER:String = 'bf'; // In case a character is missing, it will use BF on its place
+
+	var multiplier:Float = 0;
 
 	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false)
 	{
@@ -223,8 +227,12 @@ class Character extends FlxSprite
 		recalculateDanceIdle();
 		dance();
 
+		shader = blueshader.shader;
+
 		if (isPlayer)
 			flipX = !flipX;
+
+		multiplier = MusicBeatState.multAnims ? PlayState.instance.playbackRate : 1;
 	}
 
 	override function update(elapsed:Float)
@@ -233,7 +241,7 @@ class Character extends FlxSprite
 		{
 			if (heyTimer > 0)
 			{
-				heyTimer -= elapsed;
+				heyTimer -= elapsed * multiplier;
 				if (heyTimer <= 0)
 				{
 					if (specialAnim && animation.curAnim.name == 'hey' || animation.curAnim.name == 'cheer')
@@ -255,7 +263,7 @@ class Character extends FlxSprite
 				if (animation.curAnim.name.startsWith('sing'))
 					holdTimer += elapsed;
 
-				if (holdTimer >= Conductor.stepCrochet * 0.001 * singDuration)
+				if (holdTimer >= Conductor.stepCrochet * 0.001 * singDuration / multiplier)
 				{
 					dance();
 					holdTimer = 0;

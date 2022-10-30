@@ -52,10 +52,6 @@ typedef TitleData =
 
 class TitleState extends MusicBeatState
 {
-	public static var muteKeys:Array<FlxKey> = [FlxKey.ZERO];
-	public static var volumeDownKeys:Array<FlxKey> = [FlxKey.NUMPADMINUS, FlxKey.MINUS];
-	public static var volumeUpKeys:Array<FlxKey> = [FlxKey.NUMPADPLUS, FlxKey.PLUS];
-
 	public static var initialized:Bool = false;
 
 	#if sys
@@ -76,16 +72,14 @@ class TitleState extends MusicBeatState
 
 	var titleJSON:TitleData;
 
-	public static var updateVersion:String = '';
-
 	override public function create():Void
 	{
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 
-		#if sys
-		getplayernameoption = false;
-		#end
+		/*#if sys
+			getplayernameoption = false;
+			#end */
 
 		#if LUA_ALLOWED
 		trace("lua");
@@ -112,17 +106,11 @@ class TitleState extends MusicBeatState
 
 		#if (desktop && MODS_ALLOWED)
 		var path = "mods/" + Paths.currentModDirectory + "/images/gfDanceTitle.json";
-		// trace(path, FileSystem.exists(path));
 		if (!FileSystem.exists(path))
-		{
 			path = "mods/images/gfDanceTitle.json";
-		}
-		// trace(path, FileSystem.exists(path));
+
 		if (!FileSystem.exists(path))
-		{
 			path = "assets/images/gfDanceTitle.json";
-		}
-		// trace(path, FileSystem.exists(path));
 		titleJSON = Json.parse(File.getContent(path));
 		#else
 		var path = Paths.getPreloadPath("images/gfDanceTitle.json");
@@ -137,24 +125,14 @@ class TitleState extends MusicBeatState
 			{
 				var path = haxe.io.Path.join(['mods/', file]);
 				if (sys.FileSystem.isDirectory(path))
-				{
 					folders.push(file);
-				}
 			}
 			if (folders.length > 0)
-			{
 				polymod.Polymod.init({modRoot: "mods", dirs: folders});
-			}
 		}
 		#end
 
-		FlxG.game.focusLostFramerate = 60;
-		FlxG.sound.muteKeys = muteKeys;
-		FlxG.sound.volumeDownKeys = volumeDownKeys;
-		FlxG.sound.volumeUpKeys = volumeUpKeys;
-		FlxG.keys.preventDefaultKeys = [TAB];
-
-		PlayerSettings.init();
+		ClientPrefs.loadSettings();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
@@ -163,23 +141,16 @@ class TitleState extends MusicBeatState
 		swagShader = new ColorSwap();
 		super.create();
 
-		FlxG.save.bind('funkin', 'ninjamuffin99');
-
 		if (!initialized)
 		{
-			if (FlxG.save.data != null && FlxG.save.data.fullscreen)
-				FlxG.fullscreen = FlxG.save.data.fullscreen;
+			#if desktop
+			if (!initialized && FlxG.save.data != null && ClientPrefs.fullscreen)
+				FlxG.fullscreen = ClientPrefs.fullscreen;
+			#end
 
 			persistentUpdate = true;
 			persistentDraw = true;
 		}
-
-		ClientPrefs.loadPrefs();
-
-		Highscore.load();
-
-		if (FlxG.save.data.weekCompleted != null)
-			StoryMenuState.weekCompleted = FlxG.save.data.weekCompleted;
 
 		FlxG.mouse.visible = false;
 		#if FREEPLAY
@@ -189,8 +160,9 @@ class TitleState extends MusicBeatState
 		#else
 		if (FlxG.save.data.flashing == null && !FlashingState.leftState)
 		{
-			FlxTransitionableState.skipNextTransIn = true;
-			FlxTransitionableState.skipNextTransOut = true;
+			#if sys
+			FlashingState.precachewarning = false;
+			#end
 			MusicBeatState.switchState(new FlashingState());
 		}
 		else
@@ -425,9 +397,7 @@ class TitleState extends MusicBeatState
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT;
 
 		if (FlxG.mouse.justPressed)
-		{
 			pressedEnter = true;
-		}
 
 		#if mobile
 		for (touch in FlxG.touches.list)
@@ -563,32 +533,16 @@ class TitleState extends MusicBeatState
 			switch (sickBeats)
 			{
 				case 2:
-					#if PSYCH_WATERMARKS
 					createCoolText(['Psych Engine by'], 15);
-					#else
-					createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-					#end
-				// credTextShit.visible = true;
 				case 3:
 					#if PSYCH_WATERMARKS
 					addMoreText('Shadow Mario', 15);
 					addMoreText('RiverOaken', 15);
 					addMoreText('bb-panzu', 15);
-					#else
-					addMoreText('present');
-					#end
-				// credTextShit.text += '\npresent...';
-				// credTextShit.addText();
-				case 5:
-					deleteCoolText();
-				// credTextShit.visible = false;
-				// credTextShit.text = 'In association \nwith';
-				// credTextShit.screenCenter();
-				case 6:
-					#if PSYCH_WATERMARKS
-					createCoolText(['Not associated', 'with'], -40);
-					#else
-					createCoolText(['In association', 'with'], -40);
+					case 5:
+						deleteCoolText();
+					case 6:
+						createCoolText(['Not associated', 'with'], -40);
 					#end
 				case 7:
 					addMoreText('newgrounds', -40);
@@ -632,7 +586,6 @@ class TitleState extends MusicBeatState
 					skipIntro();
 			}
 		}
-
 		/*if (curBeat == 18)
 			{
 				deleteCoolText();

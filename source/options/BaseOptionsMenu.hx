@@ -24,6 +24,9 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
+import openfl.filters.ShaderFilter;
+import flixel.FlxCamera;
+import Shaders;
 
 using StringTools;
 
@@ -44,6 +47,10 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	public var title:String;
 	public var rpcTitle:String;
 
+	public var censoryCustomChroma:CustomChromaticEffect = new CustomChromaticEffect(0);
+	public var censoryChromaIntensity:Float = 0;
+	public var camGame:FlxCamera;
+
 	public function new()
 	{
 		super();
@@ -56,6 +63,11 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		#if desktop
 		DiscordClient.changePresence(rpcTitle, null);
 		#end
+
+		camGame = new FlxCamera();
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
+		camGame.setFilters([new ShaderFilter(censoryCustomChroma.shader)]);
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFea71fd;
@@ -143,17 +155,25 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+		if (ClientPrefs.shaders)
+		{
+			if (censoryChromaIntensity > 0)
+				censoryChromaIntensity -= 0.04 * elapsed;
+			else if (censoryChromaIntensity < 0)
+				censoryChromaIntensity = 0; // just to be sure.
+			if (censoryCustomChroma != null)
+				censoryCustomChroma.setChrome(ClientPrefs.flashing ? censoryChromaIntensity : censoryChromaIntensity / 2); // be half cuz this shader dosent effect the screen that much
+		}
+
 		if (controls.UI_UP_P)
-		{
 			changeSelection(-1);
-		}
+
 		if (controls.UI_DOWN_P)
-		{
 			changeSelection(1);
-		}
 
 		if (controls.BACK)
 		{
+			censoryChromaIntensity = 0;
 			close();
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 		}
@@ -291,13 +311,34 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		if (boyfriend != null && boyfriend.animation.curAnim.finished)
 		{
 			boyfriend.dance();
+			censoryChromaIntensity = 0.01;
 		}
 
 		if (nextAccept > 0)
-		{
 			nextAccept -= 1;
-		}
+
 		super.update(elapsed);
+
+		if (boyfriend != null && boyfriend.blueshader.shader.enabled.value[0] != false && boyfriend.blueshader != null)
+		{
+			var anim = boyfriend.animation.curAnim;
+			var rect = boyfriend.frames.frames[anim.frames[anim.curFrame]].frame;
+			boyfriend.blueshader.shader.clipRect.value = [
+				rect.x / boyfriend.pixels.width,
+				rect.y / boyfriend.pixels.height,
+				rect.width / boyfriend.pixels.width,
+				rect.height / boyfriend.pixels.height
+			];
+		}
+		if (optionsArray[curSelected].showBfsshaders)
+		{
+			if (controls.UI_LEFT)
+				--boyfriend.blueshader.shader.passes.value[0];
+			if (controls.UI_RIGHT)
+				++boyfriend.blueshader.shader.passes.value[0];
+			if (FlxG.keys.justPressed.CONTROL)
+				boyfriend.blueshader.shader.notuseX2.value[0] = !boyfriend.blueshader.shader.notuseX2.value[0];
+		}
 	}
 
 	function updateTextFrom(option:Option)
@@ -360,7 +401,17 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		if (boyfriend != null)
 		{
 			boyfriend.visible = optionsArray[curSelected].showBoyfriend;
+			if (boyfriend.blueshader != null)
+			{
+				if (optionsArray[curSelected].showBfsshaders)
+					boyfriend.blueshader.shader.enabled.value[0] = ClientPrefs.charactershaders;
+				else
+					boyfriend.blueshader.shader.enabled.value[0] = false;
+			}
 		}
+
+		censoryCustomChroma.shader.enabled.value = [optionsArray[curSelected].showfuckingchaders ? ClientPrefs.shaders : false];
+
 		curOption = optionsArray[curSelected]; // shorter lol
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
@@ -380,15 +431,16 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		boyfriend.setGraphicSize(Std.int(boyfriend.width * 0.75));
 		boyfriend.updateHitbox();
 		boyfriend.dance();
+		censoryChromaIntensity = 0.01;
 		insert(1, boyfriend);
 		boyfriend.visible = wasVisible;
+		boyfriend.blueshader.shader.diffX.value = [0.001];
+		boyfriend.blueshader.shader.diffX2.value = [0.001];
+		boyfriend.blueshader.shader.a.value = [0.90];
+		boyfriend.blueshader.shader.passes.value = [70];
 	}
 
 	function reloadCheckboxes()
-	{
 		for (checkbox in checkboxGroup)
-		{
 			checkbox.daValue = (optionsArray[checkbox.ID].getValue() == true);
-		}
-	}
 }

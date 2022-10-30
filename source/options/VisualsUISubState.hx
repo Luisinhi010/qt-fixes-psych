@@ -75,6 +75,14 @@ class VisualsUISubState extends BaseOptionsMenu
 			'bool', true);
 		addOption(option);
 
+		var option:Option = new Option('Icon Colored Health Bar', "If unchecked, the health bar will have set colors\nrather than colors based on the icons.",
+			'coloredHealthBar', 'bool', true);
+		addOption(option);
+
+		var option:Option = new Option('Score Text Zoom on Hit', "If checked, Makes the Score text shorter, \nshowing only Score and Misses", 'short', 'bool',
+			false);
+		addOption(option);
+
 		var option:Option = new Option('Health Bar Transparency', 'How much transparent should the health bar and icons be.', 'healthBarAlpha', 'percent', 1);
 		option.scrollSpeed = 1.6;
 		option.minValue = 0.0;
@@ -84,9 +92,17 @@ class VisualsUISubState extends BaseOptionsMenu
 		addOption(option);
 
 		#if !mobile
-		var option:Option = new Option('FPS Counter', 'If unchecked, hides FPS Counter.', 'showFPS', 'bool', true);
+		var option:Option = new Option('FPS Counter', 'If unchecked, hides the FPS Counter.', 'showFPS', 'bool', true);
 		addOption(option);
-		option.onChange = onChangeFPSCounter;
+
+		var option:Option = new Option('Memory Counter', 'If unchecked, hides the Memory Counter.', 'showMEM', 'bool',
+			true); // Show Mem Pr: https://github.com/ShadowMario/FNF-PsychEngine/pull/9554/
+		addOption(option);
+
+		var option:Option = new Option('Show Current State',
+			"Whether to display the current state and substate of the game example: \n(State: options.OptionsState) \n(SubState: options.VisualsUISubState)",
+			'showState', 'bool', false);
+		addOption(option);
 		#end
 
 		/*#if sys
@@ -97,12 +113,4 @@ class VisualsUISubState extends BaseOptionsMenu
 
 		super();
 	}
-
-	#if !mobile
-	function onChangeFPSCounter()
-	{
-		if (Main.fpsVar != null)
-			Main.fpsVar.visible = ClientPrefs.showFPS;
-	}
-	#end
 }

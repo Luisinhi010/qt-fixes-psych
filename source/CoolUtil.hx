@@ -21,6 +21,13 @@ class CoolUtil
 
 	public static var difficulties:Array<String> = [];
 
+	inline public static function quantize(f:Float, snap:Float)
+	{
+		// changed so this actually works lol
+		var m:Float = Math.fround(f * snap);
+		return (m / snap);
+	}
+
 	public static function getDifficultyFilePath(num:Null<Int> = null)
 	{
 		if (num == null)
@@ -44,7 +51,7 @@ class CoolUtil
 
 		// Scuffed code is my favourite type of code!
 		// I mean, trust me, I am professional programmer, I totally know what I am doing.
-		// LFMAO
+		// LMFAO
 		if (PlayState.SONG != null && PlayState.THISISFUCKINGDISGUSTINGPLEASESAVEME)
 		{
 			if (PlayState.SONG.song.toLowerCase() == "termination")
@@ -145,11 +152,42 @@ class CoolUtil
 	}
 
 	// uhhhh does this even work at all? i'm starting to doubt
+	// yes it does. -Luis
 	public static function precacheSound(sound:String, ?library:String = null):Void
 	{
-		var EmbeddedSound = Paths.sound(sound, library);
-		if (Assets.exists(EmbeddedSound, SOUND) || Assets.exists(EmbeddedSound, MUSIC))
-			Assets.getSound(EmbeddedSound, true);
+		precacheSoundFile(Paths.sound(sound, library));
+	}
+
+	public static function precacheMusic(sound:String, ?library:String = null):Void
+	{
+		precacheSoundFile(Paths.music(sound, library));
+	}
+
+	public static function precacheVoices(sound:String, ?library:String = null):Void
+	{
+		precacheSoundFile(Paths.voices(sound));
+	}
+
+	public static function precacheInst(sound:String, ?library:String = null):Void
+	{
+		precacheSoundFile(Paths.inst(sound));
+	}
+
+	public static function precacheImage(image:String, ?library:String = null):Void
+	{
+		precacheImageFile(Paths.image(image, library));
+	}
+
+	private static function precacheSoundFile(file:Dynamic):Void
+	{
+		if (Assets.exists(file, SOUND) || Assets.exists(file, MUSIC))
+			Assets.getSound(file, true);
+	}
+
+	private static function precacheImageFile(file:Dynamic):Void
+	{
+		if (Assets.exists(file, IMAGE))
+			LimeAssets.getImage(file, true);
 	}
 
 	public static function browserLoad(site:String)
@@ -159,5 +197,10 @@ class CoolUtil
 		#else
 		FlxG.openURL(site);
 		#end
+	}
+
+	public static inline function exactSetGraphicSize(obj:Dynamic, width:Float, height:Float)
+	{
+		obj.scale.set(Math.abs(((obj.width - width) / obj.width) - 1), Math.abs(((obj.height - height) / obj.height) - 1));
 	}
 }

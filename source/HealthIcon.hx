@@ -87,6 +87,10 @@ class HealthIcon extends FlxSprite
 			case 'qt-kb':
 				thechar = 'qt-kb';
 			default:
+				if (char.startsWith('kb'))
+					thechar = 'kb';
+				if (char.startsWith('qt'))
+					thechar = 'qt';
 				if (!char.endsWith('-invis'))
 					thechar = 'placeholder';
 		}

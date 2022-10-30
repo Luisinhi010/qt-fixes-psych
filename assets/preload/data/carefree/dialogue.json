@@ -4,50 +4,50 @@
 			"expression": "excited",
 			"text": "Oh hey cutie!",
 			"boxState": "normal",
-			"speed": 0.035,
-			"portrait": "qt"
+			"portrait": "qt",
+			"speed": 0.035
 		},
 		{
 			"expression": "talk",
 			"text": "I was looking for you!",
 			"boxState": "normal",
-			"speed": 0.04,
-			"portrait": "qt"
+			"portrait": "qt",
+			"speed": 0.04
 		},
 		{
-			"expression": "talk",
+			"expression": "confused",
 			"text": "Beep?",
 			"boxState": "normal",
-			"speed": 0.055,
-			"portrait": "bf"
+			"portrait": "bf",
+			"speed": 0.06
 		},
 		{
 			"expression": "talk",
 			"text": "I heard you're pretty hot stuff, so I want to challenge you!",
 			"boxState": "normal",
-			"speed": 0.04,
-			"portrait": "qt"
+			"portrait": "qt",
+			"speed": 0.03
 		},
 		{
 			"expression": "excited",
 			"text": "Beep!",
 			"boxState": "normal",
-			"speed": 0.035,
-			"portrait": "bf"
+			"portrait": "bf",
+			"speed": 0.035
 		},
 		{
 			"expression": "talk",
 			"text": "Hey, if I win... could we hang out some more?",
 			"boxState": "normal",
-			"speed": 0.045,
-			"portrait": "qt"
+			"portrait": "qt",
+			"speed": 0.065
 		},
 		{
 			"expression": "talk",
 			"text": "Bop beep skdoo.",
 			"boxState": "normal",
-			"speed": 0.045,
-			"portrait": "bf"
+			"portrait": "bf",
+			"speed": 0.045
 		}
 	]
 }

@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -9,6 +10,8 @@ class CustomMouse extends FlxSprite
 {
 	// public var mousecursor:FlxSprite;
 	public var mouseadded:Bool = false;
+	public var defaultcolor:FlxColor = FlxColor.WHITE;
+	public var pressedcolor:FlxColor = 0xFF1414AA;
 
 	public function new(x:Float = 0, y:Float = 0)
 	{
@@ -18,7 +21,7 @@ class CustomMouse extends FlxSprite
 
 	public function setupmousecustom():Void
 	{
-		#if web
+		#if html5
 		FlxG.mouse.visible = true;
 		#else
 		FlxG.mouse.visible = false;
@@ -33,15 +36,29 @@ class CustomMouse extends FlxSprite
 		#end
 	}
 
-	public function updatemouse():Void
+	override function update(elapsed:Float)
 	{
-		#if !web
+		super.update(elapsed);
+		updatemouse(elapsed);
+	}
+
+	function updatemouse(elapsed:Float):Void
+	{
+		#if !html5
 		if (mouseadded && this != null)
 		{
 			setPosition(FlxG.mouse.x, FlxG.mouse.y);
 			updateHitbox();
 			antialiasing = ClientPrefs.globalAntialiasing;
+
+			var pressed:Bool = FlxG.mouse.justPressed;
 		}
 		#end
+	}
+
+	public function setcolor(color:FlxColor = FlxColor.WHITE) // the mouse is suposed to have a color animation when left click,
+	{
+		defaultcolor = color;
+		this.color = color;
 	}
 }

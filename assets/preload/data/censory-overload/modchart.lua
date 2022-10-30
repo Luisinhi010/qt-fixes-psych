@@ -21,4 +21,5 @@ function onUpdate(elapsed)
 	end
 
 end
---]] --i want to die because of this, i will port the kade's modchart suport fuck you -Luis
+--]] --i want to die because of this, i will port the kade's modchart support fuck you -Luis
+--this is all your fault for not learning Pysch engine Lua -Future Luis

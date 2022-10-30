@@ -28,6 +28,7 @@ class Note extends FlxSprite
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
+	public var isFakeSustainNote:Bool = false;
 	public var noteType(default, set):String = null;
 
 	public var eventName:String = '';
@@ -38,14 +39,14 @@ class Note extends FlxSprite
 	public var colorSwap:ColorSwap;
 	public var inEditor:Bool = false;
 	public var gfNote:Bool = false;
+	public var invertanimNote:Bool = false;
 
 	private var earlyHitMult:Float = 0.5;
 
 	public static var swagWidth:Float = 160 * 0.7;
-	public static var PURP_NOTE:Int = 0;
-	public static var GREEN_NOTE:Int = 2;
-	public static var BLUE_NOTE:Int = 1;
-	public static var RED_NOTE:Int = 3;
+
+	private var colArray:Array<String> = ['purple', 'blue', 'green', 'red'];
+	private var pixelInt:Array<Int> = [0, 1, 2, 3];
 
 	// Lua shit
 	public var noteSplashDisabled:Bool = false;
@@ -169,6 +170,8 @@ class Note extends FlxSprite
 					colorSwap.brightness = 0;
 				case 'Miss Note': // lmao
 					hitCausesMiss = !mustPress;
+				case 'Invert Anim Note':
+					invertanimNote = true;
 			}
 			noteType = value;
 		}
@@ -177,6 +180,14 @@ class Note extends FlxSprite
 			noteSplashHue = colorSwap.hue;
 			noteSplashSat = colorSwap.saturation;
 			noteSplashBrt = colorSwap.brightness;
+		}
+		else
+		{
+			if (hitCausesMiss && isSustainNote)
+			{
+				isFakeSustainNote = true;
+				isSustainNote = false;
+			}
 		}
 		return value;
 	}
@@ -213,27 +224,17 @@ class Note extends FlxSprite
 				shader = colorSwap.shader;
 
 			x += swagWidth * (noteData % 4);
-			if (!isSustainNote)
+			if (!isSustainNote && !isFakeSustainNote)
 			{ // Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
-				switch (noteData % 4)
-				{
-					case 0:
-						animToPlay = 'purple';
-					case 1:
-						animToPlay = 'blue';
-					case 2:
-						animToPlay = 'green';
-					case 3:
-						animToPlay = 'red';
-				}
+				animToPlay = colArray[noteData % 4];
 				animation.play(animToPlay + 'Scroll');
 			}
 		}
 
 		// trace(prevNote);
 
-		if (isSustainNote && prevNote != null)
+		if ((isSustainNote || isFakeSustainNote) && prevNote != null)
 		{
 			alpha = 0.6;
 			multAlpha = 0.6;
@@ -243,35 +244,15 @@ class Note extends FlxSprite
 			offsetX += width / 2;
 			copyAngle = false;
 
-			switch (noteData)
-			{
-				case 0:
-					animation.play('purpleholdend');
-				case 1:
-					animation.play('blueholdend');
-				case 2:
-					animation.play('greenholdend');
-				case 3:
-					animation.play('redholdend');
-			}
+			animation.play(colArray[noteData % 4] + 'holdend');
 
 			updateHitbox();
 
 			offsetX -= width / 2;
 
-			if (prevNote.isSustainNote)
+			if (prevNote.isSustainNote || prevNote.isFakeSustainNote)
 			{
-				switch (prevNote.noteData)
-				{
-					case 0:
-						prevNote.animation.play('purplehold');
-					case 1:
-						prevNote.animation.play('bluehold');
-					case 2:
-						prevNote.animation.play('greenhold');
-					case 3:
-						prevNote.animation.play('redhold');
-				}
+				prevNote.animation.play(colArray[prevNote.noteData % 4] + 'hold');
 
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
 				if (PlayState.instance != null)
@@ -283,7 +264,7 @@ class Note extends FlxSprite
 				// prevNote.setGraphicSize();
 			}
 		}
-		else if (!isSustainNote)
+		else if (!isSustainNote && !isFakeSustainNote)
 		{
 			earlyHitMult = 1;
 		}
@@ -310,9 +291,7 @@ class Note extends FlxSprite
 
 		var animName:String = null;
 		if (animation.curAnim != null)
-		{
 			animName = animation.curAnim.name;
-		}
 
 		var arraySkin:Array<String> = skin.split('/');
 		arraySkin[arraySkin.length - 1] = prefix + arraySkin[arraySkin.length - 1] + suffix;
@@ -324,7 +303,7 @@ class Note extends FlxSprite
 		loadNoteAnims();
 		antialiasing = ClientPrefs.globalAntialiasing;
 
-		if (isSustainNote)
+		if (isSustainNote || isFakeSustainNote)
 			scale.y = lastScaleY;
 
 		updateHitbox();
@@ -341,22 +320,13 @@ class Note extends FlxSprite
 
 	function loadNoteAnims()
 	{
-		animation.addByPrefix('greenScroll', 'green0');
-		animation.addByPrefix('redScroll', 'red0');
-		animation.addByPrefix('blueScroll', 'blue0');
-		animation.addByPrefix('purpleScroll', 'purple0');
+		animation.addByPrefix(colArray[noteData] + 'Scroll', colArray[noteData] + '0', 24);
 
-		if (isSustainNote)
+		if (isSustainNote || isFakeSustainNote)
 		{
-			animation.addByPrefix('purpleholdend', 'pruple end hold');
-			animation.addByPrefix('greenholdend', 'green hold end');
-			animation.addByPrefix('redholdend', 'red hold end');
-			animation.addByPrefix('blueholdend', 'blue hold end');
-
-			animation.addByPrefix('purplehold', 'purple hold piece');
-			animation.addByPrefix('greenhold', 'green hold piece');
-			animation.addByPrefix('redhold', 'red hold piece');
-			animation.addByPrefix('bluehold', 'blue hold piece');
+			animation.addByPrefix('purpleholdend', 'pruple end hold', 24); // ?????
+			animation.addByPrefix(colArray[noteData] + 'holdend', colArray[noteData] + ' hold end', 24);
+			animation.addByPrefix(colArray[noteData] + 'hold', colArray[noteData] + ' hold piece', 24);
 		}
 
 		ogW = width;
@@ -388,12 +358,12 @@ class Note extends FlxSprite
 
 			if (strumTime < Conductor.songPosition + ((hitCausesMiss ? Conductor.safeZoneOffsetHURTNOTE : Conductor.safeZoneOffset) * earlyHitMult))
 			{
-				if ((isSustainNote && prevNote.wasGoodHit) || strumTime <= Conductor.songPosition)
+				if (((isSustainNote || isFakeSustainNote) && prevNote.wasGoodHit) || strumTime <= Conductor.songPosition)
 					wasGoodHit = true;
 			}
 		}
 
-		if (isSustainNote && !susActive)
+		if ((isSustainNote || isFakeSustainNote) && !susActive)
 			multAlpha = 0.2;
 
 		if (tooLate && !inEditor)

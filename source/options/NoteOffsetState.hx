@@ -407,12 +407,14 @@ class NoteOffsetState extends MusicBeatState
 				}
 			});
 
+			beatText.angle = 0;
 			beatText.alpha = 1;
-			beatText.y = 320;
+			beatText.x = FlxG.random.int(250, 270);
+			beatText.y = FlxG.random.int(310, 330);
 			beatText.velocity.y = -150;
 			if (beatTween != null)
 				beatTween.cancel();
-			beatTween = FlxTween.tween(beatText, {alpha: 0}, 1, {
+			beatTween = FlxTween.tween(beatText, {alpha: 0, angle: FlxG.random.int(-10, 10)}, 1, {
 				ease: FlxEase.sineIn,
 				onComplete: function(twn:FlxTween)
 				{

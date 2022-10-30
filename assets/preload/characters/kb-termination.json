@@ -1,0 +1,157 @@
+{
+	"animations": [
+		{
+			"offsets": [
+				250,
+				244
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "KB_Left"
+		},
+		{
+			"offsets": [
+				249,
+				244
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT-alt",
+			"indices": [],
+			"name": "KB_Rage_Left"
+		},
+		{
+			"offsets": [
+				-122,
+				50
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "KB_Right"
+		},
+		{
+			"offsets": [
+				-121,
+				50
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT-alt",
+			"indices": [],
+			"name": "KB_Rage_Right"
+		},
+		{
+			"offsets": [
+				182,
+				33
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN",
+			"indices": [],
+			"name": "KB_Down"
+		},
+		{
+			"offsets": [
+				182,
+				33
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN-alt",
+			"indices": [],
+			"name": "KB_Rage_Down"
+		},
+		{
+			"offsets": [
+				160,
+				265
+			],
+			"loop": false,
+			"anim": "singUP",
+			"fps": 24,
+			"name": "KB_Up",
+			"indices": []
+		},
+		{
+			"offsets": [
+				160,
+				265
+			],
+			"loop": false,
+			"anim": "singUP-alt",
+			"fps": 24,
+			"name": "KB_Rage_Up",
+			"indices": []
+		},
+		{
+			"offsets": [
+				148,
+				103
+			],
+			"loop": false,
+			"anim": "danceLeft",
+			"fps": 24,
+			"name": "KB_DanceLeft",
+			"indices": []
+		},
+		{
+			"offsets": [
+				107,
+				112
+			],
+			"loop": false,
+			"anim": "danceRight",
+			"fps": 24,
+			"name": "KB_DanceRight",
+			"indices": []
+		},
+		{
+			"offsets": [
+				143,
+				72
+			],
+			"loop": true,
+			"fps": 24,
+			"anim": "idle-rage",
+			"indices": [],
+			"name": "KB_Rage_idle"
+		},
+		{
+			"offsets": [
+				76,
+				89
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "idle-alt",
+			"loop": false,
+			"name": "KB_idleTired"
+		}
+	],
+	"no_antialiasing": false,
+	"splashSkin": "noteSplashesKb",
+	"image": "characters/qt-fixes/robot-termination",
+	"position": [
+		-160,
+		210
+	],
+	"healthicon": "kb",
+	"flip_x": false,
+	"healthbar_colors": [
+		255,
+		0,
+		0
+	],
+	"camera_position": [
+		-170,
+		-100
+	],
+	"noteSkin": "NOTE_assets_Kb",
+	"sing_duration": 4,
+	"scale": 1
+}

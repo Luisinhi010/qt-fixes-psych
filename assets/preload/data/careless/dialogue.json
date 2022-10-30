@@ -1,25 +1,25 @@
 {
 	"dialogue": [
 		{
+			"expression": "nervous",
+			"text": "Oh dear...",
+			"boxState": "normal",
 			"speed": 0.055,
-			"portrait": "qt",
-			"boxState": "normal",
-			"expression": "nervous",
-			"text": "Oh dear..."
+			"portrait": "qt"
 		},
 		{
+			"expression": "nervous",
+			"text": "Lets try that again...",
+			"boxState": "normal",
 			"speed": 0.045,
-			"portrait": "qt",
-			"boxState": "normal",
-			"expression": "nervous",
-			"text": "Lets try that again..."
+			"portrait": "qt"
 		},
 		{
-			"speed": 0.04,
-			"portrait": "bf",
+			"expression": "confused",
+			"text": "boop...?",
 			"boxState": "normal",
-			"expression": "talk",
-			"text": "boop"
+			"speed": 0.1,
+			"portrait": "bf"
 		}
 	]
 }

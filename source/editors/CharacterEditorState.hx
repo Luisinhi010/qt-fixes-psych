@@ -15,6 +15,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.graphics.FlxGraphic;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.math.FlxPoint;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUI;
@@ -74,7 +75,6 @@ class CharacterEditorState extends MusicBeatState
 	private var camHUD:FlxCamera;
 	private var camMenu:FlxCamera;
 
-	var changeBGbutton:FlxButton;
 	var leHealthIcon:HealthIcon;
 	var characterList:Array<String> = [];
 
@@ -92,9 +92,9 @@ class CharacterEditorState extends MusicBeatState
 		camMenu.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camEditor);
-		FlxG.cameras.add(camHUD);
-		FlxG.cameras.add(camMenu);
-		FlxCamera.defaultCameras = [camEditor];
+		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camMenu, false);
+		FlxG.cameras.setDefaultDrawTarget(camEditor, true);
 
 		bgLayer = new FlxTypedGroup<FlxSprite>();
 		add(bgLayer);
@@ -107,13 +107,6 @@ class CharacterEditorState extends MusicBeatState
 		cameraFollowPointer.updateHitbox();
 		cameraFollowPointer.color = FlxColor.WHITE;
 		add(cameraFollowPointer);
-
-		changeBGbutton = new FlxButton(FlxG.width - 360, 25, "", function()
-		{
-			onPixelBG = !onPixelBG;
-			reloadBGs();
-		});
-		changeBGbutton.cameras = [camMenu];
 
 		loadChar(!daAnim.startsWith('bf'), false);
 
@@ -155,8 +148,8 @@ class CharacterEditorState extends MusicBeatState
 		camFollow.screenCenter();
 		add(camFollow);
 
-		var tipText:FlxText = new FlxText(FlxG.width - 20, FlxG.height, 0, "E/Q - Camera Zoom In/Out
-			\nJKLI - Move Camera
+		var tipText:FlxText = new FlxText(FlxG.width - 20, FlxG.height, 0, "(SCROLLMOUSE) - Camera Zoom In/Out
+			\n(MOUSE) - Move Camera
 			\nW/S - Previous/Next Animation
 			\nSpace - Play Animation
 			\nArrow Keys - Move Character Offset
@@ -198,7 +191,6 @@ class CharacterEditorState extends MusicBeatState
 		UI_characterbox.scrollFactor.set();
 		add(UI_characterbox);
 		add(UI_box);
-		add(changeBGbutton);
 
 		// addOffsetsUI();
 		addSettingsUI();
@@ -213,7 +205,6 @@ class CharacterEditorState extends MusicBeatState
 		super.create();
 	}
 
-	var onPixelBG:Bool = false;
 	var OFFSET_X:Float = 300;
 
 	function reloadBGs()
@@ -235,60 +226,13 @@ class CharacterEditorState extends MusicBeatState
 		if (char.isPlayer)
 			playerXDifference = 670;
 
-		if (onPixelBG)
-		{
-			var playerYDifference:Float = 0;
-			if (char.isPlayer)
-			{
-				playerXDifference += 200;
-				playerYDifference = 220;
-			}
+		var bg:BGSprite = new BGSprite('stageback', -600 + OFFSET_X - playerXDifference, -300, 0.9, 0.9);
+		bgLayer.add(bg);
 
-			var bgSky:BGSprite = new BGSprite('weeb/weebSky', OFFSET_X - (playerXDifference / 2) - 300, 0 - playerYDifference, 0.1, 0.1);
-			bgLayer.add(bgSky);
-			bgSky.antialiasing = false;
-
-			var repositionShit = -200 + OFFSET_X - playerXDifference;
-
-			var bgSchool:BGSprite = new BGSprite('weeb/weebSchool', repositionShit, -playerYDifference + 6, 0.6, 0.90);
-			bgLayer.add(bgSchool);
-			bgSchool.antialiasing = false;
-
-			var bgStreet:BGSprite = new BGSprite('weeb/weebStreet', repositionShit, -playerYDifference, 0.95, 0.95);
-			bgLayer.add(bgStreet);
-			bgStreet.antialiasing = false;
-
-			var widShit = Std.int(bgSky.width * 6);
-			var bgTrees:FlxSprite = new FlxSprite(repositionShit - 380, -800 - playerYDifference);
-			bgTrees.frames = Paths.getPackerAtlas('weeb/weebTrees');
-			bgTrees.animation.add('treeLoop', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], 12);
-			bgTrees.animation.play('treeLoop');
-			bgTrees.scrollFactor.set(0.85, 0.85);
-			bgLayer.add(bgTrees);
-			bgTrees.antialiasing = false;
-
-			bgSky.setGraphicSize(widShit);
-			bgSchool.setGraphicSize(widShit);
-			bgStreet.setGraphicSize(widShit);
-			bgTrees.setGraphicSize(Std.int(widShit * 1.4));
-
-			bgSky.updateHitbox();
-			bgSchool.updateHitbox();
-			bgStreet.updateHitbox();
-			bgTrees.updateHitbox();
-			changeBGbutton.text = "Regular BG";
-		}
-		else
-		{
-			var bg:BGSprite = new BGSprite('stageback', -600 + OFFSET_X - playerXDifference, -300, 0.9, 0.9);
-			bgLayer.add(bg);
-
-			var stageFront:BGSprite = new BGSprite('stagefront', -650 + OFFSET_X - playerXDifference, 500, 0.9, 0.9);
-			stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-			stageFront.updateHitbox();
-			bgLayer.add(stageFront);
-			changeBGbutton.text = "Pixel BG";
-		}
+		var stageFront:BGSprite = new BGSprite('stagefront', -650 + OFFSET_X - playerXDifference, 500, 0.9, 0.9);
+		stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+		stageFront.updateHitbox();
+		bgLayer.add(stageFront);
 	}
 
 	/*var animationInputText:FlxUIInputText;
@@ -1238,6 +1182,9 @@ class CharacterEditorState extends MusicBeatState
 		#end
 	}
 
+	private var lastPosition:FlxPoint = new FlxPoint();
+	private var mouseDiff:FlxPoint = new FlxPoint();
+
 	override function update(elapsed:Float)
 	{
 		if (char.animationsArray[curAnim] != null)
@@ -1246,14 +1193,10 @@ class CharacterEditorState extends MusicBeatState
 
 			var curAnim:FlxAnimation = char.animation.getByName(char.animationsArray[curAnim].anim);
 			if (curAnim == null || curAnim.frames.length < 1)
-			{
 				textAnim.text += ' (ERROR!)';
-			}
 		}
 		else
-		{
 			textAnim.text = '';
-		}
 
 		var inputTexts:Array<FlxUIInputText> = [
 			animationInputText,
@@ -1285,9 +1228,9 @@ class CharacterEditorState extends MusicBeatState
 				return;
 			}
 		}
-		FlxG.sound.muteKeys = TitleState.muteKeys;
-		FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
-		FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
+		FlxG.sound.muteKeys = ClientPrefs.muteKeys;
+		FlxG.sound.volumeDownKeys = ClientPrefs.volumeDownKeys;
+		FlxG.sound.volumeUpKeys = ClientPrefs.volumeUpKeys;
 
 		if (!charDropDown.dropPanel.visible)
 		{
@@ -1309,37 +1252,39 @@ class CharacterEditorState extends MusicBeatState
 			if (FlxG.keys.justPressed.R)
 			{
 				FlxG.camera.zoom = 1;
-			}
-
-			if (FlxG.keys.pressed.E && FlxG.camera.zoom < 3)
-			{
-				FlxG.camera.zoom += elapsed * FlxG.camera.zoom;
-				if (FlxG.camera.zoom > 3)
-					FlxG.camera.zoom = 3;
-			}
-			if (FlxG.keys.pressed.Q && FlxG.camera.zoom > 0.1)
-			{
-				FlxG.camera.zoom -= elapsed * FlxG.camera.zoom;
-				if (FlxG.camera.zoom < 0.1)
-					FlxG.camera.zoom = 0.1;
-			}
-
-			if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
-			{
-				var addToCam:Float = 500 * elapsed;
 				if (FlxG.keys.pressed.SHIFT)
-					addToCam *= 4;
-
-				if (FlxG.keys.pressed.I)
-					camFollow.y -= addToCam;
-				else if (FlxG.keys.pressed.K)
-					camFollow.y += addToCam;
-
-				if (FlxG.keys.pressed.J)
-					camFollow.x -= addToCam;
-				else if (FlxG.keys.pressed.L)
-					camFollow.x += addToCam;
+					camFollow.screenCenter();
 			}
+			/*
+				if (FlxG.keys.pressed.E && FlxG.camera.zoom < 3)
+				{
+					FlxG.camera.zoom += elapsed * FlxG.camera.zoom;
+					if (FlxG.camera.zoom > 3)
+						FlxG.camera.zoom = 3;
+				}
+				if (FlxG.keys.pressed.Q && FlxG.camera.zoom > 0.1)
+				{
+					FlxG.camera.zoom -= elapsed * FlxG.camera.zoom;
+					if (FlxG.camera.zoom < 0.1)
+						FlxG.camera.zoom = 0.1;
+				}
+
+				if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
+				{
+					var addToCam:Float = 500 * elapsed;
+					if (FlxG.keys.pressed.SHIFT)
+						addToCam *= 4;
+
+					if (FlxG.keys.pressed.I)
+						camFollow.y -= addToCam;
+					else if (FlxG.keys.pressed.K)
+						camFollow.y += addToCam;
+
+					if (FlxG.keys.pressed.J)
+						camFollow.x -= addToCam;
+					else if (FlxG.keys.pressed.L)
+						camFollow.x += addToCam;
+			}*/
 
 			if (char.animationsArray.length > 0)
 			{
@@ -1475,6 +1420,41 @@ class CharacterEditorState extends MusicBeatState
 		camMenu.zoom = FlxG.camera.zoom;
 		ghostChar.setPosition(char.x, char.y);
 		super.update(elapsed);
+		if (FlxG.mouse.justPressedRight)
+		{
+			lastPosition.set(CoolUtil.boundTo(FlxG.mouse.getScreenPosition().x, 0, FlxG.width),
+				CoolUtil.boundTo(FlxG.mouse.getScreenPosition().y, 0, FlxG.height));
+		}
+
+		if (FlxG.mouse.pressedRight) // draggable camera with mouse movement
+		{
+			FlxG.mouse.visible = false;
+
+			mouseDiff.set((lastPosition.x - FlxG.mouse.getScreenPosition().x), (lastPosition.y - FlxG.mouse.getScreenPosition().y));
+
+			if (FlxG.mouse.justMoved)
+			{
+				var mult:Float = 1;
+
+				if (FlxG.keys.pressed.SHIFT)
+					mult = 4;
+
+				camFollow.x = camFollow.x - -CoolUtil.boundTo(mouseDiff.x, -FlxG.width, FlxG.width) * mult;
+				camFollow.y = camFollow.y - -CoolUtil.boundTo(mouseDiff.y, -FlxG.height, FlxG.height) * mult;
+
+				lastPosition.set(CoolUtil.boundTo(FlxG.mouse.getScreenPosition().x, 0, FlxG.width),
+					CoolUtil.boundTo(FlxG.mouse.getScreenPosition().y, 0, FlxG.height));
+			}
+		}
+		else
+		{
+			FlxG.mouse.visible = true;
+		}
+
+		if (FlxG.mouse.wheel != 0)
+		{
+			FlxG.camera.zoom += FlxG.mouse.wheel / 10;
+		}
 	}
 
 	var _file:FileReference;

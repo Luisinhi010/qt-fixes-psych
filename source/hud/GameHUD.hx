@@ -81,15 +81,13 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		timeBarBG.xAdd = -4;
 		timeBarBG.yAdd = -4;
 
-		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, HORIZONTAL_INSIDE_OUT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
+		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
 			'songPercent', 0, 1);
 		timeBar.screenCenter(X);
 		timeBar.scrollFactor.set();
 		reloadSongPosBarColors(PlayState.instance.qtIsBlueScreened);
-		if (!ClientPrefs.lowQuality)
+		if (!ClientPrefs.lowQuality || !ClientPrefs.optimize)
 			timeBar.numDivisions = 1000;
-		// if low quality will be 100
-		// else will be 1000
 		timeBar.alpha = 0;
 		timeBar.visible = showTime;
 		timeBarBG.sprTracker = timeBar;
@@ -117,7 +115,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			'health', 0, 2);
 		if (!ClientPrefs.downScroll)
 			healthBar.y += 18;
-		if (!ClientPrefs.lowQuality)
+		if (!ClientPrefs.lowQuality || !ClientPrefs.optimize)
 			healthBar.numDivisions = 800;
 
 		healthBar.scrollFactor.set();
@@ -138,17 +136,21 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		add(healthBarFG);
 		healthBarFG.sprTracker = healthBar;
 
-		iconP1 = new HealthIcon(PlayState.instance.boyfriend.healthIcon, true);
-		iconP1.y = healthBar.y - 75;
-		iconP1.visible = !PlayState.instance.cpuControlled;
-		iconP1.alpha = ClientPrefs.healthBarAlpha;
-		add(iconP1);
+		if (!ClientPrefs.optimize)
+		{
+			iconP1 = new HealthIcon(PlayState.instance.boyfriend.healthIcon, true);
+			iconP1.y = healthBar.y - 75;
+			iconP1.visible = !PlayState.instance.cpuControlled;
+			iconP1.alpha = ClientPrefs.healthBarAlpha;
+			add(iconP1);
 
-		iconP2 = new HealthIcon(PlayState.instance.dad.healthIcon, false);
-		iconP2.y = healthBar.y - 75;
-		iconP2.visible = !PlayState.instance.cpuControlled;
-		iconP2.alpha = ClientPrefs.healthBarAlpha;
-		add(iconP2);
+			iconP2 = new HealthIcon(PlayState.instance.dad.healthIcon, false);
+			iconP2.y = healthBar.y - 75;
+			iconP2.visible = !PlayState.instance.cpuControlled;
+			iconP2.alpha = ClientPrefs.healthBarAlpha;
+			add(iconP2);
+			// lime.app.Application.current.window.setIcon(iconP2.pixels.image);
+		}
 		reloadHealthBarColors(PlayState.instance.qtIsBlueScreened);
 
 		// set up Score
@@ -183,35 +185,38 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 		health = (Math.abs(health - PlayState.instance.health) < .1)
 			&& healthBar.visible ? PlayState.instance.health : FlxMath.lerp(health, PlayState.instance.health,
-				CoolUtil.boundTo(1 - (elapsed * 2), 0, 1)); // kinda inspired by andromeda smooth health bar
+				CoolUtil.boundTo(1 - (elapsed * 2 * PlayState.instance.playbackRate), 0, 1)); // kinda inspired by andromeda smooth health bar
 
-		var mult:Float = FlxMath.lerp(1, iconP1.scale.x, CoolUtil.boundTo(1 - (elapsed * 9), 0, 1));
-		iconP1.scale.set(mult, mult);
-		iconP1.updateHitbox();
+		if (!ClientPrefs.optimize)
+		{
+			var mult:Float = FlxMath.lerp(1, iconP1.scale.x, CoolUtil.boundTo(1 - (elapsed * 9 * PlayState.instance.playbackRate), 0, 1));
+			iconP1.scale.set(mult, mult);
+			iconP1.updateHitbox();
 
-		var mult:Float = FlxMath.lerp(1, iconP2.scale.x, CoolUtil.boundTo(1 - (elapsed * 9), 0, 1));
-		iconP2.scale.set(mult, mult);
-		iconP2.updateHitbox();
+			var mult:Float = FlxMath.lerp(1, iconP2.scale.x, CoolUtil.boundTo(1 - (elapsed * 9 * PlayState.instance.playbackRate), 0, 1));
+			iconP2.scale.set(mult, mult);
+			iconP2.updateHitbox();
 
-		var iconOffset:Int = 26;
-		iconP1.x = healthBar.x
-			+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
-			+ (150 * iconP1.scale.x - 150) / 2
-			- iconOffset;
-		iconP2.x = healthBar.x
-			+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
-			- (150 * iconP2.scale.x) / 2
-			- iconOffset * 2;
+			var iconOffset:Int = 26;
+			iconP1.x = healthBar.x
+				+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
+				+ (150 * iconP1.scale.x - 150) / 2
+				- iconOffset;
+			iconP2.x = healthBar.x
+				+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
+				- (150 * iconP2.scale.x) / 2
+				- iconOffset * 2;
 
-		if (healthBar.percent < 20)
-			iconP1.animation.curAnim.curFrame = 1;
-		else
-			iconP1.animation.curAnim.curFrame = 0;
+			if (healthBar.percent < 20)
+				iconP1.animation.curAnim.curFrame = 1;
+			else
+				iconP1.animation.curAnim.curFrame = 0;
 
-		if (healthBar.percent > 80)
-			iconP2.animation.curAnim.curFrame = 1;
-		else
-			iconP2.animation.curAnim.curFrame = 0;
+			if (healthBar.percent > 80)
+				iconP2.animation.curAnim.curFrame = 1;
+			else
+				iconP2.animation.curAnim.curFrame = 0;
+		}
 
 		if (botplayTxt.visible)
 		{
@@ -239,41 +244,41 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 			songNameTxt.screenCenter(X);
 		}
-
-		updateScore();
 	}
 
 	public function updateScore()
 	{
-		var score = PlayState.instance.songScore;
-		var misses = PlayState.instance.songMisses;
-		var rating = PlayState.instance.ratingName;
-		var ratingFC = PlayState.instance.ratingFC;
+		var score:Int = PlayState.instance.songScore;
+		var misses:Int = PlayState.instance.songMisses;
+		var rating:String = PlayState.instance.ratingName;
+		var ratingPer:Float = PlayState.instance.ratingPercent;
+		var ratingFC:String = PlayState.instance.ratingFC;
 
-		if (rating == '?')
-			scoreTxt.text = 'Score: ' + score + ' | Misses: ' + misses + ' | Rating: ?';
-		else
-			scoreTxt.text = 'Score: '
-				+ score
-				+ ' | Misses: '
-				+ misses
-				+ ' | Rating: '
-				+ rating
-				+ ' ('
-				+ Highscore.floorDecimal(PlayState.instance.ratingPercent * 100, 2)
-				+ '%)'
-				+ ' - '
-				+ ratingFC; // peeps wanted no integer rating
+		scoreTxt.text = ClientPrefs.short ? 'Score: ' + score + ' | Misses: ' + misses : 'Score: '
+			+ score
+			+ ' | Misses: '
+			+ misses
+			+ ' | Rating: '
+			+ rating
+			+ (rating != '?' ? ' [${Highscore.floorDecimal(ratingPer * 100, 2)}% | $ratingFC]' : ''); // peeps wanted no integer rating
 	}
 
 	public function reloadHealthBarColors(blue:Bool = false)
 	{
-		var dadcolor:FlxColor = FlxColor.fromRGB(PlayState.instance.dad.healthColorArray[0], PlayState.instance.dad.healthColorArray[1],
-			PlayState.instance.dad.healthColorArray[2]);
-		var bfcolor:FlxColor = FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1],
-			PlayState.instance.boyfriend.healthColorArray[2]);
-		if (blue)
-			healthBar.createGradientBar([FlxColor.BLUE, dadcolor, dadcolor], [FlxColor.BLUE, bfcolor, bfcolor], 1, 90);
+		var dadcolor:FlxColor = 0xFFFF0000;
+		var bfcolor:FlxColor = 0xFF66FF33;
+
+		if (ClientPrefs.coloredHealthBar && !ClientPrefs.optimize)
+		{
+			dadcolor = FlxColor.fromRGB(PlayState.instance.dad.healthColorArray[0], PlayState.instance.dad.healthColorArray[1],
+				PlayState.instance.dad.healthColorArray[2]);
+
+			bfcolor = FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1],
+				PlayState.instance.boyfriend.healthColorArray[2]);
+		}
+		// trace('dad color: ' + dadcolor + ' | bf color:' + bfcolor);
+		if (blue && !ClientPrefs.optimize)
+			healthBar.createGradientBar([FlxColor.CYAN, dadcolor, dadcolor], [FlxColor.CYAN, bfcolor, bfcolor], 1, 90);
 		else
 			healthBar.createFilledBar(dadcolor, bfcolor);
 
@@ -283,7 +288,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	public function reloadSongPosBarColors(blue:Bool = false)
 	{
 		// timeBar.createFilledBar(FlxColor.BLUE, FlxColor.BLUE);
-		if (blue)
+		if (blue && !ClientPrefs.optimize)
 			timeBar.createGradientBar([FlxColor.BLUE], [FlxColor.BLUE, FlxColor.BLUE, FlxColor.CYAN], 1, 90);
 		else
 			timeBar.createGradientBar([0xFF000000], [0xFFFFFFFF, 0xFFFFFFFF, 0x88222222], 1, 90);
@@ -302,21 +307,30 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		healthBar.scrollFactor.set();
 		healthBar.visible = !PlayState.instance.cpuControlled;
 		remove(healthBarFG);
-		remove(iconP1);
-		remove(iconP2);
+		if (!ClientPrefs.optimize)
+		{
+			remove(iconP1);
+			remove(iconP2);
+		}
 		add(healthBar);
 		add(healthBarFG);
-		add(iconP1);
-		add(iconP2);
+		if (!ClientPrefs.optimize)
+		{
+			add(iconP1);
+			add(iconP2);
+		}
 		reloadHealthBarColors(PlayState.instance.qtIsBlueScreened);
 	}
 
 	public function beatHit()
 	{
-		iconP1.scale.set(1.2, 1.2);
-		iconP2.scale.set(1.2, 1.2);
+		if (!ClientPrefs.optimize)
+		{
+			iconP1.scale.set(1.2, 1.2);
+			iconP2.scale.set(1.2, 1.2);
 
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+			iconP1.updateHitbox();
+			iconP2.updateHitbox();
+		}
 	}
 }

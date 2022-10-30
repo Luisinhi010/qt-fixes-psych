@@ -1,10 +1,14 @@
 package;
 
 import flixel.*;
+import flixel.FlxSubState;
+import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxUIPopup;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 
 /**
@@ -73,7 +77,15 @@ class Prompt extends MusicBeatSubstate
 			panel = new FlxSprite(0, 0);
 			panelbg = new FlxSprite(0, 0);
 			makeSelectorGraphic(panel, 300, 150, 0xff999999);
-			makeSelectorGraphic(panelbg, 302, 165, 0xff000000);
+			makeSelectorGraphic(panelbg, 304, 154, 0xff000000);
+			// panel.makeGraphic(300, 150, 0xff999999);
+			// panel.loadGraphic(Paths.image('ui/promptbg'));
+			/*
+				buttons.frames = Paths.getSparrowAtlas('ui/prompt_buttons');
+				buttons.animation.addByIndices('but0', 'buttons', [0], '', 0);
+				buttons.animation.addByIndices('but1', 'buttons', [1], '', 0);
+				buttons.animation.play('but0');
+				buttons.scrollFactor.set(); */
 			panel.scrollFactor.set();
 			panel.screenCenter();
 			panelbg.scrollFactor.set();
@@ -98,10 +110,51 @@ class Prompt extends MusicBeatSubstate
 		}
 	}
 
+	/*
+		override public function update(elapsed:Float):Void 
+		{
+			super.update(elapsed);
+			
+			
+			
+			if (!goAnyway){
+				
+				
+				
+			if (controls.UI_LEFT_P || controls.UI_RIGHT_P){
+				if (selected == 0){
+					selected = 1;
+				}else{
+					selected = 0;
+				}
+				FlxG.sound.play(Paths.sound('scrollMenu'));
+				//buttons.animation.play('but' + selected);
+			}
+			buttonAccept.color.brightness = 0.5;
+			buttonNo.color.brightness = 0.5;
+			if (selected == 0 ) buttonAccept.color.brightness = 0.9;
+			if (selected == 1 ) buttonNo.color.brightness = 0.9;
+			if (controls.ACCEPT ){
+				if (selected == 0){
+					FlxG.sound.play(Paths.sound('confirmMenu'));
+					if(okc != null)okc();
+				}else{
+					FlxG.sound.play(Paths.sound('cancelMenu'));
+					if(cancelc != null)cancelc();
+				}
+				close();
+			}
+			
+			}
+		}
+	 */
 	function makeSelectorGraphic(panel:FlxSprite, w, h, color:FlxColor)
 	{
 		panel.makeGraphic(w, h, color);
 		panel.pixels.fillRect(new Rectangle(0, 190, panel.width, 5), 0x0);
+
+		// Why did i do this? Because i'm a lmao stupid, of course
+		// also i wanted to understand better how fillRect works so i did this shit lol???
 		panel.pixels.fillRect(new Rectangle(0, 0, cornerSize, cornerSize), 0x0); // top left
 		drawCircleCornerOnSelector(panel, false, false, color);
 		panel.pixels.fillRect(new Rectangle(panel.width - cornerSize, 0, cornerSize, cornerSize), 0x0); // top right

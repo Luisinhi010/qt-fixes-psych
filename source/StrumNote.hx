@@ -8,6 +8,8 @@ using StringTools;
 
 class StrumNote extends FlxSprite
 {
+	private var dirArray:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
+
 	private var colorSwap:ColorSwap;
 
 	public var resetAnim:Float = 0;
@@ -64,25 +66,10 @@ class StrumNote extends FlxSprite
 			antialiasing = ClientPrefs.globalAntialiasing;
 			setGraphicSize(Std.int(width * 0.7));
 
-			switch (Math.abs(noteData))
-			{
-				case 0:
-					animation.addByPrefix('static', 'arrowLEFT');
-					animation.addByPrefix('pressed', 'left press', 24, false);
-					animation.addByPrefix('confirm', 'left confirm', 24, false);
-				case 1:
-					animation.addByPrefix('static', 'arrowDOWN');
-					animation.addByPrefix('pressed', 'down press', 24, false);
-					animation.addByPrefix('confirm', 'down confirm', 24, false);
-				case 2:
-					animation.addByPrefix('static', 'arrowUP');
-					animation.addByPrefix('pressed', 'up press', 24, false);
-					animation.addByPrefix('confirm', 'up confirm', 24, false);
-				case 3:
-					animation.addByPrefix('static', 'arrowRIGHT');
-					animation.addByPrefix('pressed', 'right press', 24, false);
-					animation.addByPrefix('confirm', 'right confirm', 24, false);
-			}
+			var lowerCaseAnim:String = dirArray[noteData % 4].toLowerCase();
+			animation.addByPrefix('static', 'arrow' + dirArray[noteData % 4]);
+			animation.addByPrefix('pressed', lowerCaseAnim + ' press', 24, false);
+			animation.addByPrefix('confirm', lowerCaseAnim + ' confirm', 24, false);
 
 			if (texture.startsWith('NOTE_assets_Qt')) // more animations to the qt notes
 			{

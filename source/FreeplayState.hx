@@ -80,7 +80,6 @@ class FreeplayState extends MusicBeatState
 		WeekData.reloadWeekFiles(false);
 
 		#if desktop
-		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
@@ -304,7 +303,9 @@ class FreeplayState extends MusicBeatState
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
+		#if PRELOAD_ALL
 		Conductor.songPosition = FlxG.sound.music.time;
+		#end
 
 		FlxG.camera.zoom = FlxMath.lerp(1, FlxG.camera.zoom, CoolUtil.boundTo(1 - (elapsed * 3.125), 0, 1));
 
@@ -384,6 +385,13 @@ class FreeplayState extends MusicBeatState
 				}
 			}
 
+			if (FlxG.mouse.wheel != 0)
+			{
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.2);
+				changeSelection(-shiftMult * FlxG.mouse.wheel, false);
+				changeDiff();
+			}
+
 			if (controls.UI_LEFT_P)
 				changeDiff(-1);
 			else if (controls.UI_RIGHT_P)
@@ -414,14 +422,14 @@ class FreeplayState extends MusicBeatState
 
 			if (ctrl)
 			{
-				openSubState(new GameplayChangersSubstate());
+				openSubState(new GameplayChangersSubstate(true));
 				usecontrols = false;
 			}
+			#if PRELOAD_ALL
 			else if (space && songs[curSelected].songName != "" && songs[curSelected].songName != "Interlope")
 			{
 				if (instPlaying != curSelected)
 				{
-					#if PRELOAD_ALL
 					destroyFreeplayVocals();
 					FlxG.sound.music.volume = 0;
 					Paths.currentModDirectory = songs[curSelected].folder;
@@ -450,53 +458,44 @@ class FreeplayState extends MusicBeatState
 					vocals.looped = true;
 					vocals.volume = 0.7;
 					instPlaying = curSelected;
-					#end
 				}
 			}
-			else if (accepted && songs[curSelected].songName != "")
-			{
-				persistentUpdate = false;
-				var songLowercase:String = Paths.formatToSongPath(songs[curSelected].songName);
-				var poop:String = Highscore.formatSong(songLowercase, curDifficulty);
-				/*#if MODS_ALLOWED
-					if(!sys.FileSystem.exists(Paths.modsJson(songLowercase + '/' + poop)) && !sys.FileSystem.exists(Paths.json(songLowercase + '/' + poop))) {
-					#else
-					if(!OpenFlAssets.exists(Paths.json(songLowercase + '/' + poop))) {
-					#end
-						poop = songLowercase;
-						curDifficulty = 1;
-						trace('Couldnt find file');
-				}*/
-				trace(poop);
+			#end
+		else if (accepted && songs[curSelected].songName != "")
+		{
+			persistentUpdate = false;
+			var songLowercase:String = Paths.formatToSongPath(songs[curSelected].songName);
+			var poop:String = Highscore.formatSong(songLowercase, curDifficulty);
+			trace(poop);
 
-				PlayState.SONG = Song.loadFromJson(poop, songLowercase);
-				PlayState.isStoryMode = false;
-				PlayState.storyDifficulty = curDifficulty;
+			PlayState.SONG = Song.loadFromJson(poop, songLowercase);
+			PlayState.isStoryMode = false;
+			PlayState.storyDifficulty = curDifficulty;
 
-				if (songs[curSelected].songName != "interlope")
-					FlxG.save.data.lastSelectedSong = songs[curSelected].songName.toLowerCase(); // dont kill me yoshi
-				else
-					FlxG.save.data.lastSelectedSong = 'tutorial';
+			if (songs[curSelected].songName != "interlope")
+				FlxG.save.data.lastSelectedSong = songs[curSelected].songName.toLowerCase(); // dont kill me yoshi
+			else
+				FlxG.save.data.lastSelectedSong = 'tutorial';
 
-				trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
-				if (colorTween != null)
-					colorTween.cancel();
+			trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
+			if (colorTween != null)
+				colorTween.cancel();
 
-				if (FlxG.keys.pressed.SHIFT)
-					LoadingState.loadAndSwitchState(new ChartingState());
-				else
-					LoadingState.loadAndSwitchState(new PlayState());
+			if (FlxG.keys.pressed.SHIFT)
+				LoadingState.loadAndSwitchState(new ChartingState());
+			else
+				LoadingState.loadAndSwitchState(new PlayState());
 
-				FlxG.sound.music.volume = 0;
+			FlxG.sound.music.volume = 0;
 
-				destroyFreeplayVocals();
-			}
-			else if (controls.RESET && songs[curSelected].songName != "")
-			{
-				openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));
-				FlxG.sound.play(Paths.sound('scrollMenu'));
-				usecontrols = false;
-			}
+			destroyFreeplayVocals();
+		}
+		else if (controls.RESET && songs[curSelected].songName != "")
+		{
+			openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+			usecontrols = false;
+		}
 		}
 		super.update(elapsed);
 	}
@@ -769,9 +768,7 @@ class FreeplayState extends MusicBeatState
 		var newPos:Int = CoolUtil.difficulties.indexOf(lastDifficultyName);
 		// trace('Pos of ' + lastDifficultyName + ' is ' + newPos);
 		if (newPos > -1)
-		{
 			curDifficulty = newPos;
-		}
 	}
 
 	private function positionHighscore()
@@ -784,10 +781,10 @@ class FreeplayState extends MusicBeatState
 		diffText.x -= diffText.width / 2;
 	}
 
+	#if PRELOAD_ALL
 	override function stepHit()
 	{
 		super.stepHit();
-		#if PRELOAD_ALL
 		if (amountToTakeAway < 1)
 		{
 			if (instPlayingtxt.toLowerCase() == "termination")
@@ -807,9 +804,10 @@ class FreeplayState extends MusicBeatState
 				}
 			}
 		}
-		#end
 	}
+	#end
 
+	#if PRELOAD_ALL
 	override function beatHit()
 	{
 		super.beatHit();
@@ -818,7 +816,6 @@ class FreeplayState extends MusicBeatState
 			if (FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
 				FlxG.camera.zoom += 0.015;
 
-			#if PRELOAD_ALL
 			switch (instPlayingtxt.toLowerCase())
 			{
 				case 'termination':
@@ -882,36 +879,36 @@ class FreeplayState extends MusicBeatState
 							Gas_Release('burstFAST');
 					}
 			}
-			}
-			#end
-		}
-
-		function Gas_Release(anim:String = 'burst')
-		{
-			#if PRELOAD_ALL
-			if (!ClientPrefs.lowQuality)
-				if (qt_gas != null)
-					qt_gas.animation.play(anim);
-			#end
 		}
 	}
+	#end
 
-	class SongMetadata
+	#if PRELOAD_ALL
+	function Gas_Release(anim:String = 'burst')
 	{
-		public var songName:String = "";
-		public var week:Int = 0;
-		public var songCharacter:String = "";
-		public var color:Int = -7179779;
-		public var folder:String = "";
-
-		public function new(song:String, week:Int, songCharacter:String, color:Int)
-		{
-			this.songName = song;
-			this.week = week;
-			this.songCharacter = songCharacter;
-			this.color = color;
-			this.folder = Paths.currentModDirectory;
-			if (this.folder == null)
-				this.folder = '';
-		}
+		if (!ClientPrefs.lowQuality)
+			if (qt_gas != null)
+				qt_gas.animation.play(anim);
 	}
+	#end
+}
+
+class SongMetadata
+{
+	public var songName:String = "";
+	public var week:Int = 0;
+	public var songCharacter:String = "";
+	public var color:Int = -7179779;
+	public var folder:String = "";
+
+	public function new(song:String, week:Int, songCharacter:String, color:Int)
+	{
+		this.songName = song;
+		this.week = week;
+		this.songCharacter = songCharacter;
+		this.color = color;
+		this.folder = Paths.currentModDirectory;
+		if (this.folder == null)
+			this.folder = '';
+	}
+}

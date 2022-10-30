@@ -26,6 +26,7 @@ typedef SwagSong =
 	var stage:String;
 	var validScore:Bool;
 	var dodgeEnabled:Bool;
+	var autoZoom:Bool;
 }
 
 class Song
@@ -43,6 +44,7 @@ class Song
 	public var gfVersion:String = 'gf';
 
 	public var dodgeEnabled:Bool = false;
+	public var autoZoom:Bool = true;
 
 	private static function onLoadJson(songJson:Dynamic) // Convert old charts to newest format
 	{
@@ -76,6 +78,8 @@ class Song
 				}
 			}
 		}
+		if (songJson.autoZoom == null)
+			songJson.autoZoom = true; // Easier for everyone lol
 	}
 
 	public function new(song, notes, bpm)

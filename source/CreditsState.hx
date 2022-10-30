@@ -87,22 +87,24 @@ class CreditsState extends MusicBeatState
 			[
 				'Luis Com "S"',
 				'luis',
-				'Programming, having the ideias and more shit',
-				'https://github.com/Luisinhi010',
-				/*'00FFFF'*/ 'D7A968'
+				"Programming, having the ideias n' stuff",
+				'https://twitter.com/Luis_comS_10',
+				'D7A968'
 			],
 			[
 				'BeastlyGhost',
 				'Ghost',
-				'helped with some things',
+				"Also Programming, Updated Hud's code",
 				'https://twitter.com/Fan_de_RPG',
-				/*'FFFFFF'*/ '00BEFA'
+				'00BEFA'
 			],
+			[''],
+			['QT Fixes Contributors'],
 			[
 				'NooBZiiTo',
 				'noobziito',
 				"New Qt's note skin",
-				'https://www.youtube.com/channel/UCCdQIYAARrseqRLmtgT_8WQ',
+				'https://twitter.com/NooBZiiTo1',
 				'00500F'
 			],
 			[
@@ -112,7 +114,20 @@ class CreditsState extends MusicBeatState
 				'https://twitter.com/Zahaire15',
 				'FFA0CB'
 			],
-			// ['Suok', 'suok', 'Pause menu assets', 'https://twitter.com/oSuOk3', 'FF0062'], //for some reason the custom pause menu isnt working so i will also hide the credits -Luis
+			[
+				'DrkFon376',
+				'drkfon',
+				"Qt nervous's Icon",
+				'https://twitter.com/fon376',
+				'0A0AC8'
+			],
+			[
+				'Yoshi Crafter29',
+				'yoshicrafter29',
+				"Blue Screen Shader and\nFixed Shader's Code",
+				'https://twitter.com/YoshiCrafter29',
+				'FFCC9D'
+			],
 			[''],
 			['QT Mod Team'],
 			[
@@ -146,7 +161,7 @@ class CreditsState extends MusicBeatState
 				'C30085'
 			],
 			[
-				'shubs',
+				'Shubs',
 				'shubs',
 				'Additional Programmer of Psych Engine',
 				'https://twitter.com/yoshubs',
@@ -155,7 +170,7 @@ class CreditsState extends MusicBeatState
 			[''],
 			['Former Engine Members'],
 			[
-				'bb-panzu',
+				'bb-Panzu',
 				'bb-panzu',
 				'Ex-Programmer of Psych Engine',
 				'https://twitter.com/bbsub3',
@@ -166,16 +181,17 @@ class CreditsState extends MusicBeatState
 			[
 				'iFlicky',
 				'iflicky',
-				'Composer of Psync and Tea Time\nMade the Dialogue Sounds',
+				'Composer of Psync\nMade the Dialogue Sounds',
 				'https://twitter.com/flicky_i',
 				'AA32FE'
 			],
 			[
 				'SqirraRNG',
-				'gedehari',
-				'Chart Editor\'s Sound Waveform base',
+				'sqirra',
+				#if CRASH_HANDLER 'Crash Handler and ' + #end
+				'Base code for\nChart Editor\'s Waveform',
 				'https://twitter.com/gedehari',
-				'FF9300'
+				'E1843A'
 			],
 			[
 				'PolybiusProxy',
@@ -201,7 +217,7 @@ class CreditsState extends MusicBeatState
 			[''],
 			["Funkin' Crew"],
 			[
-				'ninjamuffin99',
+				'Ninjamuffin99',
 				'ninjamuffin99',
 				"Programmer of Friday Night Funkin'",
 				'https://twitter.com/ninja_muffin99',
@@ -215,14 +231,14 @@ class CreditsState extends MusicBeatState
 				'FFBB1B'
 			],
 			[
-				'evilsk8r',
+				'Evilsk8r',
 				'evilsk8r',
 				"Artist of Friday Night Funkin'",
 				'https://twitter.com/evilsk8r',
 				'53E52C'
 			],
 			[
-				'kawaisprite',
+				'Kawaisprite',
 				'kawaisprite',
 				"Composer of Friday Night Funkin'",
 				'https://twitter.com/kawaisprite',
@@ -231,9 +247,7 @@ class CreditsState extends MusicBeatState
 		];
 
 		for (i in pisspoop)
-		{
 			creditsStuff.push(i);
-		}
 
 		for (i in 0...creditsStuff.length)
 		{
@@ -260,6 +274,8 @@ class CreditsState extends MusicBeatState
 
 				var icon:AttachedSprite = new AttachedSprite('credits/' + creditsStuff[i][1]);
 				icon.xAdd = optionText.width + 10;
+				icon.height = 150;
+				icon.width = 150;
 				icon.sprTracker = optionText;
 
 				// using a FlxGroup is too much fuss!
@@ -299,9 +315,7 @@ class CreditsState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.7)
-		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-		}
 
 		if (!quitting)
 		{
@@ -332,22 +346,18 @@ class CreditsState extends MusicBeatState
 					var checkNewHold:Int = Math.floor((holdTime - 0.5) * 10);
 
 					if (holdTime > 0.5 && checkNewHold - checkLastHold > 0)
-					{
 						changeSelection((checkNewHold - checkLastHold) * (controls.UI_UP ? -shiftMult : shiftMult));
-					}
 				}
 			}
 
 			if (controls.ACCEPT)
-			{
 				CoolUtil.browserLoad(creditsStuff[curSelected][3]);
-			}
+
 			if (controls.BACK)
 			{
 				if (colorTween != null)
-				{
 					colorTween.cancel();
-				}
+
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				MusicBeatState.switchState(new MainMenuState());
 				quitting = true;

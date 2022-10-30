@@ -8,8 +8,7 @@
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
 
 	<!-- NOTE TO SELF: DISABLE THIS IF ISSUES ARE FOUND -->
-	<haxedef name="LINC_LUA_RELATIVE_DYNAMIC_LIB"/>
-	<!-- stable luas PUT AFTER FIRST LINE WITH APP NAME AND ETC -->
+	<haxedef name="LINC_LUA_RELATIVE_DYNAMIC_LIB"/><!-- stable luas PUT AFTER FIRST LINE WITH APP NAME AND ETC -->
 
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
@@ -47,18 +46,15 @@
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
-	<assets path="assets/preload/data" rename="assets" exclude="*.lua" if="NoLua"/>
+	<assets path="assets/preload/data" rename="assets/data" exclude="*.lua" if="NoLua"/> <!-- i just realized that i probably fucked it up -->
 
 	<!-- PSYCH ENGINE CUSTOMIZATION -->
 	<define name="MODS_ALLOWED" if="desktop"/>
 	<define name="LUA_ALLOWED" if="desktop" unless="NoLua"/>
 	<define name="ACHIEVEMENTS_ALLOWED" />
 	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32bits"/>
-	<define name="PSYCH_WATERMARKS"/>
-	<!-- DELETE THIS TO REMOVE WATERMARKS ON TITLE SCREEN -->
-
-	<!-- DONT ENABLE THIS -->
-	<!-- <define name="CHECK_FOR_UPDATES" if="desktop officialBuild"/> -->
+	<define name="PSYCH_WATERMARKS"/>	<!-- DELETE THIS TO REMOVE WATERMARKS ON TITLE SCREEN -->
+	<define name="CRASH_HANDLER" if="desktop release" />
 
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
@@ -96,8 +92,13 @@
 		NOT USING A DIRECT THING TO THE ASSET!!!
 	-->
 	<assets path="assets/fonts" embed='true'/>
+	<assets path="assets/art" embed='true'/>
+	<assets path="assets/preload/images/Default" embed='true'/>
 	<!-- _______________________________ Libraries ______________________________ -->
 
+	<!--<haxelib name="lime" version="7,9,0" unless="mobile" />
+	<haxelib name="openfl" version="9,2,0" unless="mobile" />
+	<lime version="7,9,0" unless="mobile"/>-->
 	<haxelib name="flixel" />
 	<haxedev set='webgl' />
 
@@ -142,6 +143,9 @@
 	<!--Disable the Flixel sound management code-->
 	<!--<haxedef name="FLX_NO_SOUND_SYSTEM" />-->
 
+	<!-- No deprecation warnings. -->
+	<haxedef name="no-deprecation-warnings"/>
+
 	<!--Disable the Flixel core focus lost screen-->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 
@@ -151,12 +155,16 @@
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
+	<!--Used for Izzy Engine's crash handler-->
+	<haxedef name="HXCPP_CHECK_POINTER" if="CRASH_HANDLER" />
+	<haxedef name="HXCPP_STACK_LINE" if="CRASH_HANDLER" />
+
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 
-	<icon path="art/icon16.png" size='16'/>
-	<icon path="art/icon32.png" size='32'/>
-	<icon path="art/icon64.png" size='64'/>
-	<icon path="art/iconOG.png" />
+	<icon path="assets/art/icon16.png" size='16'/>
+	<icon path="assets/art/icon32.png" size='32'/>
+	<icon path="assets/art/icon64.png" size='64'/>
+	<icon path="assets/art/iconOG.png" />
 </project>

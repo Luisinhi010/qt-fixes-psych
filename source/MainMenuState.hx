@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.FlxTimer;
 import flixel.addons.display.FlxBackdrop;
 #if desktop
 import Discord.DiscordClient;
@@ -64,24 +65,27 @@ class MainMenuState extends MusicBeatState
 	var noname:Bool = false;
 	var shit:FlxText;
 
-	var t = DateTools.format(Date.now(), "%Y/%m/%d-%H:%M:%S"); // 2022/05/10-20:08:21
+	var datenow = DateTools.format(Date.now(), "%Y/%m/%d-%H:%M:%S"); // 2022/05/10-20:08:21
 
 	public static var usecontrols:Bool = true;
 
 	var lastalpha:Float;
 
+	#if desktop
 	var custommouse:CustomMouse;
+	#end
 
 	function onMouseDown(object:FlxObject)
 	{
-		for (obj in menuItems.members)
-		{
-			if (obj == object)
+		if (!selectedSomethin && usecontrols)
+			for (obj in menuItems.members)
 			{
-				accept();
-				break;
+				if (obj == object)
+				{
+					accept();
+					break;
+				}
 			}
-		}
 	}
 
 	function onMouseUp(object:FlxObject)
@@ -113,69 +117,65 @@ class MainMenuState extends MusicBeatState
 
 	function accept()
 	{
-		if (usecontrols)
+		selectedSomethin = true;
+		// usecontrols = false;
+		FlxG.sound.play(Paths.sound('confirmMenu'));
+
+		if (ClientPrefs.flashing)
+			FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+
+		menuItems.forEach(function(spr:FlxSprite)
 		{
+			if (curSelected != spr.ID)
 			{
-				if (optionShit[curSelected] == 'donate')
-				{
-					CoolUtil.browserLoad('https://ninja-muffin24.itch.io/funkin');
-				}
-				else
-				{
-					selectedSomethin = true;
-					FlxG.sound.play(Paths.sound('confirmMenu'));
-
-					if (ClientPrefs.flashing)
-						FlxFlicker.flicker(magenta, 1.1, 0.15, false);
-
-					menuItems.forEach(function(spr:FlxSprite)
+				FlxTween.tween(spr, {alpha: 0}, 0.4, {
+					ease: FlxEase.quadOut,
+					onComplete: function(twn:FlxTween)
 					{
-						if (curSelected != spr.ID)
-						{
-							FlxTween.tween(spr, {alpha: 0}, 0.4, {
-								ease: FlxEase.quadOut,
-								onComplete: function(twn:FlxTween)
-								{
-									spr.kill();
-								}
-							});
-						}
-						else
-						{
-							FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
-							{
-								var daChoice:String = optionShit[curSelected];
-
-								switch (daChoice)
-								{
-									case 'story_mode':
-										MusicBeatState.switchState(new StoryMenuState());
-									case 'freeplay':
-										MusicBeatState.switchState(new FreeplayState());
-									#if MODS_ALLOWED
-									case 'mods':
-										MusicBeatState.switchState(new ModsMenuState());
-									#end
-									case 'awards':
-										MusicBeatState.switchState(new AchievementsMenuState());
-									case 'credits':
-										MusicBeatState.switchState(new CreditsState());
-									case 'options':
-										LoadingState.loadAndSwitchState(new options.OptionsState());
-								}
-							});
-						}
-					});
-				}
+						spr.kill();
+					}
+				});
 			}
-		}
+			else
+			{
+				FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
+				{
+					var daChoice:String = optionShit[curSelected];
+
+					switch (daChoice)
+					{
+						case 'story_mode':
+							MusicBeatState.switchState(new StoryMenuState());
+						case 'freeplay':
+							MusicBeatState.switchState(new FreeplayState());
+						#if MODS_ALLOWED
+						case 'mods':
+							MusicBeatState.switchState(new ModsMenuState());
+						#end
+						case 'awards':
+							MusicBeatState.switchState(new AchievementsMenuState());
+						case 'credits':
+							MusicBeatState.switchState(new CreditsState());
+						case 'options':
+							LoadingState.loadAndSwitchState(new options.OptionsState());
+					}
+				});
+			}
+		});
 	}
 
 	override function closeSubState()
 	{
 		usecontrols = true;
+		selectedSomethin = false;
 		super.closeSubState();
-		vignette1.alpha = lastalpha;
+		if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
+		{
+			vignette1.alpha = lastalpha;
+			#if desktop
+			custommouse.setcolor(iconBG.color);
+			#end
+		}
 		/*	#if sys
 			helloText.visible = MusicBeatState.getUsernameOption();
 			#end */
@@ -189,7 +189,7 @@ class MainMenuState extends MusicBeatState
 		#end
 		debugKeys = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
 
-		trace(t);
+		trace(datenow);
 		#if sys
 		if (MusicBeatState.getUsernameOption())
 			trace(MusicBeatState.getUsername());
@@ -200,8 +200,8 @@ class MainMenuState extends MusicBeatState
 		camAchievement.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camGame);
-		FlxG.cameras.add(camAchievement);
-		FlxCamera.defaultCameras = [camGame];
+		FlxG.cameras.add(camAchievement, false);
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
@@ -234,7 +234,7 @@ class MainMenuState extends MusicBeatState
 
 		// magenta.scrollFactor.set();
 
-		if (!ClientPrefs.lowQuality)
+		if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 		{
 			checker = new FlxBackdrop(Paths.image('luis/qt-fixes/Checker'), 0.2, 0.2, true, true);
 			checker.alpha = 0.5;
@@ -280,7 +280,7 @@ class MainMenuState extends MusicBeatState
 		// custom mouse lmao
 		FlxG.camera.follow(camFollowPos, null, 1);
 
-		if (!ClientPrefs.lowQuality)
+		if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 		{
 			iconBG = new FlxSprite().loadGraphic(Paths.image('luis/qt-fixes/iconbackground'));
 			iconBG.y = FlxG.height - iconBG.height;
@@ -316,7 +316,8 @@ class MainMenuState extends MusicBeatState
 		qtVersion.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(qtVersion);
 
-		var fixesVersion:FlxText = new FlxText(qtVersion.x, FlxG.height - 24, 0, "QT Fixes Version - v" + qtfixesVersion, 12);
+		var fixesVersion:FlxText = new FlxText(qtVersion.x, FlxG.height - 24, 0,
+			"QT Fixes Version - v" + qtfixesVersion + ' (' + MusicBeatState.commitHash + ')', 12);
 		fixesVersion.scrollFactor.set();
 		fixesVersion.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(fixesVersion);
@@ -333,8 +334,10 @@ class MainMenuState extends MusicBeatState
 		// NG.core.calls.event.logEvent('swag').send();
 
 		changeItem();
+		#if desktop
 		custommouse = new CustomMouse(FlxG.mouse.x, FlxG.mouse.y);
 		add(custommouse);
+		#end
 
 		#if ACHIEVEMENTS_ALLOWED
 		Achievements.loadAchievements();
@@ -351,79 +354,93 @@ class MainMenuState extends MusicBeatState
 		}
 		#end
 
-		vignette1 = new BGSprite('luis/qt-fixes/vignettealt');
-		vignette1.setGraphicSize(FlxG.width, FlxG.height);
-		vignette1.alpha = 0;
-		vignette1.scrollFactor.set(0, 0);
-		vignette1.updateHitbox();
-		vignette1.screenCenter();
-		vignette1.antialiasing = ClientPrefs.globalAntialiasing;
-		add(vignette1);
+		if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
+		{
+			vignette1 = new BGSprite('luis/qt-fixes/vignettealt');
+			vignette1.setGraphicSize(FlxG.width, FlxG.height);
+			vignette1.alpha = 0;
+			vignette1.scrollFactor.set(0, 0);
+			vignette1.updateHitbox();
+			vignette1.screenCenter();
+			vignette1.antialiasing = ClientPrefs.globalAntialiasing;
+			add(vignette1);
+		}
 
 		switch (FlxG.random.int(1, 5))
 		{
 			case 1:
 				icon.changeIcon('bf');
 				icon.setGraphicSize(Std.int(icon.width * 2));
-				if (!ClientPrefs.lowQuality && iconBG != null)
+				if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 					iconBG.color = FlxColor.CYAN;
 			case 2:
 				icon.changeIcon('gf');
 				icon.setGraphicSize(Std.int(icon.width * 2));
-				if (!ClientPrefs.lowQuality && iconBG != null)
+				if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 					iconBG.color = FlxColor.RED;
 			case 3:
 				icon.changeIcon('kb');
 				icon.setGraphicSize(Std.int(icon.width * 1.9));
-				if (!ClientPrefs.lowQuality && iconBG != null)
+				if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 					iconBG.color = FlxColor.GRAY;
 				switch (FlxG.random.int(1, 2))
 				{
 					case 1:
-						vignette1.alpha = 0.5;
+						if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
+							vignette1.alpha = 0.5;
 						icon.animation.curAnim.curFrame = 0;
 					case 2:
-						vignette1.alpha = 0.8;
+						if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
+							vignette1.alpha = 0.8;
 						icon.animation.curAnim.curFrame = 1;
 				}
 			case 4:
 				icon.changeIcon('qt-menu');
 				icon.setGraphicSize(Std.int(icon.width * 1.9));
-				if (!ClientPrefs.lowQuality && iconBG != null)
+				if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 					iconBG.color = FlxColor.PINK;
 				switch (FlxG.random.int(1, 2))
 				{
 					case 1:
-						vignette1.alpha = 0.1;
+						if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
+							vignette1.alpha = 0.1;
 						icon.animation.curAnim.curFrame = 0;
 					case 2:
-						vignette1.alpha = 0.7;
+						if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
+							vignette1.alpha = 0.7;
 						icon.animation.curAnim.curFrame = 1;
 				}
 			case 5:
 				icon.changeIcon('qt_annoyed');
 				icon.setGraphicSize(Std.int(icon.width * 1.9));
-				if (!ClientPrefs.lowQuality && iconBG != null)
+				if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
+				{
 					iconBG.color = FlxColor.PINK;
-				vignette1.alpha = 0.7;
+					vignette1.alpha = 0.7;
+				}
 		}
 
-		if (!ClientPrefs.lowQuality)
+		if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 		{
 			if (checker != null)
 				checker.color = iconBG.color;
-			custommouse.color = iconBG.color;
+			#if desktop
+			custommouse.setcolor(iconBG.color);
+			#end
+
 			lastalpha = vignette1.alpha;
 		}
 
 		super.create();
 		/*#if sys
 			if (TitleState.getplayernameoption)
-			{
-				openSubState(new ConfirmUserOption());
-				FlxG.sound.play(Paths.sound('scrollMenu'));
-				usecontrols = false;
-				vignette1.alpha = 0.7;
+				{
+					openSubState(new ConfirmUserOption());
+					FlxG.sound.play(Paths.sound('scrollMenu'));
+					usecontrols = false;
+					selectedSomethin = true;
+					if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
+						vignette1.alpha = 0.7;
 			}
 			#end */
 	}
@@ -443,11 +460,7 @@ class MainMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.8)
-		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-		}
-
-		custommouse.updatemouse();
 
 		var lerpVal:Float = CoolUtil.boundTo(elapsed * 7.5, 0, 1);
 		camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
@@ -494,37 +507,34 @@ class MainMenuState extends MusicBeatState
 
 	function changeItem(huh:Int = 0, force:Bool = false)
 	{
-		if (usecontrols) // mouse shit in a nutshell
+		if (force)
+			curSelected = huh;
+		else
 		{
-			if (force)
-				curSelected = huh;
-			else
-			{
-				curSelected += huh;
+			curSelected += huh;
 
-				if (curSelected >= menuItems.length)
-					curSelected = 0;
-				if (curSelected < 0)
-					curSelected = menuItems.length - 1;
-			}
-
-			menuItems.forEach(function(spr:FlxSprite)
-			{
-				spr.animation.play('idle');
-				spr.updateHitbox();
-
-				if (spr.ID == curSelected)
-				{
-					spr.animation.play('selected');
-					var add:Float = 0;
-					if (menuItems.length > 4)
-					{
-						add = menuItems.length * 8;
-					}
-					camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y - add);
-					spr.centerOffsets();
-				}
-			});
+			if (curSelected >= menuItems.length)
+				curSelected = 0;
+			if (curSelected < 0)
+				curSelected = menuItems.length - 1;
 		}
+
+		menuItems.forEach(function(spr:FlxSprite)
+		{
+			spr.animation.play('idle');
+			spr.updateHitbox();
+
+			if (spr.ID == curSelected)
+			{
+				spr.animation.play('selected');
+				var add:Float = 0;
+				if (menuItems.length > 4)
+				{
+					add = menuItems.length * 8;
+				}
+				camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y - add);
+				spr.centerOffsets();
+			}
+		});
 	}
 }

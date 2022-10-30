@@ -7,5 +7,6 @@
     "setActorY",
     "onUpdate",
     "songPos"
-  ]
+  ],
+  "C_Cpp.errorSquiggles": "Enabled"
 }

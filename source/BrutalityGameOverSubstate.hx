@@ -202,20 +202,6 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 		PlayState.instance.callOnLuas('onUpdatePost', [elapsed]);
 	}
 
-	override function beatHit()
-	{
-		super.beatHit();
-
-		// FlxG.log.add('beat');
-	}
-
-	override function stepHit()
-	{
-		super.stepHit();
-		// FlxG.log.add('step');
-		// trace("Y of the dumb screen thing:", screenScanBar.y);
-	}
-
 	var isEnding:Bool = false;
 
 	function endBullshit():Void

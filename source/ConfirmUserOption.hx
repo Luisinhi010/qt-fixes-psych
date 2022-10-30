@@ -13,6 +13,8 @@ class ConfirmUserOption extends MusicBeatSubstate
 	var onYes:Bool = false;
 	var yesText:Alphabet;
 	var noText:Alphabet;
+	var custommouse:CustomMouse;
+	var selectedSomethin = false;
 
 	public function new()
 	{
@@ -53,6 +55,8 @@ class ConfirmUserOption extends MusicBeatSubstate
 		noText.x += 150;
 		noText.scrollFactor.set();
 		add(noText);
+		custommouse = new CustomMouse(FlxG.mouse.x, FlxG.mouse.y);
+		add(custommouse);
 		updateOptions();
 	}
 
@@ -68,21 +72,18 @@ class ConfirmUserOption extends MusicBeatSubstate
 			spr.alpha += elapsed * 2.5;
 		}
 
-		if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
+		if (!selectedSomethin)
 		{
-			FlxG.sound.play(Paths.sound('scrollMenu'), 1);
-			onYes = !onYes;
-			updateOptions();
-		}
-		else if (controls.ACCEPT)
-		{
-			FlxG.save.data.usePlayerUsername = onYes;
-			ClientPrefs.usePlayerUsername = onYes;
-			FlxG.sound.play(Paths.sound(onYes ? 'confirmMenu' : 'cancelMenu'), 1);
-			new FlxTimer().start(1, function(tmr:FlxTimer)
-			{
-				close();
-			});
+			if (FlxG.mouse.overlaps(yesText) && !onYes)
+				updateselection(true);
+
+			if (FlxG.mouse.overlaps(noText) && onYes)
+				updateselection(false);
+
+			if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
+				updateselection(!onYes);
+			else if (controls.ACCEPT || (FlxG.mouse.justPressed && (FlxG.mouse.overlaps(noText) || FlxG.mouse.overlaps(yesText))))
+				accepted();
 		}
 		super.update(elapsed);
 	}
@@ -97,5 +98,24 @@ class ConfirmUserOption extends MusicBeatSubstate
 		yesText.scale.set(scales[confirmInt], scales[confirmInt]);
 		noText.alpha = alphas[1 - confirmInt];
 		noText.scale.set(scales[1 - confirmInt], scales[1 - confirmInt]);
+	}
+
+	function updateselection(onYes:Bool)
+	{
+		FlxG.sound.play(Paths.sound('scrollMenu'), 1);
+		this.onYes = onYes;
+		updateOptions();
+	}
+
+	function accepted()
+	{
+		selectedSomethin = true;
+		FlxG.save.data.usePlayerUsername = onYes;
+		ClientPrefs.usePlayerUsername = onYes;
+		FlxG.sound.play(Paths.sound(onYes ? 'confirmMenu' : 'cancelMenu'), 1);
+		new FlxTimer().start(1, function(tmr:FlxTimer)
+		{
+			close();
+		});
 	}
 }
