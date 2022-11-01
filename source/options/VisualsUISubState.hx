@@ -79,7 +79,7 @@ class VisualsUISubState extends BaseOptionsMenu
 			'coloredHealthBar', 'bool', true);
 		addOption(option);
 
-		var option:Option = new Option('Score Text Zoom on Hit', "If checked, Makes the Score text shorter, \nshowing only Score and Misses", 'short', 'bool',
+		var option:Option = new Option('Short Score text', "If checked, Makes the Score text shorter, \nshowing only Score and Misses", 'short', 'bool',
 			false);
 		addOption(option);
 
