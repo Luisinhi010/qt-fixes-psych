@@ -34,6 +34,12 @@ class VisualsUISubState extends BaseOptionsMenu
 		title = 'Visuals and UI';
 		rpcTitle = 'Visuals & UI Settings Menu'; // for Discord Rich Presence
 
+		var option:Option = new Option('Colorblind filter: ', "Changes the filter used to make the game more accessible to colorblind people.",
+			'colorblindFilter', 'string', 'NONE', ['NONE', "DEUTERANOPIA", "PROTANOPIA", "TRITANOPIA" /*, "BLACK & WHITE"*/]);
+		#if debug option.description += "\nCan use a lot of resources in debug mode depending on system configuration, so it's recommended to lower the FPS cap."; #end
+		option.onChange = Colorblind.updateFilter;
+		addOption(option);
+
 		var option:Option = new Option('Note Splashes', "If unchecked, hitting \"Sick!\" notes won't show particles.", 'noteSplashes', 'bool', true);
 		addOption(option);
 
@@ -79,10 +85,6 @@ class VisualsUISubState extends BaseOptionsMenu
 			'coloredHealthBar', 'bool', true);
 		addOption(option);
 
-		var option:Option = new Option('Score Text Zoom on Hit', "If checked, Makes the Score text shorter, \nshowing only Score and Misses", 'short', 'bool',
-			false);
-		addOption(option);
-
 		var option:Option = new Option('Health Bar Transparency', 'How much transparent should the health bar and icons be.', 'healthBarAlpha', 'percent', 1);
 		option.scrollSpeed = 1.6;
 		option.minValue = 0.0;
@@ -91,8 +93,23 @@ class VisualsUISubState extends BaseOptionsMenu
 		option.decimals = 1;
 		addOption(option);
 
+		/*#if sys
+			var option:Option = new Option("Use username", "If checked, this mod will\nuse your computer's username \nin some menus", 'usePlayerUsername', 'bool',
+				false);
+			addOption(option);
+			#end */
+
+		var option:Option = new Option('Pause Screen Song:', "What song do you prefer for the Pause Screen?", 'pauseMusic', 'string', 'Tea Time',
+			['None', 'Breakfast', 'Tea Time']);
+		addOption(option);
+		option.onChange = onChangePauseMusic;
+
+		var option:Option = new Option('Combo Stacking',
+			"If unchecked, Ratings and Combo won't stack, saving on System Memory and making them easier to read", 'comboStacking', 'bool', true);
+		addOption(option);
+
 		#if !mobile
-		var option:Option = new Option('FPS Counter', 'If unchecked, hides the FPS Counter.', 'showFPS', 'bool', true);
+		var option:Option = new Option('FPS Counter', 'If unchecked, hides FPS Counter.', 'showFPS', 'bool', true);
 		addOption(option);
 
 		var option:Option = new Option('Memory Counter', 'If unchecked, hides the Memory Counter.', 'showMEM', 'bool',
@@ -105,12 +122,25 @@ class VisualsUISubState extends BaseOptionsMenu
 		addOption(option);
 		#end
 
-		/*#if sys
-			var option:Option = new Option("Use username", "If checked, this mod will\nuse your computer's username \nin some menus", 'usePlayerUsername', 'bool',
-				false);
-			addOption(option);
-			#end */
-
 		super();
+	}
+
+	var changedMusic:Bool = false;
+
+	function onChangePauseMusic()
+	{
+		if (ClientPrefs.pauseMusic == 'None')
+			FlxG.sound.music.volume = 0;
+		else
+			FlxG.sound.playMusic(Paths.music(Paths.formatToSongPath(ClientPrefs.pauseMusic)));
+
+		changedMusic = true;
+	}
+
+	override function destroy()
+	{
+		if (changedMusic)
+			FlxG.sound.playMusic(Paths.music('freakyMenu'));
+		super.destroy();
 	}
 }

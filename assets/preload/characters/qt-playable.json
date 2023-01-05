@@ -1,0 +1,55 @@
+{
+  "animations": [
+    {
+      "loop": false,
+      "offsets": [149, -12],
+      "anim": "singDOWN",
+      "fps": 24,
+      "name": "Final_Down",
+      "indices": []
+    },
+    {
+      "loop": false,
+      "offsets": [24, -93],
+      "fps": 24,
+      "anim": "idle",
+      "indices": [],
+      "name": "Final_Idle"
+    },
+    {
+      "loop": false,
+      "offsets": [91, -52],
+      "fps": 24,
+      "anim": "singUP",
+      "indices": [],
+      "name": "Final_Up"
+    },
+    {
+      "offsets": [218, -56],
+      "indices": [],
+      "fps": 24,
+      "anim": "singLEFT",
+      "loop": false,
+      "name": "Final_Right"
+    },
+    {
+      "offsets": [-44, -71],
+      "indices": [],
+      "fps": 24,
+      "anim": "singRIGHT",
+      "loop": false,
+      "name": "Final_Left"
+    }
+  ],
+  "no_antialiasing": false,
+  "splashSkin": "noteSplashesQt",
+  "image": "characters/qt-port/qt",
+  "position": [0, 200],
+  "healthicon": "qt-playable",
+  "flip_x": false,
+  "healthbar_colors": [255, 165, 182],
+  "camera_position": [130, 10],
+  "noteSkin": "NOTE_assets_Qt",
+  "sing_duration": 4,
+  "scale": 1
+}

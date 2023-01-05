@@ -19,21 +19,23 @@ this uses [Beastly Ghost's Sscript fork](github.com/BeastlyGhost/SScript-Ghost) 
 
 Engine originally used on [Mind Games Mod](https://gamebanana.com/mods/301107), intended to be a fix for the vanilla version's many issues while keeping the casual play aspect of it. Also aiming to be an easier alternative to newbie coders.
 
-## Installation:
+# Installation:
 
 You must have [the most up-to-date version of Haxe](https://haxe.org/download/), seriously, stop using 4.1.5, it misses some stuff.
 
-Follow a Friday Night Funkin' source code compilation tutorial, after this you will need to install LuaJIT.
+open up a Command Prompt/PowerShell or Terminal, type `haxelib install hmm`
 
-To install LuaJIT do this: `haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit` on a Command prompt/PowerShell
+after it finishes, simply type `haxelib run hmm install` in order to install all the needed libraries for _Psych Engine!_
 
-...Or if you don't want your mod to be able to run .lua scripts, delete the "LUA_ALLOWED" line on Project.xml
+## Customization:
 
-If you get an error about StatePointer when using Lua, run `haxelib remove linc_luajit` into Command Prompt/PowerShell, then re-install linc_luajit.
+if you wish to disable things like _Lua Scripts_ or _Video Cutscenes_, you can read over to `Project.xml`
 
-If you want video support on your mod, simply do `haxelib install hxCodec` on a Command prompt/PowerShell
+inside `Project.xml`, you will find several variables to customize Psych Engine to your liking
 
-otherwise, you can delete the "VIDEOS_ALLOWED" Line on Project.xml
+to start you off, disabling Videos should be simple, simply Delete the line `"VIDEOS_ALLOWED"` or comment it out by wrapping the line in XML-like comments, like this `<!-- YOUR_LINE_HERE -->`
+
+same goes for _Lua Scripts_, comment out or delete the line with `LUA_ALLOWED`, this and other customization options are all available within the `Project.xml` file
 
 ## Credits:
 
@@ -44,7 +46,7 @@ otherwise, you can delete the "VIDEOS_ALLOWED" Line on Project.xml
 ### Special Thanks
 
 - bbpanzu - Ex-Programmer
-- shubs - New Input System
+- Yoshubs - New Input System
 - SqirraRNG - Crash Handler and Base code for Chart Editor's Waveform
 - KadeDev - Fixed some cool stuff on Chart Editor and other PRs
 - iFlicky - Composer of Psync and Tea Time, also made the Dialogue Sounds
@@ -265,5 +267,6 @@ otherwise, you can delete the "VIDEOS_ALLOWED" Line on Project.xml
 - Some stuff based on Week 7's changes has been put in (Background colors on Freeplay, Note splashes)
 - You can reset your Score on Freeplay/Story Mode by pressing Reset button.
 - You can listen to a song or adjust Scroll Speed/Damage taken/etc. on Freeplay by pressing Space.
-#   c u s t o m h u d  
- 
+  #   c u s t o m h u d 
+   
+   

@@ -42,14 +42,14 @@
     }
   ],
   "no_antialiasing": false,
-  "splashSkin": "noteSplashesQtNew",
+  "splashSkin": "noteSplashesQt",
   "image": "characters/qt-port/qt",
   "position": [0, 200],
   "healthicon": "qt",
   "flip_x": false,
   "healthbar_colors": [255, 165, 182],
   "camera_position": [-130, 10],
-  "noteSkin": "NOTE_assets_Qt_New",
+  "noteSkin": "NOTE_assets_Qt",
   "sing_duration": 4,
   "scale": 1
 }

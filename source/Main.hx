@@ -3,44 +3,56 @@ package;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxGame;
 import flixel.FlxState;
+import openfl.Assets;
 import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.display.StageScaleMode;
-import flixel.FlxG;
 import lime.app.Application;
+#if desktop
+import Discord.DiscordClient;
+#end
+import flixel.FlxG;
+#if cpp import sys.io.File; #else import js.html.File; #end
 // crash handler stuff
 #if CRASH_HANDLER
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
 import haxe.io.Path;
-import Discord.DiscordClient;
-import sys.FileSystem;
-import sys.io.File;
+#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+import sys.io.Process;
 #end
 
 using StringTools;
 
 class Main extends Sprite
 {
-	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
+	var game = {
+		width: 1280, // WINDOW width
+		height: 720, // WINDOW height
+		initialState: #if (!debug && desktop) InitLoader #else TitleState #end, // initial game state
+		zoom: -1.0, // game state bounds
+		framerate: 60, // default framerate
+		skipSplash: true, // if the default flixel splash screen should be skipped
+		startFullscreen: false // if the game should start at fullscreen mode
+	};
 
-	public static var gameTitle:String = "Friday Night Funkin': QT Fixes";
+	public static var gameTitle(get, null):String = '';
 
-	#if (!debug && desktop)
-	var initialState:Class<FlxState> = InitLoader; // The FlxState the game starts with.
-	#else
-	var initialState:Class<FlxState> = TitleState;
-	#end
+	static function get_gameTitle():String
+	{
+		if (gameTitle == '')
+			gameTitle = Lib.application.meta["name"];
 
-	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
-	var framerate:Int = 60; // How many frames per second the game should run at.
-	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+		return gameTitle;
+	}
 
 	public static var fpsVar:FPS;
+
+	var flxGame:FlxGame;
+
+	public static var __justcompiled:Bool = false; // useless but cool
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -50,6 +62,10 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
+
+		#if mobile
+		SUtil.uncaughtErrorHandler();
+		#end
 
 		if (stage != null)
 			init();
@@ -72,32 +88,38 @@ class Main extends Sprite
 
 		#if desktop
 		var res:Array<String> = ClientPrefs.screenRes.split('x');
-		gameWidth = Std.parseInt(res[0]);
-		gameHeight = Std.parseInt(res[1]);
+		game.width = Std.parseInt(res[0]);
+		game.height = Std.parseInt(res[1]);
 		#end
 
-		if (zoom == -1)
+		#if (flixel < "5.0.0")
+		if (game.zoom == -1.0)
 		{
-			var ratioX:Float = stageWidth / gameWidth;
-			var ratioY:Float = stageHeight / gameHeight;
-			zoom = Math.min(ratioX, ratioY);
-			gameWidth = Math.ceil(stageWidth / zoom);
-			gameHeight = Math.ceil(stageHeight / zoom);
+			var ratioX:Float = stageWidth / game.width;
+			var ratioY:Float = stageHeight / game.height;
+			game.zoom = Math.min(ratioX, ratioY);
+			game.width = Math.ceil(stageWidth / game.zoom);
+			game.height = Math.ceil(stageHeight / game.zoom);
 		}
+		#end
 
-		ClientPrefs.loadDefaultKeys();
-		// fuck you, persistent caching stays ON during sex
-		FlxGraphic.defaultPersist = true;
-		// the reason for this is we're going to be handling our own cache smartly
-		// PlayState.instance.playbackRate = 1;
-		// to be sure that the game will not crash //it will crash. -Luis
+		SUtil.checkPermissions();
 		Application.current.window.title = gameTitle;
 		Application.current.window.setIcon(lime.utils.Assets.getImage('assets/art/iconOG.png'));
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
-		// FlxTransWindow.getWindowsTransparent(0, 23, 23, 23);//testing with the transparent window fork that i have
+		// FlxG.widescreen = true;
+		flxGame = new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate,
+			game.skipSplash, game.startFullscreen);
+		addChild(flxGame);
+
+		#if sys
+		__justcompiled = Sys.args().contains("-livereload");
+		#end
+		MusicBeatState.updatewindowres();
 
 		#if !mobile
 		fpsVar = new FPS(10, 3, 0xFFFFFF);
+		fpsVar.alpha = 0.8;
+
 		addChild(fpsVar);
 		Lib.current.stage.align = "tl";
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -107,15 +129,24 @@ class Main extends Sprite
 
 		#if desktop
 		FlxG.autoPause = ClientPrefs.autoPause;
-		#end
-
-		#if html5
+		#elseif html5
 		FlxG.autoPause = false;
 		FlxG.mouse.visible = false;
 		#end
 
 		#if CRASH_HANDLER
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+		#end
+
+		#if desktop
+		if (!DiscordClient.isInitialized)
+		{
+			DiscordClient.initialize();
+			Application.current.window.onClose.add(function()
+			{
+				DiscordClient.shutdown();
+			});
+		}
 		#end
 	}
 
@@ -156,8 +187,18 @@ class Main extends Sprite
 
 		File.saveContent(path, errMsg + "\n");
 
-		Sys.println(errMsgPrint);
+		Sys.println(errMsgPrint + '\n' + e.error);
 		Sys.println("Crash dump saved in " + Path.normalize(path));
+
+		/*var os:String = lime.system.System.platformLabel;
+			if (os.contains("Windows 8"))
+				FlxG.sound.play(Paths.sound('Windows8Background', 'preload'));
+			else if (os.contains("Windows 10"))
+				FlxG.sound.play(Paths.sound('Windows10Background', 'preload'));
+			else if (os.contains("Windows 11"))
+				FlxG.sound.play(Paths.sound('Windows11Background', 'preload'));
+			else
+				FlxG.sound.play(Paths.sound('cancelMenu')); */
 
 		Application.current.window.alert(errMsg, "Error!");
 		DiscordClient.shutdown();

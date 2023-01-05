@@ -1,46 +1,52 @@
 {
 	"dialogue": [
 		{
+			"expression": "excited",
+			"text": "Well that was fun!",
+			"boxState": "normal",
+			"sound": "dialogue/qt",
 			"speed": 0.04,
-			"portrait": "qt",
-			"boxState": "normal",
-			"expression": "excited",
-			"text": "Well that was fun!"
+			"portrait": "qt"
 		},
 		{
+			"expression": "pissed",
+			"text": "Beep!",
+			"boxState": "normal",
+			"sound": "dialogue/bf",
 			"speed": 0.05,
-			"portrait": "bf",
-			"boxState": "normal",
-			"expression": "excited",
-			"text": "Beep!"
+			"portrait": "bf"
 		},
 		{
-			"speed": 0.15,
-			"portrait": "kb",
-			"boxState": "normal",
 			"expression": "bruhNoTalk",
-			"text": "..."
+			"text": "...",
+			"boxState": "normal",
+			"sound": "",
+			"speed": 0.15,
+			"portrait": "kb"
 		},
 		{
+			"expression": "talk",
+			"text": "I hope we can sing again next time we meet.",
+			"boxState": "normal",
+			"sound": "dialogue/qt",
 			"speed": 0.04,
-			"portrait": "qt",
-			"boxState": "normal",
-			"expression": "talk",
-			"text": "I hope we can sing again next time we meet."
+			"portrait": "qt"
 		},
 		{
-			"speed": 0.065,
-			"portrait": "kb",
-			"boxState": "normal",
 			"expression": "lookAwayNoTalk",
-			"text": "(I hope not)"
+			"text": "(I hope not)",
+			"boxState": "normal",
+			"sound": "dialogue/kb",
+			"speed": 0.065,
+			"portrait": "kb"
 		},
 		{
-			"speed": 0.05,
-			"portrait": "gf",
-			"boxState": "normal",
 			"expression": "talk",
-			"text": "Goodbye."
+			"text": "Goodbye.",
+			"boxState": "normal",
+			"sound": "dialogue/gf",
+			"speed": 0.05,
+			"portrait": "gf"
 		}
 	]
 }

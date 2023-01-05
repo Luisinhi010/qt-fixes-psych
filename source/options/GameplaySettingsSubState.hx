@@ -59,12 +59,16 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		var option:Option = new Option('Middlescroll', 'If checked, your notes get centered.', 'middleScroll', 'bool', false);
 		addOption(option);
 
-		var option:Option = new Option('HitSound Volume', 'Sets how loud the hitsounds should be. 0 means disabled.', 'hitsoundVolume', 'percent', 1);
+		var option:Option = new Option('HitSound Volume', 'Sets how loud the hitSounds should be. 0 means disabled.', 'hitsoundVolume', 'percent', 0);
 		option.scrollSpeed = 1.6;
 		option.minValue = 0.0;
 		option.maxValue = 1;
 		option.changeValue = 0.1;
 		option.decimals = 1;
+		option.onChange = onChangeHitsoundVolume;
+		addOption(option);
+
+		var option:Option = new Option('Opponent Notes', 'If unchecked, opponent notes get hidden.', 'opponentStrums', 'bool', true);
 		addOption(option);
 
 		var option:Option = new Option('Ghost Tapping', "If checked, you won't get misses from pressing keys\nwhile there are no notes able to be hit.",
@@ -84,17 +88,6 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		var option:Option = new Option('Controller Mode', 'Check this if you want to play with\na controller instead of using your Keyboard.',
 			'controllerMode', 'bool', false);
 		addOption(option);
-
-		/*var option:Option = new Option('Note Delay',
-				'Changes how late a note is spawned.\nUseful for preventing audio lag from wireless earphones.',
-				'noteOffset',
-				'int',
-				0);
-			option.displayFormat = '%vms';
-			option.scrollSpeed = 100;
-			option.minValue = 0;
-			option.maxValue = 500;
-			addOption(option); */
 
 		var option:Option = new Option('Rating Offset', 'Changes how late/early you have to hit for a "Sick!"\nHigher values mean you have to hit later.',
 			'ratingOffset', 'int', 0);
@@ -134,13 +127,16 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.changeValue = 0.1;
 		addOption(option);
 
+		var option:Option = new Option('Input System', "Which input system the game should use, changes some difficulty", 'inputSystem', 'string', 'Psych',
+			['Kade', 'Psych']);
+		addOption(option);
+
 		var option:Option = new Option('Sawblade Bonk', // Name
 			'If checked, will play a different sound for the sawblade hit sound.', // Description
 			'qtBonk', // Save data variable name
 			'bool', // Variable type
 			false); // Default value
 		addOption(option);
-
 		super();
 	}
 
@@ -150,4 +146,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		FlxG.autoPause = ClientPrefs.autoPause;
 	}
 	#end
+
+	function onChangeHitsoundVolume()
+		FlxG.sound.play(Paths.sound('ChartingTick'), ClientPrefs.hitsoundVolume);
 }

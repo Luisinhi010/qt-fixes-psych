@@ -4,29 +4,33 @@
 			"expression": "talk",
 			"text": "...",
 			"boxState": "normal",
-			"speed": 0.4,
+			"sound": "dialogue/kb",
+			"portrait": "kb",
+			"speed": 0.4
+		},
+		{
+			"expression": "talk",
+			"text": "You're too stubborn for your own good kid.",
+			"boxState": "normal",
+			"sound": "dialogue/kb",
+			"speed": 0.05,
 			"portrait": "kb"
 		},
 		{
-			"speed": 0.05,
-			"portrait": "kb",
-			"boxState": "normal",
 			"expression": "talk",
-			"text": "You're too stubborn for your own good kid."
+			"text": "I've grown tired of you and your annoying chipmunk voice.",
+			"boxState": "normal",
+			"sound": "dialogue/kb",
+			"speed": 0.045,
+			"portrait": "kb"
 		},
 		{
-			"speed": 0.045,
-			"portrait": "kb",
-			"boxState": "normal",
 			"expression": "talk",
-			"text": "I've grown tired of you and your annoying chipmunk voice."
-		},
-		{
-			"speed": 0.045,
-			"portrait": "kb",
+			"text": "Prepare yourself, for I won't show any mercy for you...",
 			"boxState": "normal",
-			"expression": "talk",
-			"text": "Prepare yourself, for I won't show any mercy for you..."
+			"sound": "dialogue/kb",
+			"speed": 0.045,
+			"portrait": "kb"
 		}
 	]
 }

@@ -40,7 +40,17 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	public var timeBarBG:AttachedSprite;
 	public var timeBar:FlxBar;
 	public var songNameTxt:FlxText;
-	public var fucktimer:Bool = false;
+	public var songName:String = "";
+	public var fucktimer(default, set):Bool = false;
+
+	function set_fucktimer(value:Bool):Bool
+	{
+		fucktimer = value;
+		if (value = true && songNameTxt != null)
+			songNameTxt.text = "?:??" + '  ' + "SYSTEM ERROR" + '  ' + "?:??";
+		return value;
+	}
+
 	public var updateTime:Bool = true;
 	public var songPercent:Float = 0;
 
@@ -60,10 +70,11 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		instance = this;
 
 		// set up the Time Bar
+		songName = PlayState.SONG.song.replace("-", " ").replace("_", " ");
 
 		var showTime:Bool = ClientPrefs.timeBar;
 
-		songNameTxt = new FlxText(0, ClientPrefs.downScroll ? FlxG.height - 40 : 10, 0, StringTools.replace(PlayState.SONG.song, "-", " "), 32);
+		songNameTxt = new FlxText(0, ClientPrefs.downScroll ? FlxG.height - 40 : 10, 0, songName, 32);
 		songNameTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
 			PlayState.instance.inhumancolor2);
 		songNameTxt.scrollFactor.set();
@@ -123,18 +134,20 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		healthBar.alpha = ClientPrefs.healthBarAlpha;
 		add(healthBar);
 		healthBarBG.sprTracker = healthBar;
+		healthBarBG.copyVisible = true;
 
 		healthBarFG = new AttachedSprite('healthBar');
 		healthBarFG.y = healthBarBG.y;
 		healthBarFG.x = healthBarBG.x;
 		healthBarFG.height = healthBarBG.height;
 		healthBarFG.width = healthBarBG.width; // same position, height and width than healthBarBG
-		healthBarFG.scrollFactor.set();
-		healthBarFG.visible = !PlayState.instance.cpuControlled;
+		healthBarFG.scrollFactor.set(healthBarBG.scrollFactor.x, healthBarBG.scrollFactor.y);
+		healthBarFG.visible = healthBarBG.visible;
 		healthBarFG.xAdd = -4;
 		healthBarFG.yAdd = -4;
 		add(healthBarFG);
 		healthBarFG.sprTracker = healthBar;
+		healthBarFG.copyVisible = true;
 
 		if (!ClientPrefs.optimize)
 		{
@@ -155,16 +168,31 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 		// set up Score
 
-		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 26);
+		var xPos:Int = ClientPrefs.downScroll ? 10 : FlxG.height - 45;
+
+		scoreTxt = new FlxText(0, !PlayState.instance.inhumanSong ? healthBarBG.y + 36 : xPos - 5, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
 		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = PlayState.instance.inhumanSong ? 1 : 1.5;
-		scoreTxt.y += ClientPrefs.downScroll ? 10 : -110;
+		if (!PlayState.instance.inhumanSong)
+			scoreTxt.y += ClientPrefs.downScroll ? 10 : -110;
 		scoreTxt.screenCenter(X);
 		if (!PlayState.instance.forceMiddleScroll)
 			scoreTxt.x += 140;
 		scoreTxt.visible = !PlayState.instance.cpuControlled;
-		add(scoreTxt); // new scoreTxt code
+		add(scoreTxt);
+
+		if (PlayState.instance.inhumanSong)
+		{
+			healthBar.angle = 90;
+			healthBar.x = FlxG.width - healthBar.height;
+			healthBar.screenCenter(Y);
+			if (!ClientPrefs.optimize)
+			{
+				iconP1.visible = false;
+				iconP2.visible = false;
+			}
+		}
 
 		botplayTxt = new FlxText(FlxG.width - 250, (ClientPrefs.downScroll ? 120 : FlxG.height - 120), 0, "BOTPLAY", 20);
 		botplayTxt.setFormat(Paths.font("vcr.ttf"), 42, PlayState.instance.inhumancolor1, RIGHT, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
@@ -209,11 +237,15 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 			if (healthBar.percent < 20)
 				iconP1.animation.curAnim.curFrame = 1;
+			else if (healthBar.percent > 80 && iconP1.hasWinning)
+				iconP1.animation.curAnim.curFrame = 2;
 			else
 				iconP1.animation.curAnim.curFrame = 0;
 
 			if (healthBar.percent > 80)
 				iconP2.animation.curAnim.curFrame = 1;
+			else if (healthBar.percent < 20 && iconP2.hasWinning)
+				iconP2.animation.curAnim.curFrame = 2;
 			else
 				iconP2.animation.curAnim.curFrame = 0;
 		}
@@ -236,31 +268,38 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			if (secondsTotal < 0)
 				secondsTotal = 0;
 
-			if (fucktimer)
-				songNameTxt.text = FlxG.random.int(0, 9) + ":" + FlxG.random.int(0, 99) + '  ' + "SYSTEM ERROR" + '  ' + "?:??";
-			else
-				songNameTxt.text = FlxStringUtil.formatTime(secondsTotal, false) + '  ' + StringTools.replace(PlayState.SONG.song, "-", " ") + '  '
-					+ PlayState.instance.songLengthTxt;
+			if (!fucktimer)
+				songNameTxt.text = FlxStringUtil.formatTime(secondsTotal, false) + '  ' + songName + '  ' + PlayState.instance.songLengthTxt;
 
 			songNameTxt.screenCenter(X);
 		}
 	}
 
+	public var tempScore:String = "";
+	public var scoreSeparator:String = ' | ';
+	public var displayRatings:Bool = true;
+
 	public function updateScore()
 	{
-		var score:Int = PlayState.instance.songScore;
-		var misses:Int = PlayState.instance.songMisses;
-		var rating:String = PlayState.instance.ratingName;
-		var ratingPer:Float = PlayState.instance.ratingPercent;
+		var songScore:Int = PlayState.instance.songScore;
+		var songMisses:Int = PlayState.instance.songMisses;
+		var ratingName:String = PlayState.instance.ratingName;
+		var ratingPercent:Float = PlayState.instance.ratingPercent;
 		var ratingFC:String = PlayState.instance.ratingFC;
 
-		scoreTxt.text = ClientPrefs.short ? 'Score: ' + score + ' | Misses: ' + misses : 'Score: '
-			+ score
-			+ ' | Misses: '
-			+ misses
-			+ ' | Rating: '
-			+ rating
-			+ (rating != '?' ? ' [${Highscore.floorDecimal(ratingPer * 100, 2)}% | $ratingFC]' : ''); // peeps wanted no integer rating
+		// of course I would go back and fix my code, of COURSE @BeastlyGhost;
+		tempScore = "Score: " + songScore;
+
+		if (displayRatings)
+		{
+			tempScore += scoreSeparator + "Misses: " + songMisses;
+			tempScore += scoreSeparator + "Rating: " + ratingName;
+			tempScore += (ratingName != '?' ? ' (${Highscore.floorDecimal(ratingPercent * 100, 2)}%)' : '');
+			tempScore += (ratingFC != null && ratingFC != '' ? ' - $ratingFC' : '');
+		}
+		tempScore += '\n';
+
+		scoreTxt.text = tempScore;
 	}
 
 	public function reloadHealthBarColors(blue:Bool = false)
@@ -276,7 +315,6 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			bfcolor = FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1],
 				PlayState.instance.boyfriend.healthColorArray[2]);
 		}
-		// trace('dad color: ' + dadcolor + ' | bf color:' + bfcolor);
 		if (blue && !ClientPrefs.optimize)
 			healthBar.createGradientBar([FlxColor.CYAN, dadcolor, dadcolor], [FlxColor.CYAN, bfcolor, bfcolor], 1, 90);
 		else
@@ -287,11 +325,24 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 	public function reloadSongPosBarColors(blue:Bool = false)
 	{
-		// timeBar.createFilledBar(FlxColor.BLUE, FlxColor.BLUE);
+		var dadcolor:FlxColor = 0xFFFF0000;
+		var bfcolor:FlxColor = 0xFF66FF33;
+
+		if (ClientPrefs.coloredHealthBar && !ClientPrefs.optimize)
+		{
+			dadcolor = FlxColor.fromRGB(PlayState.instance.dad.healthColorArray[0], PlayState.instance.dad.healthColorArray[1],
+				PlayState.instance.dad.healthColorArray[2]);
+
+			bfcolor = FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1],
+				PlayState.instance.boyfriend.healthColorArray[2]);
+		}
+
 		if (blue && !ClientPrefs.optimize)
-			timeBar.createGradientBar([FlxColor.BLUE], [FlxColor.BLUE, FlxColor.BLUE, FlxColor.CYAN], 1, 90);
+			timeBar.createGradientBar([FlxColor.BLUE, dadcolor, bfcolor], [FlxColor.BLUE, FlxColor.BLUE, FlxColor.CYAN], 1, 90);
 		else
-			timeBar.createGradientBar([0xFF000000], [0xFFFFFFFF, 0xFFFFFFFF, 0x88222222], 1, 90);
+			timeBar.createGradientBar([dadcolor, bfcolor], [0xFFFFFFFF, 0xFFFFFFFF, 0x88222222], 1, 90);
+
+		timeBar.updateBar();
 	}
 
 	// Code from the Lullaby mod. You should check it out if you haven't already.	=D

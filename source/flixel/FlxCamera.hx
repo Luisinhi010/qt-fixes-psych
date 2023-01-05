@@ -21,7 +21,6 @@ import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
-import flixel.util.FlxSpriteUtil;
 import openfl.display.BlendMode;
 import openfl.filters.BitmapFilter;
 import openfl.Vector;
@@ -64,6 +63,11 @@ class FlxCamera extends FlxBasic
 			updateScrollRect();
 		return widescreen;
 	}
+
+	/**
+	 * Whenever the fix for black bars when the camera rotates should be enabled. Defaults to `true`.
+	 */
+	public var angleFix:Bool = true;
 
 	/**
 	 * While you can alter the zoom of each camera after the fact,
@@ -743,6 +747,9 @@ class FlxCamera extends FlxBasic
 		}
 	}
 
+	public var flipX:Bool = false;
+	public var flipY:Bool = false;
+
 	public function copyPixels(?frame:FlxFrame, ?pixels:BitmapData, ?sourceRect:Rectangle, destPoint:Point, ?transform:ColorTransform, ?blend:BlendMode,
 			?smoothing:Bool = false, ?shader:FlxShader):Void
 	{
@@ -1325,6 +1332,19 @@ class FlxCamera extends FlxBasic
 			_scrollRect.scrollRect = scrlRect;
 			widescreenMultipliers.set(1, 1);
 		}
+		if (angleFix)
+		{
+			var flxRect = FlxRect.get();
+
+			flxRect.copyFromFlash(_scrollRect.scrollRect);
+			flxRect.getRotatedBounds(angle, FlxPoint.get(FlxMath.lerp(flxRect.left, flxRect.right, 0.5), FlxMath.lerp(flxRect.top, flxRect.bottom, 0.5)),
+				flxRect);
+			_scrollRect.x += flxRect.x - _scrollRect.scrollRect.x;
+			_scrollRect.y += flxRect.y - _scrollRect.scrollRect.y;
+			_scrollRect.scrollRect = flxRect.copyToFlash();
+
+			flxRect.put();
+		}
 		_scrollRect.x -= w * 0.5;
 		_scrollRect.y -= h * 0.5;
 	}
@@ -1470,13 +1490,14 @@ class FlxCamera extends FlxBasic
 	 */
 	public function flash(Color:FlxColor = FlxColor.WHITE, Duration:Float = 1, ?OnComplete:Void->Void, Force:Bool = false):Void
 	{
+		var Realduration:Float = MusicBeatState.multAnims ? Duration / PlayState.instance.playbackRate : Duration;
 		if (!Force && (_fxFlashAlpha > 0.0))
 			return;
 
 		_fxFlashColor = Color;
-		if (Duration <= 0)
-			Duration = 0.000001;
-		_fxFlashDuration = Duration;
+		if (Realduration <= 0)
+			Realduration = 0.000001;
+		_fxFlashDuration = Realduration;
 		_fxFlashComplete = OnComplete;
 		_fxFlashAlpha = 1.0;
 	}
@@ -1492,15 +1513,16 @@ class FlxCamera extends FlxBasic
 	 */
 	public function fade(Color:FlxColor = FlxColor.BLACK, Duration:Float = 1, FadeIn:Bool = false, ?OnComplete:Void->Void, Force:Bool = false):Void
 	{
+		var Realduration:Float = MusicBeatState.multAnims ? Duration / PlayState.instance.playbackRate : Duration;
 		if (!_fxFadeCompleted && !Force)
 			return;
 
 		_fxFadeColor = Color;
-		if (Duration <= 0)
-			Duration = 0.000001;
+		if (Realduration <= 0)
+			Realduration = 0.000001;
 
 		_fxFadeIn = FadeIn;
-		_fxFadeDuration = Duration;
+		_fxFadeDuration = Realduration;
 		_fxFadeComplete = OnComplete;
 
 		_fxFadeAlpha = _fxFadeIn ? 0.999999 : 0.000001;
@@ -1519,6 +1541,7 @@ class FlxCamera extends FlxBasic
 	 */
 	public function shake(Intensity:Float = 0.05, Duration:Float = 0.5, ?OnComplete:Void->Void, Force:Bool = true, ?Axes:FlxAxes):Void
 	{
+		var Realduration:Float = MusicBeatState.multAnims ? Duration / PlayState.instance.playbackRate : Duration;
 		if (Axes == null)
 			Axes = XY;
 
@@ -1526,7 +1549,7 @@ class FlxCamera extends FlxBasic
 			return;
 
 		_fxShakeIntensity = Intensity;
-		_fxShakeDuration = Duration;
+		_fxShakeDuration = Realduration;
 		_fxShakeComplete = OnComplete;
 		_fxShakeAxes = Axes;
 	}
@@ -1953,6 +1976,8 @@ class FlxCamera extends FlxBasic
 	{
 		angle = Angle;
 		flashSprite.rotation = Angle;
+		if (angleFix)
+			updateScrollRect();
 		return Angle;
 	}
 

@@ -3,17 +3,13 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.graphics.FlxGraphic;
-import flixel.text.FlxText;
-import flixel.system.FlxSound;
-#if windows
-#end
-import openfl.display.BitmapData;
-import openfl.display3D.textures.RectangleTexture;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
+import flixel.tweens.misc.NumTween;
+import lime.app.Application;
 import flixel.ui.FlxBar;
+import flixel.text.FlxText;
 #if cpp
 import sys.FileSystem;
 #end
@@ -75,7 +71,9 @@ class Cache extends MusicBeatState
 	{
 		if (!loaded)
 		{
-			Paths.clearStoredMemory();
+			Application.current.window.title = Main.gameTitle + ' Loading 0%';
+			if (!ClientPrefs.persistentCaching)
+				Paths.clearStoredMemory();
 			FlxG.autoPause = false;
 			thevars = [images, images1, images2, images3];
 
@@ -115,12 +113,8 @@ class Cache extends MusicBeatState
 			for (o in 0...thevars.length)
 				for (i in thevars[o])
 				{
-					var replaced:String = cachefolders[o].replace('assets/shared/images/', '')
-						+ i.replace("/qt-port", "/qt-port/")
-							.replace("/stage", "/stage/")
-							.replace("/qt-fixes", "/qt-fixes/")
-							.replace(".png", "");
-					CoolUtil.precacheImage(replaced);
+					var replaced:String = getpath(cachefolders[o], i);
+					// CoolUtil.precacheImage(replaced);
 					Paths.excludeAsset(replaced); // just to be sure you know?//that's dumb
 				}
 
@@ -135,17 +129,17 @@ class Cache extends MusicBeatState
 
 			if (ClientPrefs.gpurendering)
 			{
-				var text:FlxText = new FlxText(1, 1, 0, 'GPU Rendering is enabled', 24);
+				var text:FlxText = new FlxText(Main.fpsVar.x, 1, 0, 'GPU Rendering is enabled', 24);
 				text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				add(text);
-				var gputext:FlxText = new FlxText(1, text.y + text.height - 2, 0, 'be aware that it is VERY experimental!', 24);
+				var gputext:FlxText = new FlxText(text.x, text.y + text.height - 2, 0, 'be aware that it is experimental!', 24);
 				gputext.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				add(gputext);
 				Main.fpsVar.y += gputext.y + gputext.height - 2;
 			}
 
-			Paths.clearUnusedMemory();
-			// cache thread
+			if (!ClientPrefs.persistentCaching)
+				Paths.clearUnusedMemory();
 			sys.thread.Thread.create(() ->
 			{
 				cache();
@@ -158,9 +152,7 @@ class Cache extends MusicBeatState
 	}
 
 	override function update(elapsed)
-	{
 		super.update(elapsed);
-	}
 
 	function cache()
 	{
@@ -170,38 +162,18 @@ class Cache extends MusicBeatState
 		{
 			for (i in thevars[o])
 			{
-				var key:String = i;
-				var replaced:String = key.replace(".png", "");
-				var data:BitmapData = BitmapData.fromFile(cachefolders[o] + key);
-				var graph:FlxGraphic;
-				if (ClientPrefs.gpurendering)
-				{
-					data.lock();
-					var texture:RectangleTexture = FlxG.stage.context3D.createRectangleTexture(data.width, data.height, BGRA, true);
-					texture.uploadFromBitmapData(data);
-					Paths.currentTrackedTextures.set(key, texture);
-					data.dispose();
-					data.disposeImage();
-					data = null;
-					graph = FlxGraphic.fromBitmapData(BitmapData.fromTexture(texture), false, key, false);
-				}
-				else
-					graph = FlxGraphic.fromBitmapData(data, false, key, false);
-				graph.persist = true;
-				graph.destroyOnNoUse = false;
-
-				cachedAssets.push(key);
-				Paths.currentTrackedAssets.set(key, graph);
+				var replaced:String = getpath(cachefolders[o], i);
+				Paths.returnGraphic(replaced, 'shared', ClientPrefs.gpurendering);
+				cachedAssets.push(replaced);
 				done++;
-				createtxt(replaced + ' cached' /*+ " " + ClientPrefs.gpurendering*/);
+				createtxt(replaced + ' cached');
 			}
 		}
 
 		trace("Finished caching...");
-
 		loaded = true;
 		#end
-		FlxG.autoPause = ClientPrefs.autoPause;
+		FlxG.autoPause = #if desktop ClientPrefs.autoPause #else false #end;
 		fu(true);
 	}
 
@@ -225,19 +197,26 @@ class Cache extends MusicBeatState
 
 	function createtxt(text:String)
 	{
-		FlxTween.tween(this, {donefloat: done}, 0.1, {ease: FlxEase.cubeOut});
+		// FlxTween.tween(this, {donefloat: done}, 0.1, {ease: FlxEase.cubeOut});
+
+		var numTween:NumTween = FlxTween.num(donefloat, done, 0.1, {
+			ease: FlxEase.cubeOut
+		});
+
+		numTween.onUpdate = function(twn:FlxTween)
+		{
+			donefloat = numTween.value;
+			Application.current.window.title = Main.gameTitle + ' Loading ${bar.percent}%';
+		}
 		trace(text);
-		/*var txt:FlxText = new FlxText(FlxG.random.int(18, 25), FlxG.height - FlxG.random.int(56, 65), 400, text, 32);
-			txt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			add(txt);
-			FlxTween.tween(txt, {y: txt.y - FlxG.random.int(36, 46), x: txt.y + FlxG.random.int(-26, 36), alpha: 0}, FlxG.random.float(1.6, 3), {
-				ease: FlxEase.circOut,
-				onComplete: function(twn:FlxTween)
-				{
-					txt.kill();
-				}
-		});*/
 	}
+
+	function getpath(path:String, file:String)
+		return /*Paths.getPath(*/ path.replace('assets/shared/images/', '')
+			+ file.replace("/qt-port", "/qt-port/")
+				.replace("/stage", "/stage/")
+				.replace("/qt-fixes", "/qt-fixes/")
+				.replace(".png", "") /*, IMAGE )*/;
 
 	function fu /*ck*/ (trans:Bool = true)
 	{

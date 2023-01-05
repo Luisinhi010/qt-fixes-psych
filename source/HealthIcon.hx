@@ -8,9 +8,12 @@ using StringTools;
 class HealthIcon extends FlxSprite
 {
 	public var sprTracker:FlxSprite;
+	public var canBounce:Bool = false;
+	public var hasWinning:Bool = false;
 
 	private var isPlayer:Bool = false;
 	private var char:String = '';
+	private var index:Int = 2;
 
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
@@ -25,7 +28,14 @@ class HealthIcon extends FlxSprite
 		super.update(elapsed);
 
 		if (sprTracker != null)
-			setPosition(sprTracker.x + sprTracker.width + 10, sprTracker.y - 30);
+			setPosition(sprTracker.x + sprTracker.width + 12, sprTracker.y - 30);
+
+		if (canBounce)
+		{
+			var mult:Float = flixel.math.FlxMath.lerp(1, scale.x, CoolUtil.boundTo(1 - (elapsed * 9), 0, 1));
+			scale.set(mult, mult);
+			updateHitbox();
+		}
 	}
 
 	private var iconOffsets:Array<Float> = [0, 0];
@@ -42,17 +52,28 @@ class HealthIcon extends FlxSprite
 			var file:Dynamic = Paths.image(name);
 
 			loadGraphic(file); // Load stupidly first for getting the file size
-			loadGraphic(file, true, Math.floor(width / 2), Math.floor(height)); // Then load it fr
-			iconOffsets[0] = (width - 150) / 2;
-			iconOffsets[1] = (width - 150) / 2;
+			if (width == 450)
+			{
+				index = 3;
+				hasWinning = true;
+			}
+			else
+			{
+				index = 2;
+				hasWinning = false;
+			}
+			loadGraphic(file, true, Math.floor(width / index), Math.floor(height)); // Then load it fr
+			for (i in 0...index - 1)
+				iconOffsets[i] = (width - 150) / index;
 			updateHitbox();
 
-			animation.add(char, [0, 1], 0, false, isPlayer);
+			animation.add(char, CoolUtil.numberArray(index - 1), 0, false, isPlayer);
 			animation.play(char);
 			this.char = char;
 
 			antialiasing = ClientPrefs.globalAntialiasing;
-			antialiasing = !char.endsWith('-pixel');
+			if (char.endsWith('-pixel'))
+				antialiasing = false;
 		}
 	}
 
@@ -63,10 +84,18 @@ class HealthIcon extends FlxSprite
 		offset.y = iconOffsets[1];
 	}
 
-	public function getCharacter():String
+	public function bounce()
 	{
-		return char;
+		if (canBounce)
+		{
+			var mult:Float = 1.2;
+			scale.set(mult, mult);
+			updateHitbox();
+		}
 	}
+
+	public function getCharacter():String
+		return char;
 
 	public function getDiscordCharacter():String
 	{

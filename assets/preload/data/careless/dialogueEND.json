@@ -4,29 +4,33 @@
 			"expression": "fucked",
 			"text": "System returned = null",
 			"boxState": "normal",
-			"portrait": "qt",
-			"speed": 0.1
+			"sound": "dialogue/qt_error",
+			"speed": 0.1,
+			"portrait": "qt"
 		},
 		{
 			"expression": "fucked",
 			"text": "Cannot process losed() function",
 			"boxState": "normal",
-			"portrait": "qt",
-			"speed": 0.1
+			"sound": "dialogue/qt_error",
+			"speed": 0.1,
+			"portrait": "qt"
 		},
 		{
 			"expression": "fucked",
 			"text": "...",
 			"boxState": "normal",
-			"portrait": "qt",
-			"speed": 0.4
+			"sound": "dialogue/qt_error",
+			"speed": 0.4,
+			"portrait": "qt"
 		},
 		{
 			"expression": "confused",
 			"text": "bep?",
 			"boxState": "normal",
-			"speed": 0.15,
-			"portrait": "bf"
+			"sound": "dialogue/bf",
+			"portrait": "bf",
+			"speed": 0.15
 		}
 	]
 }

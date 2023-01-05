@@ -22,6 +22,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	var camFollow:FlxPoint;
 	var camFollowPos:FlxObject;
 	var updateCamera:Bool = false;
+	var playingDeathSound:Bool = false;
 
 	var stageSuffix:String = "";
 	var TerminationText:FlxSprite;
@@ -30,7 +31,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	var textGenerated:Bool = false;
 	var songSpeed:Float = 1;
 
-	public static var characterName:String = 'bf';
+	public static var characterName:String = 'bf-dead';
 	public static var deathSoundName:String = 'fnf_loss_sfx';
 	public static var loopSoundName:String = 'gameOver';
 	public static var endSoundName:String = 'gameOverEnd';
@@ -41,7 +42,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	public static function resetVariables()
 	{
-		characterName = 'bf';
+		characterName = 'bf-dead';
 		deathSoundName = 'fnf_loss_sfx';
 		loopSoundName = 'gameOver';
 		endSoundName = 'gameOverEnd';
@@ -141,8 +142,6 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (!ClientPrefs.optimize)
 			boyfriend.playAnim('firstDeath');
 
-		var exclude:Array<Int> = [];
-
 		camFollowPos = new FlxObject(0, 0, 1, 1);
 		camFollowPos.setPosition(FlxG.camera.scroll.x + (FlxG.camera.width / 2), FlxG.camera.scroll.y + (FlxG.camera.height / 2));
 		add(camFollowPos);
@@ -171,18 +170,20 @@ class GameOverSubstate extends MusicBeatSubstate
 			FlxG.sound.music.stop();
 			PlayState.deathCounter = 0;
 			PlayState.seenCutscene = false;
+			PlayState.chartingMode = false;
 			PlayState.THISISFUCKINGDISGUSTINGPLEASESAVEME = false;
 
+			WeekData.loadTheFirstEnabledMod();
 			if (PlayState.isStoryMode)
 				MusicBeatState.switchState(new StoryMenuState());
 			else
 				MusicBeatState.switchState(new FreeplayState());
 
-			FlxG.sound.playMusic(Paths.music('qtMenu'));
+			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			PlayState.instance.callOnLuas('onGameOverConfirm', [false]);
 		}
 
-		if (!ClientPrefs.optimize)
+		if (!ClientPrefs.optimize && boyfriend != null)
 			if (boyfriend.animation.curAnim.name == 'firstDeath')
 			{
 				if (boyfriend.animation.curAnim.curFrame >= 12 && !isFollowingAlready)
@@ -206,7 +207,11 @@ class GameOverSubstate extends MusicBeatSubstate
 	}
 
 	override function beatHit()
+	{
 		super.beatHit();
+
+		// FlxG.log.add('beat');
+	}
 
 	var isEnding:Bool = false;
 
@@ -228,7 +233,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			if (killedByGAMEOVER == "sawblade")
 			{
-				var dodgeKey:String = ClientPrefs.getdodgekeys();
+				var dodgeKey:String = ClientPrefs.getkeys('qt_dodge');
 
 				killedByTextDisplay = new FlxText(xy[0] - 130, xy[1] - 56, 0, ("Died due to missing a sawblade. (Press $" + dodgeKey + "$ to dodge!)"), 28);
 				killedByTextDisplay.applyMarkup("Died due to missing a sawblade. (Press $" + dodgeKey + "$ to dodge!)",
@@ -281,7 +286,6 @@ class GameOverSubstate extends MusicBeatSubstate
 				boyfriend.playAnim('deathConfirm', true);
 			FlxG.sound.music.stop();
 			FlxG.sound.play(Paths.music(endSoundName), 1).pitch = songSpeed;
-			FlxG.sound.music.pitch = songSpeed;
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()

@@ -30,16 +30,16 @@ class CustomMouse extends FlxSprite
 		setGraphicSize(Std.int(width * 0.1));
 		antialiasing = ClientPrefs.globalAntialiasing;
 		mouseadded = true;
-		offset.set(1, 1);
-		trace('good. ' + mouseadded);
-		trace(this);
+		offset.set(2, 2);
 		#end
 	}
 
 	override function update(elapsed:Float)
 	{
+		#if !html5
 		super.update(elapsed);
 		updatemouse(elapsed);
+		#end
 	}
 
 	function updatemouse(elapsed:Float):Void
@@ -56,9 +56,11 @@ class CustomMouse extends FlxSprite
 		#end
 	}
 
-	public function setcolor(color:FlxColor = FlxColor.WHITE) // the mouse is suposed to have a color animation when left click,
+	public function setcolor(color:FlxColor = FlxColor.WHITE) // the mouse was suposed to have a color animation when left click,
 	{
+		#if !html5
 		defaultcolor = color;
 		this.color = color;
+		#end
 	}
 }

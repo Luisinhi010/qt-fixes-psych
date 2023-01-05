@@ -115,9 +115,9 @@ class FlxTimer implements IFlxDestroyable
 	 * @param	Loops		How many times the timer should go off. 0 means "looping forever".
 	 * @return	A reference to itself (handy for chaining or whatever).
 	 */
-	public function start(Time:Float = 1, ?OnComplete:FlxTimer->Void, Loops:Int = 1):FlxTimer
+	public function start(Time:Float = 1, ?OnComplete:FlxTimer->Void, Loops:Int = 1, ?applyPlayback:Bool = true):FlxTimer
 	{
-		var Realtime:Float = MusicBeatState.multAnims ? Time / PlayState.instance.playbackRate : Time;
+		var Realtime:Float = MusicBeatState.multAnims && applyPlayback ? Time / PlayState.instance.playbackRate : Time;
 		multiplyed = MusicBeatState.multAnims ? PlayState.instance.playbackRate : 1;
 		if (manager != null && !_inManager)
 		{

@@ -1,32 +1,36 @@
 {
 	"dialogue": [
 		{
+			"expression": "confused",
+			"text": "b...boop?",
+			"boxState": "normal",
+			"sound": "dialogue/bf",
 			"speed": 0.065,
-			"portrait": "bf",
-			"boxState": "normal",
-			"expression": "confused",
-			"text": "b...boop?"
+			"portrait": "bf"
 		},
 		{
+			"expression": "confused",
+			"text": "???",
+			"boxState": "normal",
+			"sound": "",
 			"speed": 0.165,
-			"portrait": "bf",
-			"boxState": "normal",
-			"expression": "confused",
-			"text": "???"
+			"portrait": "bf"
 		},
 		{
-			"speed": 0.05,
-			"portrait": "gf",
-			"boxState": "normal",
 			"expression": "confused",
-			"text": "Let's leave."
+			"text": "Let's leave.",
+			"boxState": "normal",
+			"sound": "dialogue/gf",
+			"speed": 0.05,
+			"portrait": "gf"
 		},
 		{
-			"speed": 0.05,
-			"portrait": "bf",
-			"boxState": "normal",
 			"expression": "talk",
-			"text": "Beep!"
+			"text": "Beep!",
+			"boxState": "normal",
+			"sound": "dialogue/bf",
+			"speed": 0.05,
+			"portrait": "bf"
 		}
 	]
 }

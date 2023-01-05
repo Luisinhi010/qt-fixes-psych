@@ -20,11 +20,13 @@ class StrumNote extends FlxSprite
 	public var downScroll:Bool = false; // plan on doing scroll directions soon -bb
 	public var sustainReduce:Bool = true;
 
-	private var player:Int;
+	public var player:Int;
+
+	public var multiplier:Float = 0;
 
 	public var texture(default, set):String = null;
 
-	private function set_texture(value:String):String
+	public function set_texture(value:String):String
 	{
 		if (texture != value)
 		{
@@ -44,10 +46,10 @@ class StrumNote extends FlxSprite
 		this.noteData = leData;
 		super(x, y);
 
-		var skin:String = skinnote;
-		texture = skin; // Load texture and anims
+		texture = skinnote; // Load texture and anims
 
 		scrollFactor.set();
+		multiplier = MusicBeatState.multAnims ? PlayState.instance.playbackRate : 1;
 	}
 
 	public function reloadNote()
@@ -56,36 +58,29 @@ class StrumNote extends FlxSprite
 		if (animation.curAnim != null)
 			lastAnim = animation.curAnim.name;
 
-		{
-			frames = Paths.getSparrowAtlas("Notes/" + texture);
-			animation.addByPrefix('green', 'arrowUP');
-			animation.addByPrefix('blue', 'arrowDOWN');
-			animation.addByPrefix('purple', 'arrowLEFT');
-			animation.addByPrefix('red', 'arrowRIGHT');
+		var name:String = 'Notes/' + texture;
+		if (!Paths.fileExists('images/' + name + '.png', IMAGE, false, 'shared'))
+			name = texture;
+		if (!Paths.fileExists('images/' + name + '.png', IMAGE, false, 'shared'))
+			name = 'Notes/NOTE_assets';
 
-			antialiasing = ClientPrefs.globalAntialiasing;
-			setGraphicSize(Std.int(width * 0.7));
+		frames = Paths.getSparrowAtlas(name, null, ClientPrefs.gpurendering);
+		animation.addByPrefix('green', 'arrowUP');
+		animation.addByPrefix('blue', 'arrowDOWN');
+		animation.addByPrefix('purple', 'arrowLEFT');
+		animation.addByPrefix('red', 'arrowRIGHT');
 
-			var lowerCaseAnim:String = dirArray[noteData % 4].toLowerCase();
-			animation.addByPrefix('static', 'arrow' + dirArray[noteData % 4]);
-			animation.addByPrefix('pressed', lowerCaseAnim + ' press', 24, false);
-			animation.addByPrefix('confirm', lowerCaseAnim + ' confirm', 24, false);
+		antialiasing = ClientPrefs.globalAntialiasing;
+		setGraphicSize(Std.int(width * 0.7));
 
-			if (texture.startsWith('NOTE_assets_Qt')) // more animations to the qt notes
-			{
-				switch (Math.abs(noteData))
-				{
-					case 0:
-						animation.addByPrefix('kbconfirm', 'left kbconfirm', 24, false);
-					case 1:
-						animation.addByPrefix('kbconfirm', 'down kbconfirm', 24, false);
-					case 2:
-						animation.addByPrefix('kbconfirm', 'up kbconfirm', 24, false);
-					case 3:
-						animation.addByPrefix('kbconfirm', 'right kbconfirm', 24, false);
-				}
-			}
-		}
+		var lowerCaseAnim:String = dirArray[noteData % 4].toLowerCase();
+		animation.addByPrefix('static', 'arrow' + dirArray[noteData % 4]);
+		animation.addByPrefix('pressed', lowerCaseAnim + ' press', 24, false);
+		animation.addByPrefix('confirm', lowerCaseAnim + ' confirm', 24, false);
+
+		if (texture.startsWith('NOTE_assets_Qt')) // more animations to the qt notes
+			animation.addByPrefix('kbconfirm', lowerCaseAnim + ' kbconfirm', 24, false);
+
 		updateHitbox();
 
 		if (lastAnim != null)
@@ -105,14 +100,14 @@ class StrumNote extends FlxSprite
 	{
 		if (resetAnim > 0)
 		{
-			resetAnim -= elapsed;
+			resetAnim -= elapsed * multiplier;
 			if (resetAnim <= 0)
 			{
 				playAnim('static');
 				resetAnim = 0;
 			}
 		}
-		if (animation.curAnim.name == 'confirm')
+		if (animation.curAnim.name == 'confirm' || animation.curAnim.name == 'kbconfirm')
 			centerOrigin();
 
 		super.update(elapsed);
@@ -123,7 +118,7 @@ class StrumNote extends FlxSprite
 		animation.play(anim, force);
 		centerOffsets();
 		centerOrigin();
-		if (animation.curAnim == null || animation.curAnim.name == 'static')
+		if (animation.curAnim == null || animation.curAnim.name == 'static' || animation.curAnim.name == 'kbconfirm')
 		{
 			colorSwap.hue = 0;
 			colorSwap.saturation = 0;
@@ -131,14 +126,14 @@ class StrumNote extends FlxSprite
 		}
 		else
 		{
-			if (player > 0)
+			if (player > 0 && (noteData > -1 && noteData < ClientPrefs.arrowHSV.length))
 			{
-				colorSwap.hue = ClientPrefs.arrowHSV[noteData % 4][0] / 360;
-				colorSwap.saturation = ClientPrefs.arrowHSV[noteData % 4][1] / 100;
-				colorSwap.brightness = ClientPrefs.arrowHSV[noteData % 4][2] / 100;
+				colorSwap.hue = ClientPrefs.arrowHSV[noteData][0] / 360;
+				colorSwap.saturation = ClientPrefs.arrowHSV[noteData][1] / 100;
+				colorSwap.brightness = ClientPrefs.arrowHSV[noteData][2] / 100;
 			}
 
-			if (animation.curAnim.name == 'confirm')
+			if (animation.curAnim.name == 'confirm' || animation.curAnim.name == 'kbconfirm')
 				centerOrigin();
 		}
 	}

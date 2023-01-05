@@ -11,7 +11,7 @@ import flixel.util.FlxSort;
 import Section.SwagSection;
 #if MODS_ALLOWED
 import sys.io.File;
-import sys.FileSystem;
+#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
 #end
 import openfl.utils.AssetType;
 import openfl.utils.Assets;
@@ -63,6 +63,7 @@ class Character extends FlxSprite
 	public var singDuration:Float = 4; // Multiplier of how long a character holds the sing pose
 	public var idleSuffix:String = '';
 	public var danceIdle:Bool = false; // Character use "danceLeft" and "danceRight" instead of "idle"
+	public var skipDance:Bool = false;
 
 	public var healthIcon:String = 'face';
 	public var animationsArray:Array<AnimArray> = [];
@@ -83,9 +84,9 @@ class Character extends FlxSprite
 
 	public var blueshader = new Shaders.CustomBlueShader(); // its 'blue' shader but you can put any color for it, but default is blue
 
-	public static var DEFAULT_CHARACTER:String = 'bf'; // In case a character is missing, it will use BF on its place
+	public static final DEFAULT_CHARACTER:String = 'bf'; // In case a character is missing, it will use BF on its place
 
-	var multiplier:Float = 0;
+	public var multiplier:Float = 1;
 
 	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false)
 	{
@@ -102,8 +103,11 @@ class Character extends FlxSprite
 		var library:String = null;
 		switch (curCharacter)
 		{
+			// case 'your character name in case you want to hardcode them instead':
+
 			default:
 				var characterPath:String = 'characters/' + curCharacter + '.json';
+
 				#if MODS_ALLOWED
 				var path:String = Paths.modFolders(characterPath);
 				if (!FileSystem.exists(path))
@@ -127,9 +131,15 @@ class Character extends FlxSprite
 
 				var json:CharacterFile = cast Json.parse(rawJson);
 				var spriteType = "sparrow";
+				// sparrow
+				// packer
+				// texture
 				#if MODS_ALLOWED
 				var modTxtToFind:String = Paths.modsTxt(json.image);
 				var txtToFind:String = Paths.getPath('images/' + json.image + '.txt', TEXT);
+
+				// var modTextureToFind:String = Paths.modFolders("images/"+json.image);
+				// var textureToFind:String = Paths.getPath('images/' + json.image, new AssetType();
 
 				if (FileSystem.exists(modTxtToFind) || FileSystem.exists(txtToFind) || Assets.exists(txtToFind))
 				#else
@@ -154,9 +164,11 @@ class Character extends FlxSprite
 				switch (spriteType)
 				{
 					case "packer":
-						frames = Paths.getPackerAtlas(json.image);
+						frames = Paths.getPackerAtlas(json.image, library, ClientPrefs.gpurendering);
+
 					case "sparrow":
-						frames = Paths.getSparrowAtlas(json.image);
+						frames = Paths.getSparrowAtlas(json.image, library, ClientPrefs.gpurendering);
+
 					case "texture":
 						frames = AtlasFrameMaker.construct(json.image);
 				}
@@ -193,8 +205,10 @@ class Character extends FlxSprite
 					healthColorArray = json.healthbar_colors;
 
 				antialiasing = !noAntialiasing;
-				if (!ClientPrefs.globalAntialiasing)
+				if (!ClientPrefs.globalAntialiasing || noAntialiasing)
 					antialiasing = false;
+				else
+					antialiasing = true;
 
 				animationsArray = json.animations;
 				if (animationsArray != null && animationsArray.length > 0)
@@ -222,7 +236,9 @@ class Character extends FlxSprite
 		}
 		originalFlipX = flipX;
 
-		if (animOffsets.exists('singLEFTmiss') || animOffsets.exists('singDOWNmiss') || animOffsets.exists('singUPmiss') || animOffsets.exists('singRIGHTmiss'))
+		if ((animOffsets.exists('singLEFTmiss') || animOffsets.exists('singDOWNmiss') || animOffsets.exists('singUPmiss')
+			|| animOffsets.exists('singRIGHTmiss'))
+			|| (animation.exists('singLEFTmiss') || animation.exists('singDOWNmiss') || animation.exists('singUPmiss') || animation.exists('singRIGHTmiss')))
 			hasMissAnimations = true;
 		recalculateDanceIdle();
 		dance();
@@ -231,8 +247,6 @@ class Character extends FlxSprite
 
 		if (isPlayer)
 			flipX = !flipX;
-
-		multiplier = MusicBeatState.multAnims ? PlayState.instance.playbackRate : 1;
 	}
 
 	override function update(elapsed:Float)
@@ -263,7 +277,7 @@ class Character extends FlxSprite
 				if (animation.curAnim.name.startsWith('sing'))
 					holdTimer += elapsed;
 
-				if (holdTimer >= Conductor.stepCrochet * 0.001 * singDuration / multiplier)
+				if (holdTimer >= Conductor.stepCrochet * (0.0011 / (FlxG.sound.music != null ? FlxG.sound.music.pitch : 1)) * singDuration)
 				{
 					dance();
 					holdTimer = 0;
@@ -283,7 +297,7 @@ class Character extends FlxSprite
 	 */
 	public function dance()
 	{
-		if (!debugMode && !specialAnim)
+		if (!debugMode && !skipDance && !specialAnim)
 		{
 			if (danceIdle)
 			{
@@ -329,8 +343,29 @@ class Character extends FlxSprite
 		}
 	}
 
+	public var danceEveryNumBeats:Int = 2;
+
+	private var settingCharacterUp:Bool = true;
+
 	public function recalculateDanceIdle()
+	{
+		var lastDanceIdle:Bool = danceIdle;
 		danceIdle = (animation.getByName('danceLeft' + idleSuffix) != null && animation.getByName('danceRight' + idleSuffix) != null);
+
+		if (settingCharacterUp)
+			danceEveryNumBeats = (danceIdle ? 1 : 2);
+		else if (lastDanceIdle != danceIdle)
+		{
+			var calc:Float = danceEveryNumBeats;
+			if (danceIdle)
+				calc /= 2;
+			else
+				calc *= 2;
+
+			danceEveryNumBeats = Math.round(Math.max(calc, 1));
+		}
+		settingCharacterUp = false;
+	}
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 		animOffsets[name] = [x, y];

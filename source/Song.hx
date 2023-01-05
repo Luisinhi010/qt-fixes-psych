@@ -6,9 +6,8 @@ import haxe.format.JsonParser;
 import lime.utils.Assets;
 #if sys
 import sys.io.File;
-import sys.FileSystem;
+#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
 #end
-
 using StringTools;
 
 typedef SwagSong =
@@ -26,6 +25,7 @@ typedef SwagSong =
 	var stage:String;
 	var validScore:Bool;
 	var dodgeEnabled:Bool;
+	var haveoldvoices:Bool;
 	var autoZoom:Bool;
 }
 
@@ -44,6 +44,7 @@ class Song
 	public var gfVersion:String = 'gf';
 
 	public var dodgeEnabled:Bool = false;
+	public var haveoldvoices:Bool = true;
 	public var autoZoom:Bool = true;
 
 	private static function onLoadJson(songJson:Dynamic) // Convert old charts to newest format
@@ -78,6 +79,8 @@ class Song
 				}
 			}
 		}
+		if (songJson.haveoldvoices == null)
+			songJson.haveoldvoices = false;
 		if (songJson.autoZoom == null)
 			songJson.autoZoom = true; // Easier for everyone lol
 	}
@@ -97,10 +100,8 @@ class Song
 		var formattedSong:String = Paths.formatToSongPath(jsonInput);
 		#if MODS_ALLOWED
 		var moddyFile:String = Paths.modsJson(formattedFolder + '/' + formattedSong);
-		if (FileSystem.exists(moddyFile))
-		{
+		if (FileSystem.exists(SUtil.getStorageDirectory() + moddyFile))
 			rawJson = File.getContent(moddyFile).trim();
-		}
 		#end
 
 		if (rawJson == null)

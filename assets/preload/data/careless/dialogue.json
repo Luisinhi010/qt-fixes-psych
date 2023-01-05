@@ -4,22 +4,25 @@
 			"expression": "nervous",
 			"text": "Oh dear...",
 			"boxState": "normal",
-			"speed": 0.055,
-			"portrait": "qt"
+			"sound": "dialogue/qt",
+			"portrait": "qt",
+			"speed": 0.055
 		},
 		{
 			"expression": "nervous",
 			"text": "Lets try that again...",
 			"boxState": "normal",
-			"speed": 0.045,
-			"portrait": "qt"
+			"sound": "dialogue/qt",
+			"portrait": "qt",
+			"speed": 0.045
 		},
 		{
 			"expression": "confused",
 			"text": "boop...?",
 			"boxState": "normal",
-			"speed": 0.1,
-			"portrait": "bf"
+			"sound": "dialogue/bf",
+			"portrait": "bf",
+			"speed": 0.1
 		}
 	]
 }

@@ -39,6 +39,8 @@ class OptionsState extends MusicBeatState
 	];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 
+	public static var pauseMenu:Bool = false;
+
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
 
@@ -83,15 +85,15 @@ class OptionsState extends MusicBeatState
 
 		for (i in 0...options.length)
 		{
-			var optionText:Alphabet = new Alphabet(0, 0, options[i], true, false);
+			var optionText:Alphabet = new Alphabet(0, 0, options[i], true);
 			optionText.screenCenter();
 			optionText.y += (100 * (i - (options.length / 2))) + 50;
 			grpOptions.add(optionText);
 		}
 
-		selectorLeft = new Alphabet(0, 0, '>', true, false);
+		selectorLeft = new Alphabet(0, 0, '>', true);
 		add(selectorLeft);
-		selectorRight = new Alphabet(0, 0, '<', true, false);
+		selectorRight = new Alphabet(0, 0, '<', true);
 		add(selectorRight);
 
 		changeSelection();
@@ -111,24 +113,27 @@ class OptionsState extends MusicBeatState
 		super.update(elapsed);
 
 		if (controls.UI_UP_P)
-		{
 			changeSelection(-1);
-		}
 		if (controls.UI_DOWN_P)
-		{
 			changeSelection(1);
-		}
+		if (FlxG.mouse.wheel != 0)
+			changeSelection(-FlxG.mouse.wheel);
 
-		if (controls.BACK)
+		if (controls.BACK || FlxG.mouse.justPressedRight)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-			MusicBeatState.justswitchState(new MainMenuState());
+			if (pauseMenu)
+			{
+				MusicBeatState.switchState(new PlayState());
+				FlxG.sound.music.stop();
+				pauseMenu = false;
+			}
+			else
+				MusicBeatState.switchState(new MainMenuState());
 		}
 
-		if (controls.ACCEPT)
-		{
+		if (controls.ACCEPT || FlxG.mouse.justPressed)
 			openSelectedSubstate(options[curSelected]);
-		}
 	}
 
 	function changeSelection(change:Int = 0)

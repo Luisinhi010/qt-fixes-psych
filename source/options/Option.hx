@@ -123,7 +123,7 @@ class Option
 	{
 		if (child != null)
 		{
-			child.changeText(newValue);
+			child.text = newValue;
 		}
 		return null;
 	}

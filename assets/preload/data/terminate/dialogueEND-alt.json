@@ -4,22 +4,25 @@
 			"expression": "talk",
 			"text": "lmao get fucked you stupid robot",
 			"boxState": "normal",
-			"speed": 0.25,
-			"portrait": "bf"
-		},
-		{
-			"speed": 0.05,
-			"portrait": "gf",
-			"boxState": "normal",
-			"expression": "talk",
-			"text": "Let's leave."
-		},
-		{
-			"speed": 0.05,
+			"sound": "dialogue/bf",
 			"portrait": "bf",
-			"boxState": "normal",
+			"speed": 0.25
+		},
+		{
 			"expression": "talk",
-			"text": "Beep!"
+			"text": "Let's leave.",
+			"boxState": "normal",
+			"sound": "dialogue/gf",
+			"speed": 0.05,
+			"portrait": "gf"
+		},
+		{
+			"expression": "talk",
+			"text": "Beep!",
+			"boxState": "normal",
+			"sound": "dialogue/bf",
+			"speed": 0.05,
+			"portrait": "bf"
 		}
 	]
 }

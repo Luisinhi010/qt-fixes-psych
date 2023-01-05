@@ -31,14 +31,17 @@ class FPS extends TextField
 	private var memoryMegas:Float = 0;
 	private var memoryTotal:Float = 0;
 
-	var totalmem:Int = WindowsData.obtainRAM();
+	#if cpp
+	var totalmem:Int = InitLoader.Ram;
+	#end
 	var gpuInfo:String = FlxG.stage.context3D.driverInfo.substr(FlxG.stage.context3D.driverInfo.indexOf('Renderer=') + 9);
+	var platform:String = InitLoader.System + " " + InitLoader.SystemVer;
 	@:noCompletion private var cacheCount:Int;
 	@:noCompletion private var currentTime:Float;
 	@:noCompletion private var times:Array<Float>;
 
 	var textShader = new Shader();
-	var wasPressed:Bool = false;
+	var debug:Bool = #if debug true #else false #end;
 
 	private var intervalArray:Array<String> = ['MB', 'GB', 'TB']; // og: https://github.com/BeastlyGhost/Forever-Engine-Underscore/blob/master/source/base/debug/Overlay.hx
 
@@ -105,6 +108,9 @@ class FPS extends TextField
 		width = 350;
 	}
 
+	private var _ms:Float = 0.0;
+	private var totalms:Float = 0.0;
+
 	// Event Handlers
 
 	@:noCompletion
@@ -118,14 +124,20 @@ class FPS extends TextField
 
 		var currentCount:Int = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) / 2);
+		_ms = FlxMath.lerp(_ms, 1 / Math.round(currentFPS) * 1000,
+			CoolUtil.boundTo(FlxG.elapsed * 3.75 * ((Math.abs(_ms - 1 / Math.round(currentFPS) * 1000) < 0.45) ? 2.5 : 1.0), 0, 1));
 		if (currentFPS > ClientPrefs.framerate)
 			currentFPS = ClientPrefs.framerate;
 
-		if (currentCount != cacheCount /*&& visible*/)
+		if (FlxG.keys.justPressed.F3)
+			debug = !debug;
+
+		var fpsMs = ' (${FlxMath.roundDecimal(_ms, 2)}ms)';
+		if (currentCount != cacheCount || _ms != totalms /*&& visible*/)
 		{
 			text = '';
 			if (ClientPrefs.showFPS)
-				text += "FPS: " + currentFPS;
+				text += "FPS: " + currentFPS + (debug ? fpsMs : '');
 			// Show Mem Pr: https://github.com/ShadowMario/FNF-PsychEngine/pull/9554/
 
 			#if openfl
@@ -135,13 +147,15 @@ class FPS extends TextField
 				memoryTotal = memoryMegas;
 
 			if (ClientPrefs.showMEM)
-				text += '\nMem: ${getInterval(memoryMegas)} / Peak: ${getInterval(memoryTotal)} / Total: ${getInterval(totalmem)}';
+				text += '\nMem: ${getInterval(memoryMegas)} / Peak: ${getInterval(memoryTotal)}' #if cpp + ' / Total: ${getInterval(totalmem)}' #end +
+			(debug ? ' / Vram: ${getInterval(Std.int(FlxG.stage.context3D.totalGPUMemory / 1024 / 1024))}' : '');
 			#end
 
 			// if (ClientPrefs.showGPU)
-			#if debug text += "\nGPU: " + gpuInfo; #end
+			if (debug)
+				text += '\nGPU: $gpuInfo\nObjects: ${FlxG.state.members.length}\nCameras: ${FlxG.cameras.list.length}\nSystem: $platform';
 
-			if (ClientPrefs.showState)
+			if (ClientPrefs.showState || debug)
 				text += '\nState: ${Type.getClassName(Type.getClass(FlxG.state))}' + '\nSubState: ${Type.getClassName(Type.getClass(FlxG.state.subState))}';
 
 			if (text != null || text != '')
@@ -156,12 +170,9 @@ class FPS extends TextField
 
 			text += "\n";
 		}
-		if (!wasPressed && (wasPressed = FlxG.keys.pressed.F3))
-			background = !background;
-		else
-			wasPressed = FlxG.keys.pressed.F3;
 
 		cacheCount = currentCount;
+		totalms = _ms;
 	}
 
 	public function setPosition(X:Float = 0, Y:Float = 0):Void

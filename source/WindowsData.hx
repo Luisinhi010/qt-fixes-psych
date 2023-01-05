@@ -4,6 +4,10 @@ package;
 @:buildXml('
 <target id="haxe">
     <lib name="dwmapi.lib" if="windows" />
+    <lib name="shell32.lib" if="windows" />
+    <lib name="gdi32.lib" if="windows" />
+    <lib name="ole32.lib" if="windows" />
+    <lib name="uxtheme.lib" if="windows" />
 </target>
 ')
 @:headerCode('
@@ -13,6 +17,12 @@ package;
 #include <tchar.h>
 #include <dwmapi.h>
 #include <winuser.h>
+#include "mmdeviceapi.h"
+#include "combaseapi.h"
+#include <Shlobj.h>
+#include <wingdi.h>
+#include <shellapi.h>
+#include <uxtheme.h>
 ')
 #elseif linux
 @:headerCode("#include <stdio.h>")
@@ -55,6 +65,46 @@ class WindowsData
 
 	#if windows
 	@:functionCode('
+        // https://stackoverflow.com/questions/4308503/how-to-enable-visual-styles-without-a-manifest
+        // dumbass windows
+
+        TCHAR dir[MAX_PATH];
+        ULONG_PTR ulpActivationCookie = FALSE;
+        ACTCTX actCtx =
+        {
+            sizeof(actCtx),
+            ACTCTX_FLAG_RESOURCE_NAME_VALID
+                | ACTCTX_FLAG_SET_PROCESS_DEFAULT
+                | ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID,
+            TEXT("manifesthelper.dll"), 0, 0, dir, (LPCTSTR)2
+        };
+        UINT cch = GetCurrentDirectory(sizeof(dir) / sizeof(*dir), (LPSTR) &dir);
+        if (cch >= sizeof(dir) / sizeof(*dir)) { return FALSE; /*shouldn\'t happen*/ }
+        dir[cch] = TEXT(\'\\0\');
+        ActivateActCtx(CreateActCtx(&actCtx), &ulpActivationCookie);
+        return ulpActivationCookie;
+    ')
+	#end
+	public static function enableVisualStyles()
+	{
+		return false;
+	}
+
+	#if windows
+	@:functionCode('
+    HWND window = GetActiveWindow();
+    HICON smallIcon = (HICON) LoadImage(NULL, path, IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
+    HICON icon = (HICON) LoadImage(NULL, path, IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE);
+    SendMessage(window, WM_SETICON, ICON_SMALL, (LPARAM)smallIcon);
+    SendMessage(window, WM_SETICON, ICON_BIG, (LPARAM)icon);
+    ')
+	#end
+	public static function setWindowIcon(path:String)
+	{
+	}
+
+	#if windows
+	@:functionCode('
         int darkMode = mode;
         HWND window = GetActiveWindow();
         if (S_OK != DwmSetWindowAttribute(window, 19, &darkMode, sizeof(darkMode))) {
@@ -62,6 +112,7 @@ class WindowsData
         }
         UpdateWindow(window);
     ')
+	#end
 	@:noCompletion
 	public static function _setWindowColorMode(mode:Int)
 	{
@@ -69,27 +120,57 @@ class WindowsData
 
 	public static function setWindowColorMode(mode:WindowColorMode)
 	{
+		#if windows
 		var darkMode:Int = cast(mode, Int);
 
 		if (darkMode > 1 || darkMode < 0)
 		{
 			trace("WindowColorMode Not Found...");
-
 			return;
 		}
 
 		_setWindowColorMode(darkMode);
+		#end
 	}
 
+	#if windows
 	@:functionCode('
 	HWND window = GetActiveWindow();
 	SetWindowLong(window, GWL_EXSTYLE, GetWindowLong(window, GWL_EXSTYLE) ^ WS_EX_LAYERED);
 	')
+	#end
 	@:noCompletion
 	public static function _setWindowLayered()
 	{
 	}
+
+	#if windows
+	@:functionCode('
+        HWND window = GetActiveWindow();
+
+		float a = alpha;
+
+		if (alpha > 1) {
+			a = 1;
+		} 
+		if (alpha < 0) {
+			a = 0;
+		}
+
+       	SetLayeredWindowAttributes(window, 0, (255 * (a * 100)) / 100, LWA_ALPHA);
+
+    ')
 	#end
+
+	/**
+	 * Set Whole Window's Opacity
+	 * ! MAKE SURE TO CALL WindowsData._setWindowLayered(); BEFORE RUNNING THIS
+	 * @param alpha 
+	 */
+	public static function setWindowAlpha(alpha:Float)
+	{
+		return alpha;
+	}
 }
 
 @:enum abstract WindowColorMode(Int)

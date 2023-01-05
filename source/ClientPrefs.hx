@@ -8,17 +8,14 @@ import Controls;
 
 class ClientPrefs
 {
-	public static var hitsoundVolume:Float = 0; // Here to make Interlope a bit easier, plus why not?
 	public static var qtOldVocals:Bool = false; // Here because some people (such as myself) prefer the old vocals from the original mod.
 	public static var qtSkipCutscene:Bool = false; // Because the cutscene caused problems in the original mod. This is here in case it causes problems still.
 	public static var qtBonk:Bool = false; // Switches the sawblade sound back to the original placeholder I was using because the Bonk is fucking hilarious.
 	public static var hurtNoteAlpha:Float = 0.6; // Hurt notes transparency. Useful to allow your brain to focus on the more opaque, non-hurt notes.
-	public static var shaders:Bool = true; // SHADERS. -Luis
 	public static var charactershaders:Bool = true;
-	#if desktop
 	public static var gpurendering:Bool = false;
 	public static var precache:Bool = false;
-	#end
+	public static var persistentCaching:Bool = false;
 
 	public static var camMove:Bool = true; // Camera Movement
 	#if sys
@@ -28,9 +25,13 @@ class ClientPrefs
 	public static var laneunderlayAlpha:Float = 0.5;
 
 	public static var optimize:Bool = false; // Pr: https://github.com/ShadowMario/FNF-PsychEngine/pull/10532
-	public static var short:Bool = false;
+	public static var colorblindFilter:String = "OFF";
+	public static var inputSystem:String = 'Psych';
+	public static var verticalHealthBar:String = 'Disabled';
+
 	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
+	public static var opponentStrums:Bool = true;
 	#if !mobile
 	public static var showFPS:Bool = true;
 	public static var showMEM:Bool = true; // Show Mem Pr: https://github.com/ShadowMario/FNF-PsychEngine/pull/9554/
@@ -43,13 +44,13 @@ class ClientPrefs
 	public static var globalAntialiasing:Bool = true;
 	public static var noteSplashes:Bool = true;
 	public static var lowQuality:Bool = false;
+	public static var shaders:Bool = true;
 	public static var framerate:Int = 60;
 	public static var cursing:Bool = true;
 	public static var violence:Bool = true;
 	public static var camZooms:Bool = true;
 	public static var noteOffset:Int = 0;
 	public static var arrowHSV:Array<Array<Int>> = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
-	public static var imagesPersist:Bool = false;
 	public static var ghostTapping:Bool = true;
 	public static var timeBar:Bool = true;
 	public static var scoreZoom:Bool = true;
@@ -61,6 +62,9 @@ class ClientPrefs
 	public static var fullscreen:Bool = false;
 	#end
 	public static var coloredHealthBar:Bool = true; // Pr: https://github.com/ShadowMario/FNF-PsychEngine/pull/10550/
+	public static var hitsoundVolume:Float = 0;
+	public static var pauseMusic:String = 'Tea Time';
+	public static var comboStacking = true;
 	public static var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
 		'scrolltype' => 'multiplicative',
@@ -124,7 +128,6 @@ class ClientPrefs
 
 	public static function saveSettings()
 	{
-		FlxG.save.data.hitsoundVolume = hitsoundVolume;
 		FlxG.save.data.qtOldVocals = qtOldVocals;
 		FlxG.save.data.qtSkipCutscene = qtSkipCutscene;
 		FlxG.save.data.qtBonk = qtBonk;
@@ -135,6 +138,7 @@ class ClientPrefs
 		FlxG.save.data.gpurendering = gpurendering;
 		FlxG.save.data.precache = precache;
 		#end
+		FlxG.save.data.persistentCaching = persistentCaching;
 
 		FlxG.save.data.camMove = camMove;
 		#if sys
@@ -144,9 +148,13 @@ class ClientPrefs
 		FlxG.save.data.laneunderlayAlpha = laneunderlayAlpha;
 
 		FlxG.save.data.optimize = optimize;
-		FlxG.save.data.short = short;
 		FlxG.save.data.downScroll = downScroll;
+		FlxG.save.data.colorblindFilter = colorblindFilter;
+		FlxG.save.data.inputSystem = inputSystem;
+		FlxG.save.data.verticalHealthBar = verticalHealthBar;
+
 		FlxG.save.data.middleScroll = middleScroll;
+		FlxG.save.data.opponentStrums = opponentStrums;
 		#if !mobile
 		FlxG.save.data.showFPS = showFPS;
 		FlxG.save.data.showMEM = showMEM;
@@ -159,13 +167,13 @@ class ClientPrefs
 		FlxG.save.data.globalAntialiasing = globalAntialiasing;
 		FlxG.save.data.noteSplashes = noteSplashes;
 		FlxG.save.data.lowQuality = lowQuality;
+		FlxG.save.data.shaders = shaders;
 		FlxG.save.data.framerate = framerate;
 		// FlxG.save.data.cursing = cursing;
 		// FlxG.save.data.violence = violence;
 		FlxG.save.data.camZooms = camZooms;
 		FlxG.save.data.noteOffset = noteOffset;
 		FlxG.save.data.arrowHSV = arrowHSV;
-		FlxG.save.data.imagesPersist = imagesPersist;
 		FlxG.save.data.ghostTapping = ghostTapping;
 		FlxG.save.data.timeBar = timeBar;
 		FlxG.save.data.scoreZoom = scoreZoom;
@@ -174,7 +182,6 @@ class ClientPrefs
 		FlxG.save.data.comboOffset = comboOffset;
 		FlxG.save.data.achievementsMap = Achievements.achievementsMap;
 		FlxG.save.data.sawbladeDeath = Achievements.sawbladeDeath;
-		FlxG.save.data.henchmenDeath = Achievements.henchmenDeath;
 
 		FlxG.save.data.ratingOffset = ratingOffset;
 		FlxG.save.data.sickWindow = sickWindow;
@@ -188,11 +195,15 @@ class ClientPrefs
 		FlxG.save.data.fullscreen = fullscreen;
 		#end
 		FlxG.save.data.coloredHealthBar = coloredHealthBar;
+		FlxG.save.data.hitsoundVolume = hitsoundVolume;
+		FlxG.save.data.pauseMusic = pauseMusic;
+		FlxG.save.data.comboStacking = comboStacking;
 
 		FlxG.save.flush();
 
 		var save:FlxSave = new FlxSave();
-		save.bind('controls_v2', 'ninjamuffin99'); // Placing this in a separate save so that it can be manually deleted without removing your Score and stuff
+		save.bind('Qt_controls'
+			#if (flixel < "5.0.0"), 'Luis' #end); // Placing this in a separate save so that it can be manually deleted without removing your Score and stuff
 		save.data.customControls = keyBinds;
 		save.flush();
 		FlxG.log.add("Settings saved!");
@@ -200,9 +211,6 @@ class ClientPrefs
 
 	public static function loadPrefs()
 	{
-		if (FlxG.save.data.hitsoundVolume != null)
-			hitsoundVolume = FlxG.save.data.hitsoundVolume;
-
 		if (FlxG.save.data.qtOldVocals != null)
 			qtOldVocals = FlxG.save.data.qtOldVocals;
 
@@ -227,6 +235,8 @@ class ClientPrefs
 		if (FlxG.save.data.precache != null)
 			precache = FlxG.save.data.precache;
 		#end
+		if (FlxG.save.data.persistentCaching != null)
+			persistentCaching = FlxG.save.data.persistentCaching;
 
 		if (FlxG.save.data.camMove != null)
 			camMove = FlxG.save.data.camMove;
@@ -245,14 +255,23 @@ class ClientPrefs
 		if (FlxG.save.data.optimize != null)
 			optimize = FlxG.save.data.optimize;
 
-		if (FlxG.save.data.short != null)
-			short = FlxG.save.data.short;
+		if (FlxG.save.data.colorblindFilter != null)
+			colorblindFilter = FlxG.save.data.colorblindFilter;
+
+		if (FlxG.save.data.inputSystem != null)
+			inputSystem = FlxG.save.data.inputSystem;
+
+		if (FlxG.save.data.verticalHealthBar != null)
+			verticalHealthBar = FlxG.save.data.verticalHealthBar;
 
 		if (FlxG.save.data.downScroll != null)
 			downScroll = FlxG.save.data.downScroll;
 
 		if (FlxG.save.data.middleScroll != null)
 			middleScroll = FlxG.save.data.middleScroll;
+
+		if (FlxG.save.data.opponentStrums != null)
+			opponentStrums = FlxG.save.data.opponentStrums;
 
 		#if !mobile
 		if (FlxG.save.data.showFPS != null)
@@ -273,9 +292,7 @@ class ClientPrefs
 
 		#if desktop
 		if (FlxG.save.data.autoPause != null)
-		{
 			autoPause = FlxG.save.data.autoPause;
-		}
 		#end
 		if (FlxG.save.data.flashing != null)
 			flashing = FlxG.save.data.flashing;
@@ -288,6 +305,9 @@ class ClientPrefs
 
 		if (FlxG.save.data.lowQuality != null)
 			lowQuality = FlxG.save.data.lowQuality;
+
+		if (FlxG.save.data.shaders != null)
+			shaders = FlxG.save.data.shaders;
 
 		if (FlxG.save.data.framerate != null)
 		{
@@ -303,12 +323,6 @@ class ClientPrefs
 				FlxG.updateFramerate = framerate;
 			}
 		}
-		/*if(FlxG.save.data.cursing != null) {
-				cursing = FlxG.save.data.cursing;
-			}
-			if(FlxG.save.data.violence != null) {
-				violence = FlxG.save.data.violence;
-		}*/
 		if (FlxG.save.data.camZooms != null)
 			camZooms = FlxG.save.data.camZooms;
 
@@ -356,15 +370,20 @@ class ClientPrefs
 
 		#if desktop
 		if (FlxG.save.data.screenRes != null)
-		{
 			screenRes = FlxG.save.data.screenRes;
-		}
+
 		if (FlxG.save.data.fullscreen != null)
 		{
 			fullscreen = FlxG.save.data.fullscreen;
 			FlxG.fullscreen = fullscreen;
 		}
 		#end
+
+		if (FlxG.save.data.hitsoundVolume != null)
+			hitsoundVolume = FlxG.save.data.hitsoundVolume;
+
+		if (FlxG.save.data.pauseMusic != null)
+			pauseMusic = FlxG.save.data.pauseMusic;
 
 		if (FlxG.save.data.gameplaySettings != null)
 		{
@@ -383,15 +402,17 @@ class ClientPrefs
 		if (FlxG.save.data.coloredHealthBar != null)
 			coloredHealthBar = FlxG.save.data.coloredHealthBar;
 
+		if (FlxG.save.data.comboStacking != null)
+			comboStacking = FlxG.save.data.comboStacking;
+
 		var save:FlxSave = new FlxSave();
-		save.bind('controls_v2', 'ninjamuffin99');
+		save.bind('Qt_controls' #if (flixel < "5.0.0"), 'Luis' #end);
 		if (save != null && save.data.customControls != null)
 		{
 			var loadedControls:Map<String, Array<FlxKey>> = save.data.customControls;
 			for (control => keys in loadedControls)
-			{
 				keyBinds.set(control, keys);
-			}
+
 			reloadControls();
 		}
 	}
@@ -401,16 +422,15 @@ class ClientPrefs
 		return /*PlayState.isStoryMode ? defaultValue : */ (gameplaySettings.exists(name) ? gameplaySettings.get(name) : defaultValue);
 	}
 
-	public static function getdodgekeys() // for lazyness
+	public static function getkeys(keyname:String) // for lazyness
 	{
-		var dodgeKeys:Array<String> = ['Space'];
+		var keys:Array<String> = [];
 		for (i in 0...2)
 		{
-			var dodgeKey:String = InputFormatter.getKeyName(keyBinds.get('qt_dodge')[i]);
-			dodgeKeys[i] = dodgeKey;
+			var dodgeKey:String = InputFormatter.getKeyName(keyBinds.get(keyname)[i]);
+			keys[i] = dodgeKey;
 		}
-		/*var dodgeKey:String = */
-		return dodgeKeys[0] == '---' ? dodgeKeys[1] : dodgeKeys[1] == '---' ? dodgeKeys[0] : dodgeKeys[0] + ' or ' + dodgeKeys[1];
+		return keys[0] == '---' ? keys[1] : keys[1] == '---' ? keys[0] : keys[0] + ' or ' + keys[1];
 	}
 
 	public static function reloadControls()
@@ -450,13 +470,14 @@ class ClientPrefs
 	{
 		if (!loadedSettings)
 		{
+			loadDefaultKeys();
 			FlxG.game.focusLostFramerate = 60;
 			FlxG.sound.muteKeys = muteKeys;
 			FlxG.sound.volumeDownKeys = volumeDownKeys;
 			FlxG.sound.volumeUpKeys = volumeUpKeys;
 			FlxG.keys.preventDefaultKeys = [TAB];
 			PlayerSettings.init();
-			FlxG.save.bind('funkin', 'ninjamuffin99');
+			FlxG.save.bind('funkin', 'Luis');
 			loadPrefs();
 			Highscore.load();
 			if (FlxG.save.data.weekCompleted != null)

@@ -2,7 +2,7 @@ package;
 
 #if MODS_ALLOWED
 import sys.io.File;
-import sys.FileSystem;
+#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
 #else
 import openfl.utils.Assets;
 #end
@@ -42,40 +42,28 @@ class StageData
 		{
 			switch (SONG.song.toLowerCase().replace(' ', '-'))
 			{
-				case 'spookeez' | 'south' | 'monster':
-					stage = 'spooky';
-				case 'pico' | 'blammed' | 'philly' | 'philly-nice':
-					stage = 'philly';
-				case 'milf' | 'satin-panties' | 'high':
-					stage = 'limo';
-				case 'cocoa' | 'eggnog':
-					stage = 'mall';
-				case 'winter-horrorland':
-					stage = 'mallEvil';
-				case 'senpai' | 'roses':
-					stage = 'school';
-				case 'thorns':
-					stage = 'schoolEvil';
-				case 'ugh' | 'guns' | 'stress':
-					stage = 'tank';
+				case 'carefree':
+					stage = 'street-cute';
+				case 'careless':
+					stage = 'street-real';
+				case 'cessation':
+					stage = 'street-cessation';
+				case 'censory-overload' | 'terminate':
+					stage = 'street-kb';
+				case 'termination':
+					stage = 'street-termination';
 				default:
 					stage = 'stage';
 			}
 		}
 		else
-		{
 			stage = 'stage';
-		}
 
 		var stageFile:StageFile = getStageFile(stage);
 		if (stageFile == null)
-		{ // preventing crashes
 			forceNextDirectory = '';
-		}
 		else
-		{
 			forceNextDirectory = stageFile.directory;
-		}
 	}
 
 	public static function getStageFile(stage:String):StageFile
@@ -85,24 +73,17 @@ class StageData
 
 		#if MODS_ALLOWED
 		var modPath:String = Paths.modFolders('stages/' + stage + '.json');
-		if (FileSystem.exists(modPath))
-		{
+		if (FileSystem.exists(SUtil.getStorageDirectory() + modPath))
 			rawJson = File.getContent(modPath);
-		}
-		else if (FileSystem.exists(path))
-		{
+		else if (FileSystem.exists(SUtil.getStorageDirectory() + path))
 			rawJson = File.getContent(path);
-		}
 		#else
 		if (Assets.exists(path))
-		{
 			rawJson = Assets.getText(path);
-		}
 		#end
 	else
-	{
 		return null;
-	}
+
 		return cast Json.parse(rawJson);
 	}
 }

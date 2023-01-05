@@ -63,7 +63,7 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 		FlxG.cameras.add(camHUD);
 		FlxCamera.defaultCameras = [camHUD];
 
-		if (!ClientPrefs.lowQuality && FlxG.random.bool(28))
+		if ((!ClientPrefs.lowQuality || !ClientPrefs.optimize) && FlxG.random.bool(28))
 		{ // 28% chance of Amelia laughing in the gameover screen.
 			hazardInterlopeLaugh = new FlxSprite();
 			hazardInterlopeLaugh.frames = Paths.getSparrowAtlas('hazard/inhuman-port/ameliaTaunt');
@@ -102,7 +102,7 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 		retry.alpha = 0;
 		retry.animation.play('empty');
 
-		if (!ClientPrefs.lowQuality)
+		if (!ClientPrefs.lowQuality || !ClientPrefs.optimize)
 		{
 			screenScanBar = new BGSprite(null, -FlxG.width, -FlxG.height, 0, 0);
 			screenScanBar.makeGraphic(Std.int(FlxG.width * 3), 20, FlxColor.GRAY);
@@ -170,14 +170,10 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 		}
 
 		if (retry.animation.curAnim.name == 'start' && retry.animation.curAnim.finished)
-		{
 			retry.animation.play('idle');
-		}
 
 		if (controls.ACCEPT)
-		{
 			endBullshit();
-		}
 
 		if (controls.BACK)
 		{
@@ -191,14 +187,13 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 			else
 				MusicBeatState.switchState(new FreeplayState());
 
-			FlxG.sound.playMusic(Paths.music('qtMenu'));
+			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			PlayState.instance.callOnLuas('onGameOverConfirm', [false]);
 		}
 
 		if (FlxG.sound.music.playing)
-		{
 			Conductor.songPosition = FlxG.sound.music.time;
-		}
+
 		PlayState.instance.callOnLuas('onUpdatePost', [elapsed]);
 	}
 

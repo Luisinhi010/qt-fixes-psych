@@ -30,6 +30,7 @@ class Prompt extends MusicBeatSubstate
 	var panelbg:FlxSprite;
 	var buttonAccept:FlxButton;
 	var buttonNo:FlxButton;
+	var nobuttonNo:Bool = false;
 	var cornerSize:Int = 10;
 
 	public function new(promptText:String = '', defaultSelected:Int = 0, okCallback:Void->Void, cancelCallback:Void->Void, acceptOnDefault:Bool = false,
@@ -48,18 +49,20 @@ class Prompt extends MusicBeatSubstate
 			op1 = option1;
 		if (option2 != null)
 			op2 = option2;
+		nobuttonNo = op2 == 'disabledbutton';
 		buttonAccept = new FlxButton(473.3, 450, op1, function()
 		{
 			if (okc != null)
 				okc();
 			close();
 		});
-		buttonNo = new FlxButton(633.3, 450, op2, function()
-		{
-			if (cancelc != null)
-				cancelc();
-			close();
-		});
+		if (!nobuttonNo)
+			buttonNo = new FlxButton(633.3, 450, op2, function()
+			{
+				if (cancelc != null)
+					cancelc();
+				close();
+			});
 		super();
 	}
 
@@ -78,14 +81,6 @@ class Prompt extends MusicBeatSubstate
 			panelbg = new FlxSprite(0, 0);
 			makeSelectorGraphic(panel, 300, 150, 0xff999999);
 			makeSelectorGraphic(panelbg, 304, 154, 0xff000000);
-			// panel.makeGraphic(300, 150, 0xff999999);
-			// panel.loadGraphic(Paths.image('ui/promptbg'));
-			/*
-				buttons.frames = Paths.getSparrowAtlas('ui/prompt_buttons');
-				buttons.animation.addByIndices('but0', 'buttons', [0], '', 0);
-				buttons.animation.addByIndices('but1', 'buttons', [1], '', 0);
-				buttons.animation.play('but0');
-				buttons.scrollFactor.set(); */
 			panel.scrollFactor.set();
 			panel.screenCenter();
 			panelbg.scrollFactor.set();
@@ -94,18 +89,21 @@ class Prompt extends MusicBeatSubstate
 			add(panelbg);
 			add(panel);
 			add(buttonAccept);
-			add(buttonNo);
-			// add(buttons);
-			var textshit:FlxText = new FlxText(buttonNo.width * 2, panel.y, 300, theText, 16);
+			if (!nobuttonNo)
+				add(buttonNo);
+			var textshit:FlxText = new FlxText(buttonAccept.width * 2, panel.y, 300, theText, 16);
 			textshit.alignment = 'center';
 			add(textshit);
 			textshit.screenCenter();
 			buttonAccept.screenCenter();
-			buttonNo.screenCenter();
-			buttonAccept.x -= buttonNo.width / 1.5;
 			buttonAccept.y = panel.y + panel.height - 30;
-			buttonNo.x += buttonNo.width / 1.5;
-			buttonNo.y = panel.y + panel.height - 30;
+			if (!nobuttonNo)
+			{
+				buttonAccept.x -= buttonNo.width / 1.5;
+				buttonNo.screenCenter();
+				buttonNo.y = panel.y + panel.height - 30;
+				buttonNo.x += buttonNo.width / 1.5;
+			}
 			textshit.scrollFactor.set();
 		}
 	}

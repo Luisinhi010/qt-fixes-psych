@@ -14,7 +14,7 @@ import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 #if MODS_ALLOWED
-import sys.FileSystem;
+#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
 import sys.io.File;
 #end
 import lime.utils.Assets;
@@ -92,10 +92,10 @@ class CreditsState extends MusicBeatState
 				'D7A968'
 			],
 			[
-				'BeastlyGhost',
+				'BeastlyGabi',
 				'Ghost',
 				"Also Programming, Updated Hud's code",
-				'https://twitter.com/Fan_de_RPG',
+				'https://twitter.com/BeastlyGabi',
 				'00BEFA'
 			],
 			[''],
@@ -145,6 +145,23 @@ class CreditsState extends MusicBeatState
 				'9930BB'
 			],
 			[''],
+			['Special Thanks'],
+			[
+				'sayofthelor',
+				'bean',
+				'Took some stuff From Lore Engine',
+				'https://twitter.com/sayofthelor',
+				'663399'
+			],
+			[
+				'Yoshi Crafter29',
+				'yoshicrafter29',
+				"For being a Chad",
+				'https://twitter.com/YoshiCrafter29',
+				'FFCC9D'
+			],
+
+			[''],
 			['Psych Engine Team'],
 			[
 				'Shadow Mario',
@@ -155,35 +172,35 @@ class CreditsState extends MusicBeatState
 			],
 			[
 				'RiverOaken',
-				'riveroaken',
+				'river',
 				'Main Artist/Animator of Psych Engine',
 				'https://twitter.com/RiverOaken',
-				'C30085'
+				'B42F71'
 			],
 			[
-				'Shubs',
+				'shubs',
 				'shubs',
 				'Additional Programmer of Psych Engine',
 				'https://twitter.com/yoshubs',
-				'279ADC'
+				'5E99DF'
 			],
 			[''],
 			['Former Engine Members'],
 			[
-				'bb-Panzu',
 				'bb-panzu',
+				'bb',
 				'Ex-Programmer of Psych Engine',
 				'https://twitter.com/bbsub3',
-				'389A58'
+				'3E813A'
 			],
 			[''],
 			['Engine Contributors'],
 			[
 				'iFlicky',
-				'iflicky',
-				'Composer of Psync\nMade the Dialogue Sounds',
+				'flicky',
+				'Composer of Psync and Tea Time\nMade the Dialogue Sounds',
 				'https://twitter.com/flicky_i',
-				'AA32FE'
+				'9E29CF'
 			],
 			[
 				'SqirraRNG',
@@ -194,75 +211,92 @@ class CreditsState extends MusicBeatState
 				'E1843A'
 			],
 			[
+				'EliteMasterEric',
+				'mastereric',
+				'Runtime Shaders support',
+				'https://twitter.com/EliteMasterEric',
+				'FFBD40'
+			],
+			[
 				'PolybiusProxy',
-				'polybiusproxy',
-				'.MP4 Video Loader Extension',
+				'proxy',
+				'.MP4 Video Loader Library (hxCodec)',
 				'https://twitter.com/polybiusproxy',
-				'FFEAA6'
+				'DCD294'
+			],
+			[
+				'KadeDev',
+				'kade',
+				'Fixed some cool stuff on Chart Editor\nand other PRs',
+				'https://twitter.com/kade0912',
+				'64A250'
 			],
 			[
 				'Keoiki',
 				'keoiki',
 				'Note Splash Animations',
 				'https://twitter.com/Keoiki_',
-				'FFFFFF'
+				'D2D2D2'
+			],
+			[
+				'Nebula the Zorua',
+				'nebula',
+				'LUA JIT Fork and some Lua reworks',
+				'https://twitter.com/Nebula_Zorua',
+				'7D40B2'
 			],
 			[
 				'Smokey',
 				'smokey',
-				'Spritemap Texture Support',
+				'Sprite Atlas Support',
 				'https://twitter.com/Smokey_5_',
-				'4D5DBD'
+				'483D92'
 			],
 			[''],
 			["Funkin' Crew"],
 			[
-				'Ninjamuffin99',
+				'ninjamuffin99',
 				'ninjamuffin99',
 				"Programmer of Friday Night Funkin'",
 				'https://twitter.com/ninja_muffin99',
-				'F73838'
+				'CF2D2D'
 			],
 			[
 				'PhantomArcade',
 				'phantomarcade',
 				"Animator of Friday Night Funkin'",
 				'https://twitter.com/PhantomArcade3K',
-				'FFBB1B'
+				'FADC45'
 			],
 			[
-				'Evilsk8r',
+				'evilsk8r',
 				'evilsk8r',
 				"Artist of Friday Night Funkin'",
 				'https://twitter.com/evilsk8r',
-				'53E52C'
+				'5ABD4B'
 			],
 			[
-				'Kawaisprite',
+				'kawaisprite',
 				'kawaisprite',
 				"Composer of Friday Night Funkin'",
 				'https://twitter.com/kawaisprite',
-				'6475F3'
+				'378FC7'
 			]
 		];
 
 		for (i in pisspoop)
+		{
 			creditsStuff.push(i);
+		}
 
 		for (i in 0...creditsStuff.length)
 		{
 			var isSelectable:Bool = !unselectableCheck(i);
-			var optionText:Alphabet = new Alphabet(0, 70 * i, creditsStuff[i][0], !isSelectable, false);
+			var optionText:Alphabet = new Alphabet(FlxG.width / 2, 300, creditsStuff[i][0], !isSelectable);
 			optionText.isMenuItem = true;
-			optionText.screenCenter(X);
-			optionText.yAdd -= 70;
-			if (isSelectable)
-			{
-				optionText.x -= 70;
-			}
-			optionText.forceX = optionText.x;
-			// optionText.yMult = 90;
 			optionText.targetY = i;
+			optionText.changeX = false;
+			optionText.snapToPosition();
 			grpOptions.add(optionText);
 
 			if (isSelectable)
@@ -286,6 +320,8 @@ class CreditsState extends MusicBeatState
 				if (curSelected == -1)
 					curSelected = i;
 			}
+			else
+				optionText.alignment = CENTERED;
 		}
 
 		descBox = new AttachedSprite();
@@ -330,12 +366,17 @@ class CreditsState extends MusicBeatState
 
 				if (upP)
 				{
-					changeSelection(-1 * shiftMult);
+					changeSelection(-shiftMult);
 					holdTime = 0;
 				}
 				if (downP)
 				{
-					changeSelection(1 * shiftMult);
+					changeSelection(shiftMult);
+					holdTime = 0;
+				}
+				if (FlxG.mouse.wheel != 0)
+				{
+					changeSelection(-FlxG.mouse.wheel);
 					holdTime = 0;
 				}
 
@@ -350,10 +391,11 @@ class CreditsState extends MusicBeatState
 				}
 			}
 
-			if (controls.ACCEPT)
+			if ((controls.ACCEPT || FlxG.mouse.justPressed)
+				&& (creditsStuff[curSelected][3] == null || creditsStuff[curSelected][3].length > 4))
 				CoolUtil.browserLoad(creditsStuff[curSelected][3]);
 
-			if (controls.BACK)
+			if (controls.BACK || FlxG.mouse.justPressedRight)
 			{
 				if (colorTween != null)
 					colorTween.cancel();
@@ -366,7 +408,7 @@ class CreditsState extends MusicBeatState
 
 		for (item in grpOptions.members)
 		{
-			if (!item.isBold)
+			if (!item.bold)
 			{
 				var lerpVal:Float = CoolUtil.boundTo(elapsed * 12, 0, 1);
 				if (item.targetY == 0)
@@ -374,12 +416,10 @@ class CreditsState extends MusicBeatState
 					var lastX:Float = item.x;
 					item.screenCenter(X);
 					item.x = FlxMath.lerp(lastX, item.x - 70, lerpVal);
-					item.forceX = item.x;
 				}
 				else
 				{
 					item.x = FlxMath.lerp(item.x, 200 + -40 * Math.abs(item.targetY), lerpVal);
-					item.forceX = item.x;
 				}
 			}
 		}

@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxCamera;
+import flixel.graphics.frames.FlxFrame;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -29,17 +31,14 @@ class NoteSplash extends FlxSprite
 	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = 'noteSplashes', hueColor:Float = 0, satColor:Float = 0,
 			brtColor:Float = 0, ?isPlayer:Bool = false, thealpha:Float = 0.6)
 	{
-		var realtexture:String = 'Splashes/noteSplashes';
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 		alpha = thealpha;
 
 		if (texture == null)
 			texture = 'noteSplashes';
 
-		realtexture = 'Splashes/' + texture;
-
 		if (textureLoaded != texture)
-			loadAnims(realtexture);
+			loadAnims(texture);
 
 		colorSwap.hue = hueColor;
 		colorSwap.saturation = satColor;
@@ -49,12 +48,18 @@ class NoteSplash extends FlxSprite
 		var animNum:Int = FlxG.random.int(1, 2);
 		animation.play('note' + note + '-' + animNum, true);
 		if (animation.curAnim != null)
-			animation.curAnim.frameRate = MusicBeatState.getFramerate(24 + FlxG.random.int(-2, 2), true);
+			animation.curAnim.frameRate = 24 + FlxG.random.int(-2, 2);
 	}
 
-	function loadAnims(skin:String)
+	public function loadAnims(skin:String)
 	{
-		frames = Paths.getSparrowAtlas(skin);
+		var name:String = 'Splashes/' + skin;
+		if (!Paths.fileExists('images/' + name + '.png', IMAGE, false, 'shared'))
+			name = skin;
+		if (!Paths.fileExists('images/' + name + '.png', IMAGE, false, 'shared'))
+			name = 'Splashes/noteSplashes';
+
+		frames = Paths.getSparrowAtlas(name, null, ClientPrefs.gpurendering);
 		for (i in 1...3)
 		{
 			animation.addByPrefix("note0-" + i, "note splash purple " + i, 24, false);
@@ -71,5 +76,32 @@ class NoteSplash extends FlxSprite
 				kill();
 
 		super.update(elapsed);
+	}
+
+	@:noCompletion
+	override function drawComplex(camera:FlxCamera):Void
+	{
+		_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
+		_matrix.translate(-origin.x, -origin.y);
+		_matrix.scale(scale.x, scale.y);
+
+		if (bakedRotationAngle <= 0)
+		{
+			updateTrig();
+
+			if (angle != 0)
+				_matrix.rotateWithTrig(_cosAngle, _sinAngle);
+		}
+
+		_point.add(origin.x, origin.y);
+		_matrix.translate(_point.x, _point.y);
+
+		if (isPixelPerfectRender(camera))
+		{
+			_matrix.tx = Math.floor(_matrix.tx);
+			_matrix.ty = Math.floor(_matrix.ty);
+		}
+
+		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
 	}
 }

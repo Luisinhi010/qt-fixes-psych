@@ -1,32 +1,36 @@
 {
 	"dialogue": [
 		{
-			"speed": 0.05,
-			"portrait": "kb",
-			"boxState": "normal",
 			"expression": "talk",
-			"text": "So you're the one causing the commotion."
+			"text": "So you're the one causing the commotion.",
+			"boxState": "normal",
+			"sound": "dialogue/kb",
+			"speed": 0.05,
+			"portrait": "kb"
 		},
 		{
-			"speed": 0.015,
-			"portrait": "bf",
-			"boxState": "normal",
 			"expression": "shocked",
-			"text": ""
-		},
-		{
+			"text": "",
+			"boxState": "normal",
+			"sound": "",
 			"speed": 0.05,
-			"portrait": "kb",
-			"boxState": "normal",
-			"expression": "talk",
-			"text": "I won't allow QT to lose."
+			"portrait": "bf"
 		},
 		{
-			"speed": 0.09,
-			"portrait": "kb",
-			"boxState": "normal",
 			"expression": "talk",
-			"text": "Nothing personal kid."
+			"text": "I won't allow QT to lose.",
+			"boxState": "normal",
+			"sound": "dialogue/kb",
+			"speed": 0.05,
+			"portrait": "kb"
+		},
+		{
+			"expression": "talk",
+			"text": "Nothing personal kid.",
+			"boxState": "normal",
+			"sound": "dialogue/kb",
+			"speed": 0.09,
+			"portrait": "kb"
 		}
 	]
 }

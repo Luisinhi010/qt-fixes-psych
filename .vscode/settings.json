@@ -6,7 +6,37 @@
     "setActorX",
     "setActorY",
     "onUpdate",
-    "songPos"
+    "songPos",
+    "runHaxeCode",
+    "onBeatHit",
+    "onStepHit",
+    "onUpdatePost",
+    "onStartCountdown",
+    "onCountdownTick",
+    "onSongStart",
+    "onEndSong",
+    "Function_Continue",
+    "onResume",
+    "onGameOver",
+    "onGameOverConfirm",
+    "onNextDialogue",
+    "onSkipDialogue",
+    "goodNoteHit",
+    "opponentNoteHit",
+    "noteMissPress",
+    "noteMiss",
+    "onRecalculateRating",
+    "onMoveCamera",
+    "onEvent",
+    "eventEarlyTrigger",
+    "onTweenCompleted",
+    "onTimerCompleted",
+    "onCheckForAchievement",
+    "onCreate"
   ],
-  "C_Cpp.errorSquiggles": "Enabled"
+  "C_Cpp.errorSquiggles": "enabled",
+  "[haxe]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true
+  }
 }

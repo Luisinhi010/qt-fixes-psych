@@ -193,6 +193,19 @@ class ChromaticAberrationEffect extends Effect
 			shader.bOffset.value = [chromeOffset * -1];
 		}
 	}
+
+	public function setGreenChrome(chromeOffset:Float):Void // cuz i'm lazy
+	{
+		if (chromeOffset <= 0)
+			shader.enabled.value = [false];
+		else
+		{
+			shader.enabled.value = [true];
+			shader.rOffset.value = [0.0];
+			shader.gOffset.value = [chromeOffset];
+			shader.bOffset.value = [chromeOffset * -1];
+		}
+	}
 }
 
 class ChromaticAberrationShader extends FlxFixedShader
@@ -817,7 +830,6 @@ class ThreeDEffect extends Effect
 
 // coding is like hitting on women, you never start with the number
 //               -naether
-
 class ThreeDShader extends FlxFixedShader
 {
 	@:glFragmentSource('
@@ -900,7 +912,6 @@ void main() {
 }
 
 // Boing! by ThaeHan
-
 class FuckingTriangleEffect extends Effect
 {
 	public var shader:FuckingTriangle = new FuckingTriangle();
@@ -1471,15 +1482,5 @@ class PulseShader extends FlxFixedShader
 class Effect
 {
 	public function setValue(shader:FlxShader, variable:String, value:Float)
-	{
 		Reflect.setProperty(Reflect.getProperty(shader, 'variable'), 'value', [value]);
-	}
-}
-
-class ShaderPaths extends Paths
-{
-	inline static public function shader(key:String)
-	{
-		return 'assets/shaders/$key';
-	}
 }

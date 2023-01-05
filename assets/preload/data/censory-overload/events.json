@@ -1,10 +1,5 @@
 {
   "song": {
-    "speed": 2.9,
-    "stage": "street-kb",
-    "player1": "bf",
-    "player2": "kb",
-    "player3": null,
     "events": [
       [0, [["Set GF Speed", "2", ""]]],
       [
@@ -118,16 +113,15 @@
           ["streetTV state", "5", ""],
           ["Screen Shake", "0.63,0.0097", "0.63,0.0092"],
           ["censory overload events", "9", ""],
-          ["censory Chroma", "0.01", ""]
+          ["censory Chroma", "0.01", "0.01"]
         ]
       ],
-      [176526.315789474, [["censory Chroma", "0.01", ""]]],
       [
         176842.105263158,
         [
           ["streetTV state", "1", ""],
           ["censory overload events", "10 ", ""],
-          ["censory Chroma", "0.01", ""]
+          ["censory Chroma", "", "0.001"]
         ]
       ],
       [
@@ -136,7 +130,8 @@
           ["streetTV state", "0", ""],
           ["Set GF Speed", "2", ""],
           ["Alt Idle Animation", "dad", "-alt"],
-          ["censory overload events", "11", ""]
+          ["censory overload events", "11", ""],
+          ["censory Chroma", "0", "0"]
         ]
       ],
       [
@@ -146,7 +141,7 @@
           ["streetBG state", "1", ""],
           ["Screen Shake", "0.63,0.0123", "0.63,0.012"],
           ["Alt Idle Animation", "dad", ""],
-          ["censory Chroma", "0.01", ""]
+          ["censory Chroma", "0.01", "0.01"]
         ]
       ],
       [
@@ -154,27 +149,29 @@
         [
           ["streetTV state", "7", ""],
           ["streetBG state", "2", ""],
-          ["Change Character OPTIONAL", "gf", "gf-404"],
-          ["Change Character OPTIONAL", "dad", "kb-404"],
-          ["Change Character OPTIONAL", "bf", "bf-404"],
+          ["blue screen shader", "true", ""],
           ["newDadDrainHealthValue", "0.0095", ""],
           ["newLossMultiplier", "1.125", ""],
           ["Set GF Speed", "1", ""],
           ["Gas Effect", "burst", ""],
           ["censory overload events", "12", ""],
-          ["censory Chroma", "0.01", ""],
+          ["censory Chroma", "0.01", "0.001"],
           ["notes modchart player", "10", "10"],
           ["notes modchart opponent", "10", "10"]
         ]
       ],
       [222947.368421053, [["Gas Effect", "burstloop", ""]]],
-      [242526.315789475, [["newDadDrainHealthValue", "0.100", ""]]],
+      [
+        242526.315789475,
+        [
+          ["newDadDrainHealthValue", "0.100", ""],
+          ["censory Chroma", "0.01", "0.001"]
+        ]
+      ],
       [
         262736.842105264,
         [
-          ["Change Character OPTIONAL", "dad", "kb"],
-          ["Change Character OPTIONAL", "bf", "bf"],
-          ["Change Character OPTIONAL", "gf", "gf"],
+          ["blue screen shader", "false", ""],
           ["Set GF Speed", "1", ""],
           ["newLossMultiplier", "1.075", ""],
           ["newDadDrainHealthValue", "0.02", ""],
@@ -182,7 +179,7 @@
           ["streetBG state", "0", ""],
           ["Gas Effect", "burstfaster", ""],
           ["censory overload events", "13", ""],
-          ["censory Chroma", "0.01", ""],
+          ["censory Chroma", "0.01", "0.001"],
           ["reset notes pos", "0.5", ""]
         ],
         null,
@@ -381,7 +378,7 @@
         303157.894736844,
         [
           ["streetTV state", "0", ""],
-          ["censory Chroma", "0.01", ""],
+          ["censory Chroma", "0.01", "0"],
           ["reset notes pos", "2", ""]
         ]
       ],
@@ -411,13 +408,6 @@
       [322421.052631581, [["censory final events", "2", ""]]],
       [322736.842105265, [["censory final events", "3", ""]]],
       [323052.631578949, [["censory final events", "4", ""]]]
-    ],
-    "notes": [],
-    "validScore": false,
-    "gfVersion": "gf",
-    "bpm": 190,
-    "needsVoices": true,
-    "song": "Censory-Overload",
-    "dodgeEnabled": null
+    ]
   }
 }

@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="TV.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="TV_Attention0000" x="10" y="853" width="1503" height="270" pivotX="0" pivotY="0"/>
+	<SubTexture name="TV_Attention0001" x="1523" y="853" width="1503" height="270"/>
+	<SubTexture name="TV_Attention0002" x="3036" y="853" width="1503" height="270"/>
+	<SubTexture name="TV_Attention0003" x="4549" y="853" width="1503" height="270"/>
+	<SubTexture name="TV_Attention0004" x="6062" y="853" width="1503" height="270"/>
+	<SubTexture name="TV_Attention0005" x="10" y="1133" width="1503" height="270"/>
+	<SubTexture name="TV_Attention0006" x="1523" y="1133" width="1503" height="270"/>
+	<SubTexture name="TV_Attention0007" x="3036" y="1133" width="1503" height="270"/>
+	<SubTexture name="TV_Attention0008" x="4549" y="1133" width="1503" height="270"/>
+	<SubTexture name="TV_Bluescreen0000" x="6062" y="1133" width="1503" height="270" pivotX="0" pivotY="0"/>
+	<SubTexture name="TV_Drop0000" x="10" y="1413" width="1503" height="270" pivotX="0" pivotY="0"/>
+	<SubTexture name="TV_Drop0001" x="1523" y="1413" width="1503" height="270"/>
+	<SubTexture name="TV_Drop0002" x="3036" y="1413" width="1503" height="270"/>
+	<SubTexture name="TV_End0000" x="4549" y="1413" width="1503" height="270" pivotX="0" pivotY="0"/>
+	<SubTexture name="TV_End0001" x="6062" y="1413" width="1503" height="270"/>
+	<SubTexture name="TV_End0002" x="10" y="1693" width="1503" height="270"/>
+	<SubTexture name="TV_End0003" x="1523" y="1693" width="1503" height="270"/>
+	<SubTexture name="TV_End0004" x="3036" y="1693" width="1503" height="270"/>
+	<SubTexture name="TV_End0005" x="4549" y="1693" width="1503" height="270"/>
+	<SubTexture name="TV_Error0000" x="6062" y="1693" width="1503" height="270" pivotX="0" pivotY="0"/>
+	<SubTexture name="TV_GoodLuck0000" x="4552" y="10" width="1504" height="271" pivotX="1" pivotY="0"/>
+	<SubTexture name="TV_GoodLuck0001" x="6066" y="10" width="1504" height="271"/>
+	<SubTexture name="TV_GoodLuck0002" x="4552" y="291" width="1504" height="271"/>
+	<SubTexture name="TV_Idle0000" x="6062" y="2253" width="1503" height="270" pivotX="0" pivotY="0"/>
+	<SubTexture name="TV_Idle0001" x="10" y="2533" width="1503" height="270"/>
+	<SubTexture name="TV_Idle0002" x="1523" y="2533" width="1503" height="270"/>
+	<SubTexture name="TV_Instructions-ALT0000" x="6066" y="291" width="1504" height="271" pivotX="1" pivotY="1"/>
+	<SubTexture name="TV_Instructions-ALT0001" x="10" y="292" width="1504" height="271"/>
+	<SubTexture name="TV_Instructions-ALT0002" x="1524" y="292" width="1504" height="271"/>
+	<SubTexture name="TV_Instructions-Normal0000" x="3038" y="292" width="1504" height="271" pivotX="1" pivotY="1"/>
+	<SubTexture name="TV_Instructions-Normal0001" x="4552" y="572" width="1504" height="271"/>
+	<SubTexture name="TV_Instructions-Normal0002" x="6066" y="572" width="1504" height="271"/>
+	<SubTexture name="TV_Watchout0000" x="10" y="10" width="1504" height="272" pivotX="1" pivotY="0"/>
+	<SubTexture name="TV_Watchout0001" x="1524" y="10" width="1504" height="272"/>
+	<SubTexture name="TV_Watchout0002" x="3038" y="10" width="1504" height="272"/>
+	<SubTexture name="TV_brutality0000" x="10" y="573" width="1504" height="270" pivotX="1" pivotY="0"/>
+	<SubTexture name="TV_brutality0001" x="1524" y="573" width="1504" height="270"/>
+	<SubTexture name="TV_brutality0002" x="3038" y="573" width="1504" height="270"/>
+	<SubTexture name="TV_eyeLeft0000" x="10" y="1973" width="1503" height="270" pivotX="0" pivotY="0"/>
+	<SubTexture name="TV_eyeLeft0001" x="1523" y="1973" width="1503" height="270"/>
+	<SubTexture name="TV_eyeLeft0002" x="3036" y="1973" width="1503" height="270"/>
+	<SubTexture name="TV_eyeRight0000" x="4549" y="1973" width="1503" height="270" pivotX="0" pivotY="0"/>
+	<SubTexture name="TV_eyeRight0001" x="6062" y="1973" width="1503" height="270"/>
+	<SubTexture name="TV_eyeRight0002" x="10" y="2253" width="1503" height="270"/>
+	<SubTexture name="TV_eyes-OLD0000" x="1523" y="2253" width="1503" height="270" pivotX="0" pivotY="0"/>
+	<SubTexture name="TV_eyes-OLD0001" x="3036" y="2253" width="1503" height="270"/>
+	<SubTexture name="TV_eyes-OLD0002" x="4549" y="2253" width="1503" height="270"/>
+	<SubTexture name="TV_old_idle0000" x="3036" y="2533" width="1503" height="270" pivotX="0" pivotY="0"/>
+	<SubTexture name="TV_old_idle0001" x="4549" y="2533" width="1503" height="270"/>
+	<SubTexture name="TV_old_idle0002" x="6062" y="2533" width="1503" height="270"/>
+	<SubTexture name="TV_sus0000" x="10" y="2813" width="1503" height="270" pivotX="0" pivotY="0"/>
+</TextureAtlas>
