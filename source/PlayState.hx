@@ -365,9 +365,6 @@ class PlayState extends MusicBeatState
 	var kb_attack_saw:FlxSprite = null;
 	var qtSawbladeTimers:Map<String, FlxTimer> = new Map<String, FlxTimer>(); // "improved" dodge code.
 
-	// For changing the visuals -Haz
-	public var qtIsBlueScreened:Bool = false; // lmao this var is back in here
-
 	public var pincer1:FlxSprite;
 	public var pincer2:FlxSprite;
 	public var pincer3:FlxSprite;
@@ -449,6 +446,7 @@ class PlayState extends MusicBeatState
 	var interlopeFadeinShaderIntensity:Float = 4;
 	var interlopeFadeinShaderFading:Bool = false;
 	var hazardBG:BGSprite;
+	var streetOverlay:FlxSprite;
 	var hazardBGkb:FlxSprite; // Used for KB and Cinder's song
 	var hazardBlack:BGSprite; // Black is ontop of camera!
 	var hazardInterlopeLaugh:FlxSprite; // Used by Amelia in Interlope when taunting player
@@ -1271,15 +1269,33 @@ class PlayState extends MusicBeatState
 				add(hazardAlarmRight);
 			}
 
-			if (!ClientPrefs.lowQuality && !ClientPrefs.optimize && !inhumanSong)
-				add(qt_gaskb);
-
 			if (!inhumanSong)
 			{
+				if (!ClientPrefs.lowQuality)
+					add(qt_gaskb);
+
 				add(gfGroup);
 				add(dadGroup);
 				add(boyfriendGroup);
+
+				add(kb_attack_saw);
 			}
+
+			if (!ClientPrefs.lowQuality)
+				switch (curStage)
+				{
+					case 'street-cessation' | 'street-cute' | 'street-kb' | 'street-termination':
+						var real:Bool = (curStage == 'street-kb' || curStage == 'street-termination');
+						streetOverlay = new FlxSprite(-750,
+							-145).loadGraphic(Paths.image(real ? 'hazard/qt-port/stage/streetErrorOverlay' : 'hazard/qt-port/stage/streetCuteOverlay'));
+						streetOverlay.antialiasing = true;
+						streetOverlay.scrollFactor.set(1, 1);
+						streetOverlay.active = false;
+						streetOverlay.visible = !real;
+						streetOverlay.alpha = 0.3;
+						streetOverlay.blend = ADD;
+						add(streetOverlay);
+				}
 		}
 
 		#if LUA_ALLOWED
@@ -1512,7 +1528,7 @@ class PlayState extends MusicBeatState
 			var luaToLoad:String = Paths.modFolders('custom_notetypes/' + notetype + '.lua');
 			if (FileSystem.exists(luaToLoad))
 			{
-				if (luaNoteType.contains(notetype))
+				if (!luaNoteType.contains(notetype))
 					luaNoteType.push(notetype);
 				luaArray.push(new FunkinLua(luaToLoad));
 			}
@@ -1521,7 +1537,7 @@ class PlayState extends MusicBeatState
 				luaToLoad = Paths.getPreloadPath('custom_notetypes/' + notetype + '.lua');
 				if (FileSystem.exists(luaToLoad))
 				{
-					if (luaNoteType.contains(notetype))
+					if (!luaNoteType.contains(notetype))
 						luaNoteType.push(notetype);
 					luaArray.push(new FunkinLua(luaToLoad));
 				}
@@ -1530,7 +1546,7 @@ class PlayState extends MusicBeatState
 			var luaToLoad:String = Paths.getPreloadPath('custom_notetypes/' + notetype + '.lua');
 			if (OpenFlAssets.exists(luaToLoad))
 			{
-				if (luaNoteType.contains(notetype))
+				if (!luaNoteType.contains(notetype))
 					luaNoteType.push(notetype);
 				luaArray.push(new FunkinLua(luaToLoad));
 			}
@@ -1562,7 +1578,7 @@ class PlayState extends MusicBeatState
 			var hscriptToLoad:String = Paths.modFolders('custom_notetypes/' + notetype + '.hx');
 			if (FileSystem.exists(hscriptToLoad))
 			{
-				if (luaNoteType.contains(notetype))
+				if (!luaNoteType.contains(notetype))
 					luaNoteType.push(notetype);
 				haxeArray.push(new ScriptHandler(hscriptToLoad));
 			}
@@ -1571,7 +1587,7 @@ class PlayState extends MusicBeatState
 				hscriptToLoad = Paths.getPreloadPath('custom_notetypes/' + notetype + '.hx');
 				if (FileSystem.exists(hscriptToLoad))
 				{
-					if (luaNoteType.contains(notetype))
+					if (!luaNoteType.contains(notetype))
 						luaNoteType.push(notetype);
 					haxeArray.push(new ScriptHandler(hscriptToLoad));
 				}
@@ -1580,7 +1596,7 @@ class PlayState extends MusicBeatState
 			var hscriptToLoad:String = Paths.getPreloadPath('custom_notetypes/' + notetype + '.hx');
 			if (OpenFlAssets.exists(hscriptToLoad))
 			{
-				if (luaNoteType.contains(notetype))
+				if (!luaNoteType.contains(notetype))
 					luaNoteType.push(notetype);
 				haxeArray.push(new ScriptHandler(hscriptToLoad));
 			}
@@ -4230,16 +4246,16 @@ class PlayState extends MusicBeatState
 		];
 
 		if (playSound)
-			FlxG.sound.play(Paths.sound(sound[0][alertType + 1]), 1).pitch = playbackRate;
+			FlxG.sound.play(Paths.sound(sound[0][alertType 1]), 1).pitch = playbackRate;
 
 		// Not the best way to do offset since I fear lag can lead to an offsync sawblade, but hey I tried at least and it's better then no support at all. -Haz
 		if (ClientPrefs.noteOffset <= 0)
-			kbATTACK_ALERT_PART2(0.49, sound[1][alertType + 1]);
+			kbATTACK_ALERT_PART2(0.49, sound[1][alertType 1]);
 		else
 		{
 			new FlxTimer().start(ClientPrefs.noteOffset / 1000, function(tmr:FlxTimer)
 			{
-				kbATTACK_ALERT_PART2(0.49, sound[1][alertType + 1]);
+				kbATTACK_ALERT_PART2(0.49, sound[1][alertType 1]);
 			},1,false);
 	}*/
 
@@ -4319,11 +4335,8 @@ class PlayState extends MusicBeatState
 		{
 			if (!ClientPrefs.optimize)
 			{
-				if (!qtSawbladeAdded)
-				{
-					add(kb_attack_saw);
-					qtSawbladeAdded = true;
-				}
+				// kb_attack_saw.visible = true;
+
 				// Play saw attack animation
 				if (!inhumanSong)
 				{
@@ -4416,11 +4429,7 @@ class PlayState extends MusicBeatState
 		if (state)
 			FlxG.sound.play(Paths.sound(soundToPlay), 0.765).pitch = playbackRate;
 
-		if (!qtSawbladeAdded && !inhumanSong && !ClientPrefs.optimize)
-		{
-			add(kb_attack_saw);
-			qtSawbladeAdded = true;
-		}
+		// kb_attack_saw.visible = true;
 
 		if (ClientPrefs.noteOffset <= 0)
 			kbATTACK_DELAYED(state, soundToPlay, instaKill);
@@ -4767,48 +4776,52 @@ class PlayState extends MusicBeatState
 
 	public function qtStreetBG(stateID:Int)
 	{
+		if (curStage == 'street-kb' || curStage == 'street-termination')
+			switch (stateID)
+			{
+				case 1:
+					if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
+					{
+						streetBGerror1.visible = true;
+						streetBG.visible = false;
+						streetBG1.visible = false;
+					}
+					camGame.bgColor = ClientPrefs.lowQuality ? 0xFF74404E : 0xFFF4B35F;
+				case 2:
+					if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
+					{
+						streetBG.visible = false;
+						streetBG1.visible = false;
+						streetBGerror.visible = false;
+						streetBGerror1.visible = false;
+						streetFrontError.visible = true;
+						streetOverlay.visible = true;
+					}
+					camGame.bgColor = ClientPrefs.lowQuality ? 0xFF74404E : 0xFF000FBD;
+				case 0:
+					if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
+					{
+						streetBG.visible = true;
+						streetBG1.visible = true;
+						streetFrontError.visible = false;
+						streetOverlay.visible = false;
+					}
+					camGame.bgColor = 0xFF74404E;
+			}
+
 		switch (stateID)
 		{
 			case 1:
-				// Change to glitch background
-				if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
-				{
-					streetBGerror.visible = true;
-					streetBGerror1.visible = true;
-					streetBG.visible = false;
-					streetBG1.visible = false;
-					gameHUD.fucktimer = false;
-				}
-				camGame.bgColor = ClientPrefs.lowQuality ? 0xFF74404E : 0xFFF4B35F;
+				gameHUD.fucktimer = false;
 				FlxG.camera.shake(0.0078, 0.675);
-			// dadDrainHealth=0.0055; //Reducing health drain because fuck me that's a lot of notes!
-			// healthLossMultiplier=1.1375; //More forgiving because fuck me that's a lot of notes!
-			// healthGainMultiplier=1.125;
 			case 2:
-				if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
-				{
-					qtIsBlueScreened = true;
-					streetBG.visible = false;
-					streetBG1.visible = false;
-					streetBGerror.visible = false;
-					streetBGerror1.visible = false;
-					streetFrontError.visible = true;
-					gameHUD.fucktimer = true;
-				}
-				camGame.bgColor = ClientPrefs.lowQuality ? 0xFF74404E : 0xFF000FBD;
+				gameHUD.fucktimer = true;
 			case 0:
-				if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
-				{
-					qtIsBlueScreened = false;
-					streetBG.visible = true;
-					streetBG1.visible = true;
-					streetFrontError.visible = false;
-					gameHUD.fucktimer = false;
-				}
-				camGame.bgColor = 0xFF74404E;
+				gameHUD.fucktimer = false;
 		}
-		gameHUD.reloadSongPosBarColors(qtIsBlueScreened);
-		gameHUD.reloadHealthBarColors(qtIsBlueScreened);
+
+		gameHUD.reloadSongPosBarColors(gameHUD.fucktimer);
+		gameHUD.reloadHealthBarColors(gameHUD.fucktimer);
 	}
 
 	function terminateEndEarly():Void
@@ -8024,7 +8037,7 @@ class PlayState extends MusicBeatState
 						boyfriend = boyfriendMap.get(value2);
 						boyfriend.alpha = lastAlpha;
 						gameHUD.iconP1.changeIcon(boyfriend.healthIcon);
-						gameHUD.reloadHealthBarColors(qtIsBlueScreened);
+						gameHUD.reloadHealthBarColors(gameHUD.fucktimer);
 						if (!ClientPrefs.lowQuality)
 							reloadStaticsEvent();
 						if (ClientPrefs.charactershaders)
@@ -8065,7 +8078,7 @@ class PlayState extends MusicBeatState
 						}
 						dad.alpha = lastAlpha;
 						gameHUD.iconP2.changeIcon(dad.healthIcon);
-						gameHUD.reloadHealthBarColors(qtIsBlueScreened);
+						gameHUD.reloadHealthBarColors(gameHUD.fucktimer);
 						if (!ClientPrefs.lowQuality)
 						{
 							reloadStaticsEvent();

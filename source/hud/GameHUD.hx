@@ -96,7 +96,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			'songPercent', 0, 1);
 		timeBar.screenCenter(X);
 		timeBar.scrollFactor.set();
-		reloadSongPosBarColors(PlayState.instance.qtIsBlueScreened);
+		reloadSongPosBarColors(fucktimer);
 		if (!ClientPrefs.lowQuality || !ClientPrefs.optimize)
 			timeBar.numDivisions = 1000;
 		timeBar.alpha = 0;
@@ -164,7 +164,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			add(iconP2);
 			// lime.app.Application.current.window.setIcon(iconP2.pixels.image);
 		}
-		reloadHealthBarColors(PlayState.instance.qtIsBlueScreened);
+		reloadHealthBarColors(fucktimer);
 
 		// set up Score
 
@@ -370,7 +370,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			add(iconP1);
 			add(iconP2);
 		}
-		reloadHealthBarColors(PlayState.instance.qtIsBlueScreened);
+		reloadHealthBarColors(fucktimer);
 	}
 
 	public function beatHit()

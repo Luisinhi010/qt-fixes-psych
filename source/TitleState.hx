@@ -94,9 +94,6 @@ class TitleState extends MusicBeatState
 
 		#if LUA_ALLOWED
 		Paths.pushGlobalMods();
-		trace("lua");
-		#else
-		trace("no lua");
 		#end
 		// Just to load a mod on start up if ya got one. For mods that change the menu music and bg
 		WeekData.loadTheFirstEnabledMod();
@@ -106,8 +103,6 @@ class TitleState extends MusicBeatState
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		// DEBUG BULLSHIT
-
-		swagShader = new ColorSwap();
 		super.create();
 		#if mobile
 		addVirtualPad(LEFT_FULL, A_B);
