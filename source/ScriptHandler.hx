@@ -19,7 +19,6 @@ import lime.app.Application;
 import openfl.display.GraphicsShader;
 import openfl.filters.ShaderFilter;
 import Discord.DiscordClient as Discord;
-import shadertoy.FlxShaderToyRuntimeShader;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import sys.io.File;
 

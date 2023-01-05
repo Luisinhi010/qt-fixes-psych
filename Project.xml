@@ -103,7 +103,6 @@
 	<haxelib name="flixel-addons" />
 	<haxelib name="hscript" />
 	<define name="hscriptPos" />
-	<haxelib name="flixel-shadertoy-shader-lr" if="HAXE_EXTENSION"/>
 	<haxelib name="SScript" if="HAXE_EXTENSION" />
 
 	<!--In case you want to use the ui package-->
