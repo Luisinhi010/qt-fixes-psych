@@ -41,6 +41,8 @@ class MainMenuState extends MusicBeatState
 
 	public var menuItems:FlxTypedGroup<MainMenuItem>;
 
+	public var sideOffset:Float = 100;
+
 	private var camGame:FlxCamera;
 	private var camAchievement:FlxCamera;
 
@@ -380,9 +382,6 @@ class MainMenuState extends MusicBeatState
 
 		if (!selectedSomethin && usecontrols)
 		{
-			if (FlxG.keys.justPressed.M)
-				MusicBeatState.switchState(new MaskStolenState());
-
 			if (controls.UI_UP_P)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -428,11 +427,11 @@ class MainMenuState extends MusicBeatState
 				switch (alignment)
 				{
 					case LEFT:
-						menuItem.x = 100;
+						menuItem.x = sideOffset;
 					case CENTER | MIDDLE:
 						menuItem.screenCenter(X);
 					case RIGHT:
-						menuItem.x = FlxG.width - menuItem.width - 100;
+						menuItem.x = FlxG.width - menuItem.width - sideOffset;
 				}
 			}
 		});
