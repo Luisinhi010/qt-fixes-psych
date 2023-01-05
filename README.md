@@ -13,7 +13,7 @@ and update ur haxelibs:
 
 this uses [TheWorldMachinima's Sscript lib](https://github.com/TheWorldMachinima/SScript) cuz im stupid
 
-`haxelib git SScript-Ghost https://github.com/BeastlyGhost/SScript-Ghost`
+`haxelib git SScript https://github.com/TheWorldMachinima/SScript`
 
 # Friday Night Funkin' - Psych Engine
 
