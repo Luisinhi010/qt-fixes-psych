@@ -62,7 +62,7 @@ class Paths
 		{
 			if (!localTrackedAssets.contains(key) && !dumpExclusions.contains(key) #if sys && !Cache.cachedAssets.contains(key) #end)
 			{
-				var obj:Null<FlxGraphic> = currentTrackedAssets.get(key);
+				var obj = currentTrackedAssets.get(key);
 				@:privateAccess
 				if (obj != null)
 				{
@@ -72,18 +72,12 @@ class Paths
 					if (isTexture)
 					{
 						trace(key);
-						var texture:Null<RectangleTexture> = currentTrackedTextures.get(key);
+						var texture = currentTrackedTextures.get(key);
 						texture.dispose();
 						texture = null;
 						currentTrackedTextures.remove(key);
 					}
 					#end
-					/*@:privateAccess
-						if (openfl.Assets.cache.hasBitmapData(key))
-						{
-							openfl.Assets.cache.removeBitmapData(key);
-							FlxG.bitmap._cache.remove(key);
-					}*/
 					openfl.Assets.cache.removeBitmapData(key);
 					FlxG.bitmap._cache.remove(key);
 					obj.bitmap.disposeImage(); // btw shoutouts to Raltyro :)

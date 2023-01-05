@@ -11,7 +11,7 @@ and update ur haxelibs:
 `haxelib install lime 8.0.0`
 `haxelib install openfl 9.2.0`
 
-this uses [Beastly Ghost's Sscript fork](github.com/BeastlyGhost/SScript-Ghost) cuz im stupid
+this uses [TheWorldMachinima's Sscript lib](https://github.com/TheWorldMachinima/SScript) cuz im stupid
 
 `haxelib git SScript-Ghost https://github.com/BeastlyGhost/SScript-Ghost`
 

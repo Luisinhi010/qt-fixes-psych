@@ -1177,6 +1177,8 @@ class PlayState extends MusicBeatState
 			luisOverlayShit.updateHitbox();
 			luisOverlayShit.alpha = 0.001;
 			luisOverlayShit.cameras = [camOther];
+			luisOverlayShit.active = false;
+			luisOverlayShit.blend = OVERLAY;
 			add(luisOverlayShit);
 
 			if (ClientPrefs.flashing)
@@ -1189,6 +1191,8 @@ class PlayState extends MusicBeatState
 				luisOverlayWarning.updateHitbox();
 				luisOverlayWarning.alpha = 0.001;
 				luisOverlayWarning.cameras = [camOther];
+				luisOverlayWarning.active = false;
+				luisOverlayWarning.blend = OVERLAY;
 				add(luisOverlayWarning);
 				hazardOverlayShit = new BGSprite('hazard/inhuman-port/alert-vignette');
 				hazardOverlayShit.setGraphicSize(FlxG.width, FlxG.height);
@@ -1198,6 +1202,8 @@ class PlayState extends MusicBeatState
 				hazardOverlayShit.updateHitbox();
 				hazardOverlayShit.alpha = 0.001;
 				hazardOverlayShit.cameras = [camOther];
+				hazardOverlayShit.active = false;
+				hazardOverlayShit.blend = OVERLAY;
 				add(hazardOverlayShit);
 			}
 		} // change layering to better optimization.
