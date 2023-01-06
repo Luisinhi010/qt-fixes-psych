@@ -267,6 +267,3 @@ otherwise, you can delete the "VIDEOS_ALLOWED" Line on Project.xml
 - Some stuff based on Week 7's changes has been put in (Background colors on Freeplay, Note splashes)
 - You can reset your Score on Freeplay/Story Mode by pressing Reset button.
 - You can listen to a song or adjust Scroll Speed/Damage taken/etc. on Freeplay by pressing Space.
-  #   c u s t o m h u d 
-   
-   
