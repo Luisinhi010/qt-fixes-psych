@@ -39,7 +39,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	// timer
 	public var timeBarBG:AttachedSprite;
 	public var timeBar:FlxBar;
-	public var kadetimeBar:Bool;
+	public var kadetimeBar:Bool; // oh well
 	public var psychtimeBar:Bool;
 	public var songNameTxt:FlxText;
 	public var songName:String = "";
