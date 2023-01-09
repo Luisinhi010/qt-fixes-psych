@@ -67,7 +67,7 @@ import flixel.addons.display.FlxRuntimeShader;
 import openfl.filters.ShaderFilter;
 #end
 #if sys
-#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+#if cpp import sys.FileSystem; #end
 import sys.io.File;
 #end
 #if VIDEOS_ALLOWED
@@ -342,7 +342,6 @@ class PlayState extends MusicBeatState
 
 	public var forceMiddleScroll:Bool = false;
 
-	var controlsPlayer2:Bool = false; // Set to true if you are doing modchart shit. Stops middle scroll from disabling player2's notes and the player can hit them as if they were player 1 notes (if that makes sense?)
 	var causeOfDeath:String = 'health';
 
 	// 'health' / null 	= death by health
@@ -356,14 +355,15 @@ class PlayState extends MusicBeatState
 	var streetBGerror:FlxSprite;
 	var streetBGerror1:FlxSprite;
 	var streetFrontError:FlxSprite;
-	var bfDodging:Bool = false;
-	var bfCanDodge:Bool = false;
-	var bfDodgeTiming:Float = 0.222; // 0.22625 for single sawblades (most forgiving), 0.222 for double sawblade variation
-	var bfDodgeCooldown:Float = 0.102; // 0.1135 for single sawblades (most forgiving), 0.102 for double sawblade variation
-	var canSkipEndScreen:Bool = false; // This is set to true at the "thanks for playing" screen. Once true, in update, if enter is pressed it'll skip to the main menu.
-	var kb_attack_alert:KbAttackAlert = null;
-	var kb_attack_saw:FlxSprite = null;
-	var qtSawbladeTimers:Map<String, FlxTimer> = new Map<String, FlxTimer>(); // "improved" dodge code.
+
+	public var bfDodging:Bool = false;
+	public var bfCanDodge:Bool = false;
+	public var bfDodgeTiming:Float = 0.222; // 0.22625 for single sawblades (most forgiving), 0.222 for double sawblade variation
+	public var bfDodgeCooldown:Float = 0.102; // 0.1135 for single sawblades (most forgiving), 0.102 for double sawblade variation
+	public var canSkipEndScreen:Bool = false; // This is set to true at the "thanks for playing" screen. Once true, in update, if enter is pressed it'll skip to the main menu.
+	public var kb_attack_alert:KbAttackAlert = null;
+	public var kb_attack_saw:FlxSprite = null;
+	public var qtSawbladeTimers:Map<String, FlxTimer> = new Map<String, FlxTimer>(); // "improved" dodge code.
 
 	public var pincer1:FlxSprite;
 	public var pincer2:FlxSprite;
@@ -459,16 +459,15 @@ class PlayState extends MusicBeatState
 	var hazardAlarmLeft:BGSprite;
 	var hazardAlarmRight:BGSprite;
 
-	public var luisModChartDefaultStrumY:Float = 0;
-
 	// for censory overload
-	var censoryChroma:ChromaticAberrationEffect = null;
-	var censoryCustomChroma:CustomChromaticEffect = null;
-	var censoryChromaIntensity(default, set):Float = 0;
+	public var censoryChroma:ChromaticAberrationEffect = null;
+	public var censoryCustomChroma:CustomChromaticEffect = null;
+	public var censoryChromaIntensity(default, set):Float = 0;
+	public var censoryChromaLimit:Float = 0;
 
-	function set_censoryChromaIntensity(value:Float)
+	public function set_censoryChromaIntensity(value:Float)
 	{
-		if (censoryChromaIntensity != value)
+		if (censoryChromaIntensity != value || censoryChromaLimit != value)
 		{
 			if (censoryChroma != null && ClientPrefs.flashing)
 				censoryChroma.setChrome(censoryChromaIntensity);
@@ -480,10 +479,9 @@ class PlayState extends MusicBeatState
 		return value;
 	}
 
-	var censoryChromaLimit:Float = 0;
-	var qt_gas01:FlxSprite;
-	var qt_gas02:FlxSprite;
-	var qt_gaskb:FlxSprite; // haz had a ideia to make the gas came out of kb.
+	public var qt_gas01:FlxSprite;
+	public var qt_gas02:FlxSprite;
+	public var qt_gaskb:FlxSprite; // haz had a ideia to make the gas came out of kb.
 
 	public var blueshader:CustomBlueShader = new CustomBlueShader(); // its 'blue' shader but you can put any color for it, but default is blue
 	public var blueBool:Bool = false;
@@ -496,10 +494,6 @@ class PlayState extends MusicBeatState
 
 	// separating hud from PlayState because it's dumb as fuck to have it here //thank you so much beastlyGhost
 	public static var gameHUD:GameHUD;
-
-	private var allUIs:Array<FlxCamera> = [];
-
-	public static var camera_offset:Array<Int> = [100, 100];
 
 	override public function create()
 	{
@@ -575,10 +569,6 @@ class PlayState extends MusicBeatState
 		camHUD.bgColor.alpha = 0;
 		camGAS.bgColor.alpha = 0;
 		camOther.bgColor.alpha = 0;
-		allUIs.push(camHUD);
-		// trace(camHUD);
-		// trace(allUIs);
-		// i will have this function here if i need it on the future. -Luis
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
@@ -588,10 +578,6 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.setDefaultDrawTarget(camGAS, false);
 		FlxG.cameras.add(camOther);
 		FlxG.cameras.setDefaultDrawTarget(camOther, false);
-		// camHUD.x -= camera_offset[0];
-		// camHUD.y -= camera_offset[1];
-		// camHUD.width += camera_offset[0] /** 2*/;
-		// camHUD.height += camera_offset[1] /** 2*/;
 
 		for (i in [FlxG.camera, camGame, /*camHUD,camGAS,*/ camOther])
 			i.widescreen = true;
@@ -803,11 +789,13 @@ class PlayState extends MusicBeatState
 				// QT port
 				case 'street-cessation':
 					hazardBG = new BGSprite('hazard/qt-port/stage/streetBackCute', -750, -145, 0.95, 0.95);
+					hazardBG.moves = false;
 					add(hazardBG);
 
 					var streetFront:BGSprite = new BGSprite('hazard/qt-port/stage/streetFrontCute', -820, 710, 0.95, 0.95);
 					streetFront.setGraphicSize(Std.int(streetFront.width * 1.15));
 					streetFront.updateHitbox();
+					streetFront.moves = false;
 					add(streetFront);
 
 					qt_tv01 = new FlxSprite();
@@ -832,17 +820,20 @@ class PlayState extends MusicBeatState
 					qt_tv01.updateHitbox();
 					qt_tv01.antialiasing = ClientPrefs.globalAntialiasing;
 					qt_tv01.scrollFactor.set(0.9, 0.9);
+					qt_tv01.moves = false;
 					add(qt_tv01);
 					qt_tv01.animation.play('heart');
 					qtTVstate = 8;
 
 				case 'street-cute':
 					hazardBG = new BGSprite('hazard/qt-port/stage/streetBackCute', -750, -145, 0.95, 0.95);
+					hazardBG.moves = false;
 					add(hazardBG);
 
 					var streetFront:BGSprite = new BGSprite('hazard/qt-port/stage/streetFrontCute', -820, 710, 0.95, 0.95);
 					streetFront.setGraphicSize(Std.int(streetFront.width * 1.15));
 					streetFront.updateHitbox();
+					streetFront.moves = false;
 					add(streetFront);
 
 					qt_tv01 = new FlxSprite(-62, 540).loadGraphic(Paths.image('hazard/qt-port/stage/TV_off'));
@@ -851,10 +842,12 @@ class PlayState extends MusicBeatState
 					qt_tv01.antialiasing = ClientPrefs.globalAntialiasing;
 					qt_tv01.scrollFactor.set(0.9, 0.9);
 					qt_tv01.active = false;
+					qt_tv01.moves = false;
 					add(qt_tv01);
 
 				case 'street-real':
 					hazardBG = new BGSprite('hazard/qt-port/stage/streetBack', -750, -145, 0.95, 0.95);
+					hazardBG.moves = false;
 					add(hazardBG);
 
 					var streetFront:FlxSprite = new FlxSprite(-820, 710).loadGraphic(Paths.image('hazard/qt-port/stage/streetFront'));
@@ -863,6 +856,7 @@ class PlayState extends MusicBeatState
 					streetFront.antialiasing = ClientPrefs.globalAntialiasing;
 					streetFront.scrollFactor.set(0.95, 0.95);
 					streetFront.active = false;
+					streetFront.moves = false;
 					add(streetFront);
 
 					qt_tv01 = new FlxSprite();
@@ -881,12 +875,12 @@ class PlayState extends MusicBeatState
 					qt_tv01.animation.addByPrefix('instructions', 'TV_Instructions-Normal', 24, true);
 					qt_tv01.animation.addByPrefix('gl', 'TV_GoodLuck', 24, true);
 					qt_tv01.animation.addByPrefix('heart', 'TV_End', 24, false);
-
 					qt_tv01.setPosition(-62, 540);
 					qt_tv01.setGraphicSize(Std.int(qt_tv01.width * 1.2));
 					qt_tv01.updateHitbox();
 					qt_tv01.antialiasing = ClientPrefs.globalAntialiasing;
 					qt_tv01.scrollFactor.set(0.9, 0.9);
+					qt_tv01.moves = false;
 					add(qt_tv01);
 					qt_tv01.animation.play('idle');
 
@@ -895,18 +889,21 @@ class PlayState extends MusicBeatState
 					{
 						// Far Back Layer - Error (blue screen)
 						var errorBG:BGSprite = new BGSprite('hazard/qt-port/stage/streetError', -750, -145, 0.95, 0.95);
+						errorBG.moves = false;
 						add(errorBG);
 
 						// Back Layer - Error (glitched version of normal Back)
 						streetBGerror = new FlxSprite(-750, -145).loadGraphic(Paths.image('hazard/qt-port/stage/streetBackError'));
 						streetBGerror.antialiasing = ClientPrefs.globalAntialiasing;
 						streetBGerror.scrollFactor.set(0.95, 0.95);
+						streetBGerror.moves = false;
 						add(streetBGerror);
 						streetBGerror1 = new FlxSprite(streetBGerror.x + streetBGerror.width,
 							streetBGerror.y).loadGraphic(Paths.image('hazard/qt-port/stage/streetBackError'));
 						streetBGerror1.antialiasing = ClientPrefs.globalAntialiasing;
 						streetBGerror1.flipX = true;
 						streetBGerror1.scrollFactor.set(0.95, 0.95);
+						streetBGerror1.moves = false;
 						add(streetBGerror1);
 					}
 
@@ -914,18 +911,21 @@ class PlayState extends MusicBeatState
 					streetBG = new FlxSprite(-750, -145).loadGraphic(Paths.image('hazard/qt-port/stage/streetBack'));
 					streetBG.antialiasing = ClientPrefs.globalAntialiasing;
 					streetBG.scrollFactor.set(0.95, 0.95);
+					streetBG.moves = false;
 					add(streetBG);
 
 					streetBG1 = new FlxSprite(streetBG.x + streetBG.width, streetBG.y).loadGraphic(Paths.image('hazard/qt-port/stage/streetBack'));
 					streetBG1.antialiasing = ClientPrefs.globalAntialiasing;
 					streetBG1.flipX = true;
 					streetBG1.scrollFactor.set(0.95, 0.95);
+					streetBG1.moves = false;
 					add(streetBG1);
 
 					// Front Layer - Normal
 					var streetFront:BGSprite = new BGSprite('hazard/qt-port/stage/streetFront', -820, 710, 0.95, 0.95);
 					streetFront.setGraphicSize(Std.int(streetFront.width * 1.15));
 					streetFront.updateHitbox();
+					streetFront.moves = false;
 					add(streetFront);
 
 					if (!ClientPrefs.lowQuality)
@@ -937,6 +937,7 @@ class PlayState extends MusicBeatState
 						streetFrontError.antialiasing = ClientPrefs.globalAntialiasing;
 						streetFrontError.scrollFactor.set(0.95, 0.95);
 						streetFrontError.active = false;
+						streetFrontError.moves = false;
 						add(streetFrontError);
 						streetFrontError.visible = false;
 					}
@@ -962,6 +963,7 @@ class PlayState extends MusicBeatState
 					qt_tv01.updateHitbox();
 					qt_tv01.antialiasing = ClientPrefs.globalAntialiasing;
 					qt_tv01.scrollFactor.set(0.9, 0.9);
+					qt_tv01.moves = false;
 					add(qt_tv01);
 					if (ClientPrefs.shaders)
 						qt_tv01.shader = blueshader.shader;
@@ -975,18 +977,21 @@ class PlayState extends MusicBeatState
 						errorBG.antialiasing = ClientPrefs.globalAntialiasing;
 						errorBG.scrollFactor.set(0.95, 0.95);
 						errorBG.active = false;
+						errorBG.moves = false;
 						add(errorBG);
 
 						// Back Layer - Error (glitched version of normal Back)
 						streetBGerror = new FlxSprite(-750, -145).loadGraphic(Paths.image('hazard/qt-port/stage/streetBackError'));
 						streetBGerror.antialiasing = ClientPrefs.globalAntialiasing;
 						streetBGerror.scrollFactor.set(0.95, 0.95);
+						streetBGerror.moves = false;
 						add(streetBGerror);
 						streetBGerror1 = new FlxSprite(streetBGerror.x + streetBGerror.width,
 							streetBGerror.y).loadGraphic(Paths.image('hazard/qt-port/stage/streetBackError'));
 						streetBGerror1.antialiasing = ClientPrefs.globalAntialiasing;
 						streetBGerror1.flipX = true;
 						streetBGerror1.scrollFactor.set(0.95, 0.95);
+						streetBGerror1.moves = false;
 						add(streetBGerror1);
 					}
 
@@ -994,12 +999,14 @@ class PlayState extends MusicBeatState
 					streetBG = new FlxSprite(-750, -145).loadGraphic(Paths.image('hazard/qt-port/stage/streetBack'));
 					streetBG.antialiasing = ClientPrefs.globalAntialiasing;
 					streetBG.scrollFactor.set(0.95, 0.95);
+					streetBG.moves = false;
 					add(streetBG);
 
 					streetBG1 = new FlxSprite(streetBG.x + streetBG.width, streetBG.y).loadGraphic(Paths.image('hazard/qt-port/stage/streetBack'));
 					streetBG1.antialiasing = ClientPrefs.globalAntialiasing;
 					streetBG1.flipX = true;
 					streetBG1.scrollFactor.set(0.95, 0.95);
+					streetBG.moves = false;
 					add(streetBG1);
 
 					// Front Layer - Normal
@@ -1009,6 +1016,7 @@ class PlayState extends MusicBeatState
 					streetFront.antialiasing = ClientPrefs.globalAntialiasing;
 					streetFront.scrollFactor.set(0.95, 0.95);
 					streetFront.active = false;
+					streetFront.moves = false;
 					add(streetFront);
 
 					if (!ClientPrefs.lowQuality)
@@ -1020,6 +1028,7 @@ class PlayState extends MusicBeatState
 						streetFrontError.antialiasing = ClientPrefs.globalAntialiasing;
 						streetFrontError.scrollFactor.set(0.95, 0.95);
 						streetFrontError.active = false;
+						streetFrontError.moves = false;
 						add(streetFrontError);
 						streetFrontError.visible = false;
 					}
@@ -1045,6 +1054,7 @@ class PlayState extends MusicBeatState
 					qt_tv01.updateHitbox();
 					qt_tv01.antialiasing = ClientPrefs.globalAntialiasing;
 					qt_tv01.scrollFactor.set(0.9, 0.9);
+					qt_tv01.moves = false;
 					add(qt_tv01);
 					if (ClientPrefs.shaders)
 						qt_tv01.shader = blueshader.shader;
@@ -1065,6 +1075,7 @@ class PlayState extends MusicBeatState
 					hazardBGkb.setGraphicSize(Std.int(hazardBGkb.width * 1.1));
 					hazardBGkb.updateHitbox();
 					hazardBGkb.animation.play('pulse');
+					hazardBGkb.moves = false;
 					add(hazardBGkb);
 
 					if (!ClientPrefs.lowQuality)
@@ -1178,6 +1189,7 @@ class PlayState extends MusicBeatState
 			luisOverlayShit.alpha = 0.001;
 			luisOverlayShit.cameras = [camOther];
 			luisOverlayShit.active = false;
+			luisOverlayShit.moves = false;
 			luisOverlayShit.blend = OVERLAY;
 			add(luisOverlayShit);
 
@@ -1192,6 +1204,7 @@ class PlayState extends MusicBeatState
 				luisOverlayWarning.alpha = 0.001;
 				luisOverlayWarning.cameras = [camOther];
 				luisOverlayWarning.active = false;
+				luisOverlayWarning.moves = false;
 				luisOverlayWarning.blend = OVERLAY;
 				add(luisOverlayWarning);
 				hazardOverlayShit = new BGSprite('hazard/inhuman-port/alert-vignette');
@@ -1203,6 +1216,7 @@ class PlayState extends MusicBeatState
 				hazardOverlayShit.alpha = 0.001;
 				hazardOverlayShit.cameras = [camOther];
 				hazardOverlayShit.active = false;
+				hazardOverlayShit.moves = false;
 				hazardOverlayShit.blend = OVERLAY;
 				add(hazardOverlayShit);
 			}
@@ -1293,13 +1307,14 @@ class PlayState extends MusicBeatState
 					case 'street-cessation' | 'street-cute' | 'street-kb' | 'street-termination':
 						var real:Bool = (curStage == 'street-kb' || curStage == 'street-termination');
 						streetOverlay = new FlxSprite(-750,
-							-145).loadGraphic(Paths.image(real ? 'hazard/qt-port/stage/streetErrorOverlay' : 'hazard/qt-port/stage/streetCuteOverlay'));
+							-145).loadGraphic(Paths.image('hazard/qt-port/stage/' + (real ? 'streetErrorOverlay' : 'streetCuteOverlay')));
 						streetOverlay.antialiasing = true;
 						streetOverlay.scrollFactor.set(1, 1);
 						streetOverlay.active = false;
+						streetOverlay.moves = false;
 						streetOverlay.visible = !real;
 						streetOverlay.alpha = 0.3;
-						streetOverlay.blend = ADD;
+						streetOverlay.blend = real ? OVERLAY : ADD;
 						add(streetOverlay);
 				}
 		}
@@ -1459,7 +1474,8 @@ class PlayState extends MusicBeatState
 			strumLine.y = FlxG.height - 150;
 		strumLine.scrollFactor.set();
 
-		luisModChartDefaultStrumY = strumLine.y;
+		for (i in 0...8)
+			hazardModChartDefaultStrumY[i] = strumLine.y;
 
 		inhumancolor1 = inhumanSong ? FlxColor.BLACK : FlxColor.WHITE;
 		inhumancolor2 = inhumanSong ? FlxColor.RED : FlxColor.BLACK;
@@ -1474,13 +1490,14 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 		add(grpNoteSplashes);
 
-		for (i in [boyfriend.splashSkinFile, dad.splashSkinFile, gf.splashSkinFile])
-		{
-			var splash:NoteSplash = new NoteSplash(100, 100, 0);
-			splash.loadAnims(i);
-			grpNoteSplashes.add(splash);
-			splash.alpha = 0.00001;
-		}
+		if (!ClientPrefs.optimize)
+			for (i in [boyfriend.splashSkinFile, dad.splashSkinFile, gf.splashSkinFile])
+			{
+				var splash:NoteSplash = new NoteSplash(100, 100, 0);
+				splash.loadAnims(i);
+				grpNoteSplashes.add(splash);
+				splash.alpha = 0.00001;
+			}
 
 		opponentStrums = new FlxTypedGroup<StrumNote>();
 		playerStrums = new FlxTypedGroup<StrumNote>();
@@ -1718,8 +1735,10 @@ class PlayState extends MusicBeatState
 		// WAIT, WHAT IS HAXE?!?? -Luis
 		if (ClientPrefs.hitsoundVolume > 0)
 			precacheList.set('ChartingTick', 'sound');
+		#if sys
 		for (i in 0...Cache.coolsounds.length)
 			precacheList.set(Cache.coolsounds[i], 'sound');
+		#end
 		if (PauseSubState.songName != null)
 			precacheList.set(PauseSubState.songName, 'music');
 		else if (ClientPrefs.pauseMusic != 'None')
@@ -1754,6 +1773,7 @@ class PlayState extends MusicBeatState
 		}
 
 		Conductor.safeZoneOffset = (ClientPrefs.safeFrames / 60) * 1000; // todo:remember this -Luis
+
 		callOnLuas('onCreatePost', []);
 		callOnHaxes('createPost', []);
 
@@ -1953,7 +1973,6 @@ class PlayState extends MusicBeatState
 				vocals.pitch = value;
 			FlxG.sound.music.pitch = value;
 		}
-		FlxG.sound.play(Paths.sound('hazard/alert'), 0).pitch = value; // yay, i'm dumb
 		playbackRate = value;
 		FlxAnimationController.globalSpeed = value;
 		if (kb_attack_alert != null)
@@ -2279,9 +2298,8 @@ class PlayState extends MusicBeatState
 
 		if (dialogueFile.dialogue.length > 0)
 		{
-			inCutscene = true;
-			for (i in 0...Cache.dialoguesounds.length)
-				precacheList.set(Cache.dialoguesounds[i], 'sound');
+			inCutscene = true; #if sys for (i in 0...Cache.dialoguesounds.length)
+				precacheList.set(Cache.dialoguesounds[i], 'sound'); #end
 			psychDialogue = new DialogueBoxPsych(dialogueFile, song);
 			psychDialogue.scrollFactor.set();
 			if (endingSong)
@@ -2624,9 +2642,6 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		for (i in 0...8)
-			hazardModChartDefaultStrumY[i] = luisModChartDefaultStrumY;
-
 		for (i in 0...playerStrums.length)
 		{
 			hazardModChartDefaultStrumX[i] = opponentStrums.members[i].x;
@@ -2758,7 +2773,7 @@ class PlayState extends MusicBeatState
 		// Termination returns 316219
 		// Tutorial returns 67213
 		FlxTween.tween(gameHUD.timeBar, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
-		FlxTween.tween(gameHUD.songNameTxt, {alpha: 0.8}, 0.5, {ease: FlxEase.circOut});
+		FlxTween.tween(gameHUD.songNameTxt, {alpha: (ClientPrefs.timeBarUi == 'Qt Fixes') ? 0.8 : 1}, 0.5, {ease: FlxEase.circOut});
 
 		gameHUD.beatHit();
 		if (SONG.autoZoom)
@@ -3589,7 +3604,6 @@ class PlayState extends MusicBeatState
 		if (!ClientPrefs.noReset && controls.RESET && canReset && !inCutscene && startedCountdown && !endingSong)
 		{
 			health = 0;
-			trace("RESET = True");
 			causeOfDeath = 'reset';
 		}
 		doDeathCheck();
@@ -3864,13 +3878,6 @@ class PlayState extends MusicBeatState
 							}
 						}
 
-						var ReturnTexture:String = daNote.gfNote ? gf.noteSkinFile : daNote.mustPress ? boyfriend.noteSkinFile : dad.noteSkinFile;
-						if (!daNote.haveCustomTexture && (daNote.texture == daNote.skin) && !ClientPrefs.lowQuality && !ClientPrefs.optimize)
-							daNote.texture = ReturnTexture;
-
-						// ayo i just love this
-						// i hate this -Luis
-
 						if (!daNote.mustPress && daNote.wasGoodHit && !daNote.hitByOpponent && !daNote.ignoreNote && !dad.stunned && !daNote.hitCausesMiss)
 							opponentNoteHit(daNote);
 
@@ -3996,14 +4003,6 @@ class PlayState extends MusicBeatState
 			{
 				if (!endingSong && !startingSong)
 				{
-					if (FlxG.keys.justPressed.FIVE)
-					{
-						godMode = !godMode;
-						if (godMode)
-							gameHUD.scoreTxt.color = FlxColor.CYAN;
-						else
-							gameHUD.scoreTxt.color = FlxColor.WHITE;
-					}
 					if (FlxG.keys.justPressed.ONE)
 					{
 						KillNotes();
@@ -4013,6 +4012,13 @@ class PlayState extends MusicBeatState
 					{ // Go 10 seconds into the future :O
 						setSongTime(Conductor.songPosition + 10000);
 						clearNotesBefore(Conductor.songPosition);
+					}
+					if (FlxG.keys.justPressed.THREE)
+						chartingMode = !chartingMode;
+					if (FlxG.keys.justPressed.FIVE)
+					{
+						godMode = !godMode;
+						gameHUD.scoreTxt.color = godMode ? FlxColor.CYAN : FlxColor.WHITE;
 					}
 				}
 			}
@@ -5772,18 +5778,18 @@ class PlayState extends MusicBeatState
 				fancyModchartStrumY[1] = susY;
 
 			case 'censory Chroma':
-				var force:Float = Std.parseFloat(value1);
 				var limit:Float = Std.parseFloat(value2);
-
-				if (Math.isNaN(force) || force <= 0)
-					force = 0;
-				if (value1 != null && value1.length > 0 && value1 != " ")
-					censoryChromaIntensity = force;
+				var force:Float = Std.parseFloat(value1);
 
 				if (Math.isNaN(limit) || limit <= 0)
 					limit = 0;
 				if (value2 != null && value2.length > 0 && value2 != " ")
 					censoryChromaLimit = limit;
+
+				if (Math.isNaN(force) || force <= 0)
+					force = 0;
+				if (value1 != null && value1.length > 0 && value1 != " ")
+					censoryChromaIntensity = force;
 
 			case 'blue screen shader':
 				var value:Bool = (value1.toLowerCase().trim() == 'true' || Std.parseFloat(value1) == 1);
@@ -6256,8 +6262,8 @@ class PlayState extends MusicBeatState
 		else
 		{
 			var achieve:String = checkForAchievement([
-				'tutorial_hard', 'tutorial_harder', 'qtweek_hard', 'termination_beat', 'termination_old', 'sawblade_death', 'sawblade_hell', 'taunter',
-				'cessation_beat', 'cessation_troll', 'freeplay_depths', 'ur_bad', 'ur_good', 'toastie'
+				'tutorial_hard', 'tutorial_harder', 'qtweek_hard', 'termination_beat', 'termination_old', 'sawblade_hell', 'taunter', 'cessation_beat',
+				'cessation_troll', 'freeplay_depths', 'ur_bad', 'ur_good', 'toastie'
 			]);
 
 			if (achieve != null)
@@ -6801,19 +6807,25 @@ class PlayState extends MusicBeatState
 		// trace('DODGE START!');
 		bfDodging = true;
 		bfCanDodge = false;
-		if (boyfriend.animation.exists('dodge'))
+
+		if (!ClientPrefs.optimize)
 		{
-			if (!ClientPrefs.optimize)
+			if (boyfriend.animation.exists('dodge'))
 				boyfriend.playAnim('dodge');
-		}
-		else // inspired by FNB that have a white box that apperas when you press space
-		{
-			if (!ClientPrefs.optimize)
+			else // inspired by FNB that have a white box that apperas when you press space
+			{
 				boyfriend.dance();
-			var white:FlxSprite = new FlxSprite(boyfriend.x, boyfriend.y).makeGraphic(Std.int(boyfriend.width), Std.int(boyfriend.height), FlxColor.WHITE);
-			// insert(members.indexOf(boyfriendGroup) + 1, white);
-			addBehindBF(white);
-			FlxTween.tween(white, {alpha: 0, "scale.x": 1.1, "scale.y": 1.1}, bfDodgeTiming /*, {ease: FlxEase.cubeOut}*/);
+				var white:FlxSprite = new FlxSprite(boyfriend.x, boyfriend.y).makeGraphic(Std.int(boyfriend.width), Std.int(boyfriend.height), FlxColor.WHITE);
+				// insert(members.indexOf(boyfriendGroup) + 1, white);
+				addBehindBF(white);
+				FlxTween.tween(white, {alpha: 0, "scale.x": 1.1, "scale.y": 1.1}, bfDodgeTiming, {
+					/*ease: FlxEase.cubeOut,*/
+					onComplete: function(twn:FlxTween)
+					{
+						remove(white);
+					}
+				});
+			}
 		}
 		camXplayer = 0;
 		camYplayer = 0;
@@ -8108,5 +8120,15 @@ class PlayState extends MusicBeatState
 					}
 					setOnLuas('gfName', gf.curCharacter);
 			}
+			notes.forEachAlive(function(daNote:Note)
+			{
+				var ReturnTexture:String = daNote.gfNote ? gf.noteSkinFile : daNote.mustPress ? boyfriend.noteSkinFile : dad.noteSkinFile;
+				if (!daNote.haveCustomTexture
+					&& (daNote.texture != daNote.skin)
+					&& !luaNoteType.contains(daNote.noteType)
+					&& !ClientPrefs.lowQuality
+					&& !ClientPrefs.optimize)
+					daNote.texture = ReturnTexture;
+			});
 		}
 }

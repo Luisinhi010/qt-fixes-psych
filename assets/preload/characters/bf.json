@@ -200,6 +200,7 @@
 		}
 	],
 	"no_antialiasing": false,
+	"splashSkin": "noteSplashes",
 	"image": "characters/BOYFRIEND",
 	"position": [
 		0,

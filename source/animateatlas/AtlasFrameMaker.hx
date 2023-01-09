@@ -16,7 +16,7 @@ import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxFrame;
 import flixel.util.FlxColor;
 #if cpp
-#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+#if cpp import sys.FileSystem; #end
 import sys.io.File;
 #else
 import js.html.FileSystem;

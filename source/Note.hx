@@ -198,6 +198,7 @@ class Note extends FlxSprite
 					colorSwap.brightness = 0;
 				case 'Miss Note': // lmao
 					hitCausesMiss = !mustPress;
+					lowPriority = !mustPress;
 				case 'Invert Anim Note':
 					invertanimNote = true;
 			}

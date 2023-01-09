@@ -13,7 +13,7 @@ import flixel.text.FlxText.FlxTextAlign;
 import flixel.tweens.FlxTween.FlxTweenType;
 #if sys
 import sys.io.File;
-#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+#if cpp import sys.FileSystem; #end
 #else
 import openfl.utils.Assets;
 #end
@@ -163,6 +163,19 @@ class CoolUtil
 		#else
 		FlxG.openURL(site);
 		#end
+	}
+
+	/** Quick Function to Fix Save Files for Flixel 5
+		if you are making a mod, you are gonna wanna change "Hazardous industries" to something else
+		so Base Psych saves won't conflict with yours
+		@BeastlyGabi 
+	**/
+	public static function getSavePath(folder:String = 'Hazardous industries'):String
+	{
+		@:privateAccess
+		return #if (flixel < "5.0.0") folder #else FlxG.stage.application.meta.get('company')
+			+ '/'
+			+ FlxSave.validate(FlxG.stage.application.meta.get('file')) #end;
 	}
 
 	public static inline function exactSetGraphicSize(obj:Dynamic, width:Float, height:Float)

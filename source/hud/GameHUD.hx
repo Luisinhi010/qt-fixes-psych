@@ -39,6 +39,8 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	// timer
 	public var timeBarBG:AttachedSprite;
 	public var timeBar:FlxBar;
+	public var kadetimeBar:Bool;
+	public var psychtimeBar:Bool;
 	public var songNameTxt:FlxText;
 	public var songName:String = "";
 	public var fucktimer(default, set):Bool = false;
@@ -46,8 +48,14 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	function set_fucktimer(value:Bool):Bool
 	{
 		fucktimer = value;
-		if (value = true && songNameTxt != null)
-			songNameTxt.text = "?:??" + '  ' + "SYSTEM ERROR" + '  ' + "?:??";
+		if (songNameTxt != null)
+		{
+			if (value)
+				songNameTxt.text = kadetimeBar ? 'ERROR' : psychtimeBar ? '?:??' : '?:??' + '  ' + "SYSTEM ERROR" + '  ' + '?:??';
+			else if (kadetimeBar)
+				songNameTxt.text = songName;
+			songNameTxt.screenCenter(X);
+		}
 		return value;
 	}
 
@@ -71,6 +79,8 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 		// set up the Time Bar
 		songName = PlayState.SONG.song.replace("-", " ").replace("_", " ");
+		kadetimeBar = ClientPrefs.timeBarUi == 'Kade Engine'; // kade engine 1.6.2 btw
+		psychtimeBar = ClientPrefs.timeBarUi == 'Psych Engine'; // what you gonna do about it?
 
 		var showTime:Bool = ClientPrefs.timeBar;
 
@@ -82,8 +92,13 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		songNameTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
 		songNameTxt.visible = showTime;
 		songNameTxt.screenCenter(X);
+		if (kadetimeBar)
+		{
+			songNameTxt.y -= 5;
+			songNameTxt.size = 18;
+		}
 
-		timeBarBG = new AttachedSprite('timeBar');
+		timeBarBG = new AttachedSprite(kadetimeBar ? 'healthBar' : 'timeBar');
 		timeBarBG.y = songNameTxt.y + (songNameTxt.height / 4);
 		timeBarBG.scrollFactor.set();
 		timeBarBG.alpha = 0;
@@ -91,9 +106,11 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		timeBarBG.color = FlxColor.BLACK;
 		timeBarBG.xAdd = -4;
 		timeBarBG.yAdd = -4;
+		if (kadetimeBar)
+			timeBarBG.screenCenter(X);
 
-		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
-			'songPercent', 0, 1);
+		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4 - (kadetimeBar ? 5 : 0), LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8),
+			Std.int(timeBarBG.height - 8), this, 'songPercent', 0, 1);
 		timeBar.screenCenter(X);
 		timeBar.scrollFactor.set();
 		reloadSongPosBarColors(fucktimer);
@@ -108,6 +125,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		add(songNameTxt);
 
 		updateTime = showTime;
+		set_fucktimer(fucktimer);
 
 		// set up the Health Bar
 
@@ -162,7 +180,6 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			iconP2.visible = !PlayState.instance.cpuControlled;
 			iconP2.alpha = ClientPrefs.healthBarAlpha;
 			add(iconP2);
-			// lime.app.Application.current.window.setIcon(iconP2.pixels.image);
 		}
 		reloadHealthBarColors(fucktimer);
 
@@ -185,7 +202,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		if (PlayState.instance.inhumanSong)
 		{
 			healthBar.angle = 90;
-			healthBar.x = FlxG.width - healthBar.height;
+			healthBar.x = FlxG.width - healthBarBG.height;
 			healthBar.screenCenter(Y);
 			if (!ClientPrefs.optimize)
 			{
@@ -268,8 +285,9 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			if (secondsTotal < 0)
 				secondsTotal = 0;
 
-			if (!fucktimer)
-				songNameTxt.text = FlxStringUtil.formatTime(secondsTotal, false) + '  ' + songName + '  ' + PlayState.instance.songLengthTxt;
+			if (!kadetimeBar && !fucktimer)
+				songNameTxt.text = FlxStringUtil.formatTime(secondsTotal, false)
+					+ (psychtimeBar ? '' : '  ' + songName + '  ' + PlayState.instance.songLengthTxt);
 
 			songNameTxt.screenCenter(X);
 		}
@@ -315,7 +333,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			bfcolor = FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1],
 				PlayState.instance.boyfriend.healthColorArray[2]);
 		}
-		if (blue && !ClientPrefs.optimize)
+		if (blue && !ClientPrefs.coloredHealthBar)
 			healthBar.createGradientBar([FlxColor.CYAN, dadcolor, dadcolor], [FlxColor.CYAN, bfcolor, bfcolor], 1, 90);
 		else
 			healthBar.createFilledBar(dadcolor, bfcolor);
@@ -325,22 +343,27 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 	public function reloadSongPosBarColors(blue:Bool = false)
 	{
-		var dadcolor:FlxColor = 0xFFFF0000;
-		var bfcolor:FlxColor = 0xFF66FF33;
-
-		if (ClientPrefs.coloredHealthBar && !ClientPrefs.optimize)
-		{
-			dadcolor = FlxColor.fromRGB(PlayState.instance.dad.healthColorArray[0], PlayState.instance.dad.healthColorArray[1],
-				PlayState.instance.dad.healthColorArray[2]);
-
-			bfcolor = FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1],
-				PlayState.instance.boyfriend.healthColorArray[2]);
-		}
-
-		if (blue && !ClientPrefs.optimize)
-			timeBar.createGradientBar([FlxColor.BLUE, dadcolor, bfcolor], [FlxColor.BLUE, FlxColor.BLUE, FlxColor.CYAN], 1, 90);
+		if (ClientPrefs.timeBarUi != 'Qt Fixes')
+			timeBar.createFilledBar(kadetimeBar ? FlxColor.GRAY : FlxColor.BLACK, kadetimeBar ? FlxColor.LIME : FlxColor.WHITE);
 		else
-			timeBar.createGradientBar([dadcolor, bfcolor], [0xFFFFFFFF, 0xFFFFFFFF, 0x88222222], 1, 90);
+		{
+			var dadcolor:FlxColor = 0xFFFF0000;
+			var bfcolor:FlxColor = 0xFF66FF33;
+
+			if (ClientPrefs.coloredHealthBar && !ClientPrefs.optimize)
+			{
+				dadcolor = FlxColor.fromRGB(PlayState.instance.dad.healthColorArray[0], PlayState.instance.dad.healthColorArray[1],
+					PlayState.instance.dad.healthColorArray[2]);
+
+				bfcolor = FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1],
+					PlayState.instance.boyfriend.healthColorArray[2]);
+			}
+
+			if (blue && !ClientPrefs.optimize)
+				timeBar.createGradientBar([FlxColor.BLUE, dadcolor, bfcolor], [FlxColor.BLUE, FlxColor.BLUE, FlxColor.CYAN], 1, 90);
+			else
+				timeBar.createGradientBar([dadcolor, bfcolor], [0xFFFFFFFF, 0xFFFFFFFF, 0x88222222], 1, 90);
+		}
 
 		timeBar.updateBar();
 	}

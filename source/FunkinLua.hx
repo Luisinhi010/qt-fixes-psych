@@ -35,7 +35,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.display.FlxRuntimeShader;
 #end
 #if sys
-#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+#if cpp import sys.FileSystem; #end
 import sys.io.File;
 #end
 import Type.ValueType;
@@ -2987,7 +2987,7 @@ class FunkinLua
 			if (!PlayState.instance.modchartSaves.exists(name))
 			{
 				var save:FlxSave = new FlxSave();
-				save.bind(name #if (flixel < "5.0.0"), folder #end);
+				save.bind(name, CoolUtil.getSavePath(folder));
 				PlayState.instance.modchartSaves.set(name, save);
 				return;
 			}

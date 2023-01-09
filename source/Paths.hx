@@ -15,7 +15,7 @@ import lime.utils.Assets;
 import flixel.FlxSprite;
 #if sys
 import sys.io.File;
-#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+#if cpp import sys.FileSystem; #end
 #end
 import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
@@ -29,8 +29,6 @@ using StringTools;
 
 class Paths
 {
-	private static var __useSourceAssets = false;
-
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
 	inline public static var VIDEO_EXT = "mp4";
 
@@ -129,9 +127,7 @@ class Paths
 	static public var currentLevel:String;
 
 	static public function setCurrentLevel(name:String)
-	{
 		currentLevel = name.toLowerCase();
-	}
 
 	public static function getPath(file:String, type:AssetType, ?library:Null<String> = null)
 	{
@@ -169,7 +165,7 @@ class Paths
 
 	inline public static function getPreloadPath(file:String = '')
 	{
-		return (__useSourceAssets) ? getLibraryPathForce(file, 'sourceassets') : 'assets/$file';
+		return 'assets/$file';
 	}
 
 	inline static public function file(file:String, type:AssetType = TEXT, ?library:String)
@@ -343,9 +339,7 @@ class Paths
 		#if MODS_ALLOWED
 		var file:String = modsFont(key);
 		if (FileSystem.exists(file))
-		{
 			return file;
-		}
 		#end
 		return 'assets/fonts/$key';
 	}
@@ -354,15 +348,12 @@ class Paths
 	{
 		#if MODS_ALLOWED
 		if (FileSystem.exists(mods(currentModDirectory + '/' + key)) || FileSystem.exists(mods(key)))
-		{
 			return true;
-		}
 		#end
 
 		if (OpenFlAssets.exists(getPath(key, type)))
-		{
 			return true;
-		}
+
 		return false;
 	}
 
@@ -519,67 +510,36 @@ class Paths
 
 	#if MODS_ALLOWED
 	inline static public function mods(key:String = '')
-	{
 		return 'mods/' + key;
-	}
 
 	inline static public function modsFont(key:String)
-	{
 		return modFolders('fonts/' + key);
-	}
 
 	inline static public function modsJson(key:String)
-	{
 		return modFolders('data/' + key + '.json');
-	}
 
 	inline static public function modsVideo(key:String)
-	{
 		return modFolders('videos/' + key + '.' + VIDEO_EXT);
-	}
 
 	inline static public function modsSounds(path:String, key:String)
-	{
 		return modFolders(path + '/' + key + '.' + SOUND_EXT);
-	}
 
 	inline static public function modsImages(key:String)
-	{
 		return modFolders('images/' + key + '.png');
-	}
 
 	inline static public function modsXml(key:String)
-	{
 		return modFolders('images/' + key + '.xml');
-	}
 
 	inline static public function modsTxt(key:String)
-	{
 		return modFolders('images/' + key + '.txt');
-	}
 
-	/* Goes unused for now
-
-		inline static public function modsShaderFragment(key:String, ?library:String)
-		{
-			return modFolders('shaders/'+key+'.frag');
-		}
-		inline static public function modsShaderVertex(key:String, ?library:String)
-		{
-			return modFolders('shaders/'+key+'.vert');
-		}
-		inline static public function modsAchievements(key:String) {
-			return modFolders('achievements/' + key + '.json');
-	}*/
 	static public function modFolders(key:String)
 	{
 		if (currentModDirectory != null && currentModDirectory.length > 0)
 		{
 			var fileToCheck:String = mods(currentModDirectory + '/' + key);
 			if (FileSystem.exists(fileToCheck))
-			{
 				return fileToCheck;
-			}
 		}
 
 		for (mod in getGlobalMods())

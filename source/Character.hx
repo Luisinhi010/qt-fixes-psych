@@ -11,7 +11,7 @@ import flixel.util.FlxSort;
 import Section.SwagSection;
 #if MODS_ALLOWED
 import sys.io.File;
-#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+#if cpp import sys.FileSystem; #end
 #end
 import openfl.utils.AssetType;
 import openfl.utils.Assets;
@@ -45,6 +45,7 @@ typedef AnimArray =
 	var loop:Bool;
 	var indices:Array<Int>;
 	var offsets:Array<Int>;
+	var camOffset:Array<Int>;
 }
 
 class Character extends FlxSprite
@@ -71,6 +72,9 @@ class Character extends FlxSprite
 	public var positionArray:Array<Float> = [0, 0];
 	public var cameraPosition:Array<Float> = [0, 0];
 
+	public var curCameraPosition:Array<Int> = [0, 0];
+	public var camOffset:Map<String, Array<Int>>;
+
 	public var hasMissAnimations:Bool = false;
 
 	// Used on Character Editor
@@ -94,8 +98,10 @@ class Character extends FlxSprite
 
 		#if (haxe >= "4.0.0")
 		animOffsets = new Map();
+		camOffset = new Map();
 		#else
 		animOffsets = new Map<String, Array<Dynamic>>();
+		camOffset = new Map<String, Array<Dynamic>>();
 		#end
 		curCharacter = character;
 		this.isPlayer = isPlayer;
@@ -227,6 +233,9 @@ class Character extends FlxSprite
 
 						if (anim.offsets != null && anim.offsets.length > 1)
 							addOffset(anim.anim, anim.offsets[0], anim.offsets[1]);
+
+						if (anim.camOffset != null && anim.camOffset.length > 1)
+							addCamOffset(anim.anim, anim.camOffset[0], anim.camOffset[1]);
 					}
 				}
 				else
@@ -331,6 +340,12 @@ class Character extends FlxSprite
 		else
 			offset.set(0, 0);
 
+		var daOffset = camOffset.get(AnimName);
+		if (camOffset.exists(AnimName))
+			curCameraPosition = daOffset;
+		else
+			curCameraPosition = [0, 0];
+
 		if (curCharacter.startsWith('gf'))
 		{
 			if (AnimName == 'singLEFT')
@@ -369,6 +384,9 @@ class Character extends FlxSprite
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 		animOffsets[name] = [x, y];
+
+	public function addCamOffset(name:String, x:Int = 0, y:Int = 0)
+		camOffset[name] = [x, y];
 
 	public function quickAnimAdd(name:String, anim:String)
 		animation.addByPrefix(name, anim, 24, false);

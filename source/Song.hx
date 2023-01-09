@@ -6,7 +6,7 @@ import haxe.format.JsonParser;
 import lime.utils.Assets;
 #if sys
 import sys.io.File;
-#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+#if cpp import sys.FileSystem; #end
 #end
 using StringTools;
 

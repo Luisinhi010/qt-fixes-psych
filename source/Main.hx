@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxCamera;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -20,7 +21,7 @@ import flixel.FlxG;
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
 import haxe.io.Path;
-#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+#if cpp import sys.FileSystem; #end
 import sys.io.Process;
 #end
 
@@ -53,6 +54,7 @@ class Main extends Sprite
 	var flxGame:FlxGame;
 
 	public static var __justcompiled:Bool = false; // useless but cool
+	public static var __curBuild:Int;
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -112,7 +114,16 @@ class Main extends Sprite
 		addChild(flxGame);
 
 		#if sys
-		__justcompiled = Sys.args().contains("-livereload");
+		if (Sys.args().contains("-livereload")) // yoshi please dont kill me
+		{
+			__justcompiled = true;
+
+			var buildNum:Int = Std.parseInt(File.getContent("./../../../../buildnumber.txt"));
+			buildNum++;
+			File.saveContent("./../../../../buildnumber.txt", Std.string(buildNum));
+			__curBuild = buildNum;
+			trace(__curBuild);
+		}
 		#end
 		MusicBeatState.updatewindowres();
 

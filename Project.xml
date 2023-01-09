@@ -90,7 +90,7 @@
 	-->
 	<assets path="assets/fonts" />
 	<assets path="assets/art" />
-	<assets path="assets/preload/images/Default" embed='true'/>
+	<assets path="assets/sound" />
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<!-- yoshicrafter29 flixel comes bundled in with addons and ui as well so dw -->

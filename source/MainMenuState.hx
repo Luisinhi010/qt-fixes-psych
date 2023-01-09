@@ -1,6 +1,6 @@
 package;
 
-#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+#if cpp import sys.FileSystem; #end
 import flixel.util.FlxTimer;
 import flixel.addons.display.FlxBackdrop;
 #if desktop

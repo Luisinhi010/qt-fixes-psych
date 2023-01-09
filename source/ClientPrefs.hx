@@ -53,6 +53,7 @@ class ClientPrefs
 	public static var arrowHSV:Array<Array<Int>> = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
 	public static var ghostTapping:Bool = true;
 	public static var timeBar:Bool = true;
+	public static var timeBarUi:String = 'Qt Fixes';
 	public static var scoreZoom:Bool = true;
 	public static var noReset:Bool = false;
 	public static var healthBarAlpha:Float = 1;
@@ -176,6 +177,7 @@ class ClientPrefs
 		FlxG.save.data.arrowHSV = arrowHSV;
 		FlxG.save.data.ghostTapping = ghostTapping;
 		FlxG.save.data.timeBar = timeBar;
+		FlxG.save.data.timeBarUi = timeBarUi;
 		FlxG.save.data.scoreZoom = scoreZoom;
 		FlxG.save.data.noReset = noReset;
 		FlxG.save.data.healthBarAlpha = healthBarAlpha;
@@ -202,8 +204,8 @@ class ClientPrefs
 		FlxG.save.flush();
 
 		var save:FlxSave = new FlxSave();
-		save.bind('Qt_controls'
-			#if (flixel < "5.0.0"), 'Luis' #end); // Placing this in a separate save so that it can be manually deleted without removing your Score and stuff
+		save.bind('Qt_controls',
+			CoolUtil.getSavePath('Luis')); // Placing this in a separate save so that it can be manually deleted without removing your Score and stuff
 		save.data.customControls = keyBinds;
 		save.flush();
 		FlxG.log.add("Settings saved!");
@@ -338,6 +340,9 @@ class ClientPrefs
 		if (FlxG.save.data.timeBar != null)
 			timeBar = FlxG.save.data.timeBar;
 
+		if (FlxG.save.data.timeBarUi != null)
+			timeBarUi = FlxG.save.data.timeBarUi;
+
 		if (FlxG.save.data.scoreZoom != null)
 			scoreZoom = FlxG.save.data.scoreZoom;
 
@@ -406,7 +411,7 @@ class ClientPrefs
 			comboStacking = FlxG.save.data.comboStacking;
 
 		var save:FlxSave = new FlxSave();
-		save.bind('Qt_controls' #if (flixel < "5.0.0"), 'Luis' #end);
+		save.bind('Qt_controls', CoolUtil.getSavePath('Luis'));
 		if (save != null && save.data.customControls != null)
 		{
 			var loadedControls:Map<String, Array<FlxKey>> = save.data.customControls;
@@ -477,7 +482,7 @@ class ClientPrefs
 			FlxG.sound.volumeUpKeys = volumeUpKeys;
 			FlxG.keys.preventDefaultKeys = [TAB];
 			PlayerSettings.init();
-			FlxG.save.bind('funkin', 'Luis');
+			FlxG.save.bind('funkin', CoolUtil.getSavePath('Luis'));
 			loadPrefs();
 			Highscore.load();
 			if (FlxG.save.data.weekCompleted != null)

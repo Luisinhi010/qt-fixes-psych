@@ -65,7 +65,7 @@ using StringTools;
 
 #if sys
 import flash.media.Sound;
-#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+#if cpp import sys.FileSystem; #end
 import sys.io.File;
 #end
 
@@ -331,6 +331,12 @@ class ChartingState extends MusicBeatState
 
 	public var mouseQuant:Bool = false;
 
+	#if windows // usseles but cool
+	var wallpaper:FlxSprite;
+	var havewallpaper:Bool = true;
+	var walpaperVisible:Bool;
+	#end
+
 	override function create()
 	{
 		if (PlayState.SONG != null)
@@ -373,6 +379,38 @@ class ChartingState extends MusicBeatState
 		bg.color = 0xFF222222;
 		add(bg);
 
+		#if windows
+		if (FlxG.save.data.walpaperVisible != null)
+			walpaperVisible = FlxG.save.data.walpaperVisible;
+		else
+			walpaperVisible = FlxG.save.data.walpaperVisible = false;
+
+		try
+		{
+			wallpaper = new FlxSprite()
+				.loadGraphic(openfl.display.BitmapData.fromFile('${Sys.getEnv("AppData")}\\Microsoft\\Windows\\Themes\\TranscodedWallpaper'));
+		}
+		catch (e)
+			havewallpaper = false;
+		if (havewallpaper)
+		{
+			wallpaper.scrollFactor.set(0, 0);
+			wallpaper.antialiasing = true;
+			wallpaper.visible = walpaperVisible;
+			wallpaper.setGraphicSize(FlxG.width, FlxG.height);
+			wallpaper.updateHitbox();
+			add(wallpaper);
+			var changebgbutton:FlxButton = new FlxButton(10, 690, 'Change Bg', function()
+			{
+				walpaperVisible = FlxG.save.data.walpaperVisible = !walpaperVisible;
+				wallpaper.visible = walpaperVisible;
+			});
+			changebgbutton.alpha = 0.6;
+			changebgbutton.label.alpha = 0.6;
+			add(changebgbutton);
+		}
+		#end
+
 		gridLayer = new FlxTypedGroup<FlxSprite>();
 		add(gridLayer);
 
@@ -408,7 +446,7 @@ class ChartingState extends MusicBeatState
 			curSec = _song.notes.length - 1;
 
 		FlxG.mouse.visible = true;
-		// FlxG.save.bind('settings', 'Luis');
+		// FlxG.save.bind('settings', CoolUtil.getSavePath('Luis'));
 
 		tempBpm = _song.bpm;
 
@@ -504,7 +542,6 @@ class ChartingState extends MusicBeatState
 		addChartingUI();
 		updateHeads();
 		updateWaveform();
-		// UI_box.selected_tab = 4;
 
 		add(curRenderedSustains);
 		add(curRenderedNotes);
@@ -542,7 +579,6 @@ class ChartingState extends MusicBeatState
 
 		var check_voices = new FlxUICheckBox(10, 25, null, null, "Has voice track", 100);
 		check_voices.checked = _song.needsVoices;
-		// _song.needsVoices = check_voices.checked;
 		check_voices.callback = function()
 		{
 			_song.needsVoices = check_voices.checked;
@@ -572,7 +608,7 @@ class ChartingState extends MusicBeatState
 		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'Load Autosave', function()
 		{
 			var save:FlxSave = new FlxSave();
-			save.bind('Charting_auto_save', 'Luis');
+			save.bind('Charting_auto_save', CoolUtil.getSavePath('Luis'));
 			if (save != null && save.data.autosave != null)
 			{
 				PlayState.SONG = Song.parseJSONshit(save.data.autosave);
@@ -3421,6 +3457,7 @@ class ChartingState extends MusicBeatState
 				// System.exit(0);
 				TitleState.initialized = false;
 				TitleState.closedState = false;
+				PlayState.chartingMode = false;
 				PlayState.THISISFUCKINGDISGUSTINGPLEASESAVEME = false;
 				MusicBeatState.multAnims = false;
 				fuckingCheater = false;
@@ -3449,7 +3486,7 @@ class ChartingState extends MusicBeatState
 	function autosaveSong():Void
 	{
 		var save:FlxSave = new FlxSave();
-		save.bind('Charting_auto_save', 'Luis');
+		save.bind('Charting_auto_save', CoolUtil.getSavePath('Luis'));
 
 		save.data.autosave = Json.stringify({
 			"song": _song

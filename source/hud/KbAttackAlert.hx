@@ -92,8 +92,6 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 				alert.animation.findByPrefix(animFrames, "Alert-Quad");
 			}
 
-			trace(animFrames.length);
-
 			if (animFrames.length > 0)
 			{
 				newalert = true;
@@ -112,7 +110,6 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 				alert.animation.addByPrefix('alertTRIPLE', 'kb_attack_animation_alert-triple', 24, false);
 				alert.animation.addByPrefix('alertQUAD', 'kb_attack_animation_alert-quad', 24, false);
 			}
-			trace("newalert " + newalert);
 
 			alert.screenCenter(X);
 			alert.x += alert.width / 4; // wtf? haz?
@@ -136,7 +133,6 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 
 			for (i in [alert.x, alert.y, tipTxt.x, tipTxt.y])
 				pos.push(i);
-			trace(pos);
 
 			alertAdded = true;
 			multiplier = MusicBeatState.multAnims ? PlayState.instance.playbackRate : 1;

@@ -29,7 +29,7 @@ import lime.system.Clipboard;
 import haxe.Json;
 #if sys
 import sys.io.File;
-#if cpp import sys.FileSystem; #else import js.html.FileSystem; #end
+#if cpp import sys.FileSystem; #end
 #end
 import WeekData;
 

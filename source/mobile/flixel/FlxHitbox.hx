@@ -1,9 +1,9 @@
 package mobile.flixel;
 
-import flash.display.BitmapData;
-import flash.display.Shape;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup;
+import openfl.display.BitmapData;
+import openfl.display.Shape;
 import mobile.flixel.FlxButton;
 
 /**
@@ -22,7 +22,7 @@ class FlxHitbox extends FlxSpriteGroup
 	/**
 	 * Create the zone.
 	 */
-	public function new()
+	public function new():Void
 	{
 		super();
 
@@ -37,7 +37,7 @@ class FlxHitbox extends FlxSpriteGroup
 	/**
 	 * Clean up memory.
 	 */
-	override function destroy()
+	override function destroy():Void
 	{
 		super.destroy();
 
@@ -68,18 +68,16 @@ class FlxHitbox extends FlxSpriteGroup
 		hint.immovable = true;
 		hint.scrollFactor.set();
 		hint.alpha = 0.00001;
-		hint.onDown.callback = function()
+		hint.onDown.callback = hint.onOver.callback = function()
 		{
 			if (hint.alpha != 0.2)
 				hint.alpha = 0.2;
 		}
-		hint.onUp.callback = function()
+		hint.onUp.callback = hint.onOut.callback = function()
 		{
 			if (hint.alpha != 0.00001)
 				hint.alpha = 0.00001;
 		}
-		hint.onOut.callback = hint.onUp.callback;
-		hint.onOver.callback = hint.onDown.callback;
 		#if FLX_DEBUG
 		hint.ignoreDrawDebug = true;
 		#end

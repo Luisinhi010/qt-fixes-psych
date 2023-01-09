@@ -49,10 +49,10 @@ class FlxSoundTray extends Sprite
 	var _defaultScale:Float = 2.0;
 
 	/**The sound used when increasing the volume.**/
-	public var volumeUpSound:String = "flixel/sounds/beep";
+	public var volumeUpSound:String = "assets/sound/volumeUpSound";
 
 	/**The sound used when decreasing the volume.**/
-	public var volumeDownSound:String = 'flixel/sounds/beep';
+	public var volumeDownSound:String = 'assets/sound/volumeDownSound';
 
 	/**Whether or not changing the volume should make noise.**/
 	public var silent:Bool = false;
@@ -82,9 +82,9 @@ class FlxSoundTray extends Sprite
 		text.embedFonts = true;
 		text.antiAliasType = AntiAliasType.NORMAL;
 		text.gridFitType = GridFitType.PIXEL;
-		#else
 		#end
-		var dtf:TextFormat = new TextFormat(FlxAssets.FONT_DEFAULT, 10, 0xffffff);
+
+		var dtf:TextFormat = new TextFormat(Paths.font("FridayNightFunkin2-Regular.ttf"), 10, 0xffffff);
 		dtf.align = TextFormatAlign.CENTER;
 		text.defaultTextFormat = dtf;
 		addChild(text);
