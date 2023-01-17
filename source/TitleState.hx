@@ -104,9 +104,6 @@ class TitleState extends MusicBeatState
 
 		// DEBUG BULLSHIT
 		super.create();
-		#if mobile
-		addVirtualPad(LEFT_FULL, A_B);
-		#end
 
 		// IGNORE THIS!!!
 		titleJSON = Json.parse(Paths.getTextFromFile('images/gfDanceTitle.json'));
@@ -254,7 +251,7 @@ class TitleState extends MusicBeatState
 		titleText = new FlxSprite(titleJSON.startx, titleJSON.starty);
 		#if (desktop && MODS_ALLOWED)
 		var path = "mods/" + Paths.currentModDirectory + "/images/titleEnter.png";
-		// trace(path, FileSystem.exists(SUtil.getStorageDirectory() +path));
+		// trace(path, FileSystem.exists(path));
 		if (!FileSystem.exists(path))
 			path = "mods/images/titleEnter.png";
 		if (!FileSystem.exists(path))
@@ -362,16 +359,6 @@ class TitleState extends MusicBeatState
 
 		if (FlxG.mouse.justPressed)
 			pressedEnter = true;
-
-		#if mobile
-		for (touch in FlxG.touches.list)
-		{
-			if (touch.justPressed)
-			{
-				pressedEnter = true;
-			}
-		}
-		#end
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 

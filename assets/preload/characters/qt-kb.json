@@ -131,7 +131,7 @@
   ],
   "no_antialiasing": false,
   "splashSkin": "noteSplashesQt",
-  "image": "characters/qt-port/qt-kbV2",
+  "image": "characters/qt-port/qt-kb",
   "position": [-140, 210],
   "healthicon": "qtkb",
   "flip_x": false,

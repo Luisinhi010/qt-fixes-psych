@@ -276,7 +276,7 @@ class ModsMenuState extends MusicBeatState
 			removeButton = new FlxButton(startX, 620, "Delete Selected Mod", function()
 			{
 				var path = haxe.io.Path.join([Paths.mods(), modsList[curSelected][0]]);
-				if(FileSystem.exists(SUtil.getStorageDirectory() +path) && FileSystem.isDirectory(path))
+				if(FileSystem.exists(path) && FileSystem.isDirectory(path))
 				{
 					trace('Trying to delete directory ' + path);
 					try

@@ -153,14 +153,6 @@ class CreditsState extends MusicBeatState
 				'https://twitter.com/sayofthelor',
 				'663399'
 			],
-			[
-				'Yoshi Crafter29',
-				'yoshicrafter29',
-				"For being a Chad",
-				'https://twitter.com/YoshiCrafter29',
-				'FFCC9D'
-			],
-
 			[''],
 			['Psych Engine Team'],
 			[
@@ -285,9 +277,7 @@ class CreditsState extends MusicBeatState
 		];
 
 		for (i in pisspoop)
-		{
 			creditsStuff.push(i);
-		}
 
 		for (i in 0...creditsStuff.length)
 		{
@@ -302,9 +292,7 @@ class CreditsState extends MusicBeatState
 			if (isSelectable)
 			{
 				if (creditsStuff[i][5] != null)
-				{
 					Paths.currentModDirectory = creditsStuff[i][5];
-				}
 
 				var icon:AttachedSprite = new AttachedSprite('credits/' + creditsStuff[i][1]);
 				icon.xAdd = optionText.width + 10;
@@ -418,9 +406,7 @@ class CreditsState extends MusicBeatState
 					item.x = FlxMath.lerp(lastX, item.x - 70, lerpVal);
 				}
 				else
-				{
 					item.x = FlxMath.lerp(item.x, 200 + -40 * Math.abs(item.targetY), lerpVal);
-				}
 			}
 		}
 		super.update(elapsed);
@@ -468,9 +454,7 @@ class CreditsState extends MusicBeatState
 			{
 				item.alpha = 0.6;
 				if (item.targetY == 0)
-				{
 					item.alpha = 1;
-				}
 			}
 		}
 
@@ -519,14 +503,11 @@ class CreditsState extends MusicBeatState
 	{
 		var bgColor:String = creditsStuff[curSelected][4];
 		if (!bgColor.startsWith('0x'))
-		{
 			bgColor = '0xFF' + bgColor;
-		}
+
 		return Std.parseInt(bgColor);
 	}
 
 	private function unselectableCheck(num:Int):Bool
-	{
 		return creditsStuff[num].length <= 1;
-	}
 }

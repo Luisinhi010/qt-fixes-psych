@@ -65,10 +65,6 @@ class Main extends Sprite
 	{
 		super();
 
-		#if mobile
-		SUtil.uncaughtErrorHandler();
-		#end
-
 		if (stage != null)
 			init();
 		else
@@ -105,7 +101,6 @@ class Main extends Sprite
 		}
 		#end
 
-		SUtil.checkPermissions();
 		Application.current.window.title = gameTitle;
 		Application.current.window.setIcon(lime.utils.Assets.getImage('assets/art/iconOG.png'));
 		// FlxG.widescreen = true;

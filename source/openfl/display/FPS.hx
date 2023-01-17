@@ -1,6 +1,7 @@
 package openfl.display;
 
 import flixel.FlxG;
+import openfl.Lib;
 import openfl.display.Shader;
 import openfl.filters.ShaderFilter;
 import flixel.math.FlxMath;
@@ -34,7 +35,24 @@ class FPS extends TextField
 	#if cpp
 	var totalmem:Int = InitLoader.Ram;
 	#end
-	var gpuInfo:String = FlxG.stage.context3D.driverInfo.substr(FlxG.stage.context3D.driverInfo.indexOf('Renderer=') + 9);
+	var gpuInfo(get, null):String = '';
+
+	function get_gpuInfo():String
+	{
+		if (gpuInfo == '')
+			gpuInfo = glInfo('Renderer');
+		return gpuInfo;
+	}
+
+	var glver(get, null):String = '';
+
+	function get_glver():String
+	{
+		if (glver == '')
+			glver = glInfo('Shader Ver');
+		return glver;
+	}
+
 	var platform:String = InitLoader.System + " " + InitLoader.SystemVer;
 	@:noCompletion private var cacheCount:Int;
 	@:noCompletion private var currentTime:Float;
@@ -133,10 +151,10 @@ class FPS extends TextField
 			debug = !debug;
 
 		var fpsMs = ' (${FlxMath.roundDecimal(_ms, 2)}ms)';
-		if (currentCount != cacheCount || _ms != totalms /*&& visible*/)
+		if (currentCount != cacheCount || _ms != totalms)
 		{
 			text = '';
-			if (ClientPrefs.showFPS)
+			if (ClientPrefs.showFPS || debug)
 				text += "FPS: " + currentFPS + (debug ? fpsMs : '');
 			// Show Mem Pr: https://github.com/ShadowMario/FNF-PsychEngine/pull/9554/
 
@@ -146,14 +164,13 @@ class FPS extends TextField
 			if (memoryMegas > memoryTotal)
 				memoryTotal = memoryMegas;
 
-			if (ClientPrefs.showMEM)
+			if (ClientPrefs.showMEM || debug)
 				text += '\nMem: ${getInterval(memoryMegas)} / Peak: ${getInterval(memoryTotal)}' #if cpp + ' / Total: ${getInterval(totalmem)}' #end +
 			(debug ? ' / Vram: ${getInterval(Std.int(FlxG.stage.context3D.totalGPUMemory / 1024 / 1024))}' : '');
 			#end
 
-			// if (ClientPrefs.showGPU)
 			if (debug)
-				text += '\nGPU: $gpuInfo\nObjects: ${FlxG.state.members.length}\nCameras: ${FlxG.cameras.list.length}\nSystem: $platform';
+				text += '\nGPU: $gpuInfo $glver\nObjects: ${FlxG.state.members.length}\nCameras: ${FlxG.cameras.list.length}\nSystem: $platform';
 
 			if (ClientPrefs.showState || debug)
 				text += '\nState: ${Type.getClassName(Type.getClass(FlxG.state))}' + '\nSubState: ${Type.getClassName(Type.getClass(FlxG.state.subState))}';
@@ -173,6 +190,22 @@ class FPS extends TextField
 
 		cacheCount = currentCount;
 		totalms = _ms;
+	}
+
+	private function glInfo(info:String):String // https://github.com/SawPorts/IMPOSTOR-UPDATE/blob/6e81841c5af491a504620b94239ea3e3cad64adc/source/Overlay.hx#L119
+	{
+		@:privateAccess
+		var gl:Dynamic = Lib.current.stage.context3D.gl;
+
+		switch (info)
+		{
+			case 'Renderer':
+				return Std.string(gl.getParameter(gl.RENDERER));
+			case 'Shader Ver':
+				return Std.string(gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
+		}
+
+		return '';
 	}
 
 	public function setPosition(X:Float = 0, Y:Float = 0):Void

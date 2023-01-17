@@ -35,24 +35,29 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	public var healthBarFG:AttachedSprite;
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
+	public var coloredHealthBar:Bool;
 
 	// timer
 	public var timeBarBG:AttachedSprite;
 	public var timeBar:FlxBar;
-	public var kadetimeBar:Bool; // oh well
-	public var psychtimeBar:Bool;
+	public var timeBarUi:String;
+
 	public var songNameTxt:FlxText;
 	public var songName:String = "";
 	public var fucktimer(default, set):Bool = false;
 
-	function set_fucktimer(value:Bool):Bool
+	public function set_fucktimer(value:Bool):Bool
 	{
 		fucktimer = value;
 		if (songNameTxt != null)
 		{
 			if (value)
-				songNameTxt.text = kadetimeBar ? 'ERROR' : psychtimeBar ? '?:??' : '?:??' + '  ' + "SYSTEM ERROR" + '  ' + '?:??';
-			else if (kadetimeBar)
+				songNameTxt.text = (timeBarUi == 'Kade Engine') ? 'ERROR' : (timeBarUi == 'Psych Engine') ? '?:??' : '?:??'
+					+ '  '
+					+ "SYSTEM ERROR"
+					+ '  '
+					+ '?:??';
+			else if (timeBarUi == 'Kade Engine')
 				songNameTxt.text = songName;
 			songNameTxt.screenCenter(X);
 		}
@@ -65,6 +70,15 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	// score bla bla bla
 	public var scoreTxt:FlxText;
 	public var scoreTxtTween:FlxTween;
+	public var kadescore(default, set):Bool = false;
+
+	public function set_kadescore(value:Bool):Bool
+	{
+		kadescore = value;
+		scoreTxt.size = value ? 16 : 20;
+		updateScore();
+		return value;
+	}
 
 	public var botplaySine:Float = 0;
 	public var botplayTxt:FlxText;
@@ -79,8 +93,8 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 		// set up the Time Bar
 		songName = PlayState.SONG.song.replace("-", " ").replace("_", " ");
-		kadetimeBar = ClientPrefs.timeBarUi == 'Kade Engine'; // kade engine 1.6.2 btw
-		psychtimeBar = ClientPrefs.timeBarUi == 'Psych Engine'; // what you gonna do about it?
+		coloredHealthBar = PlayState.instance.coloredHealthBar;
+		timeBarUi = PlayState.instance.timeBarUi;
 
 		var showTime:Bool = ClientPrefs.timeBar;
 
@@ -92,13 +106,13 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		songNameTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
 		songNameTxt.visible = showTime;
 		songNameTxt.screenCenter(X);
-		if (kadetimeBar)
+		if (timeBarUi == 'Kade Engine')
 		{
-			songNameTxt.y -= 5;
+			songNameTxt.y += ClientPrefs.downScroll ? 5 : -5;
 			songNameTxt.size = 18;
 		}
 
-		timeBarBG = new AttachedSprite(kadetimeBar ? 'healthBar' : 'timeBar');
+		timeBarBG = new AttachedSprite((timeBarUi == 'Kade Engine') ? 'healthBar' : 'timeBar');
 		timeBarBG.y = songNameTxt.y + (songNameTxt.height / 4);
 		timeBarBG.scrollFactor.set();
 		timeBarBG.alpha = 0;
@@ -106,10 +120,10 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		timeBarBG.color = FlxColor.BLACK;
 		timeBarBG.xAdd = -4;
 		timeBarBG.yAdd = -4;
-		if (kadetimeBar)
+		if (timeBarUi == 'Kade Engine')
 			timeBarBG.screenCenter(X);
 
-		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4 - (kadetimeBar ? 5 : 0), LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8),
+		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4 - ((timeBarUi == 'Kade Engine') ? 5 : 0), LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8),
 			Std.int(timeBarBG.height - 8), this, 'songPercent', 0, 1);
 		timeBar.screenCenter(X);
 		timeBar.scrollFactor.set();
@@ -184,32 +198,15 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		reloadHealthBarColors(fucktimer);
 
 		// set up Score
-
-		var xPos:Int = ClientPrefs.downScroll ? 10 : FlxG.height - 45;
-
-		scoreTxt = new FlxText(0, !PlayState.instance.inhumanSong ? healthBarBG.y + 36 : xPos - 5, FlxG.width, "", 20);
+		scoreTxt = new FlxText(0, healthBarBG.y + healthBarBG.height + 36, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
 		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = PlayState.instance.inhumanSong ? 1 : 1.5;
-		if (!PlayState.instance.inhumanSong)
-			scoreTxt.y += ClientPrefs.downScroll ? 10 : -110;
 		scoreTxt.screenCenter(X);
 		if (!PlayState.instance.forceMiddleScroll)
 			scoreTxt.x += 140;
 		scoreTxt.visible = !PlayState.instance.cpuControlled;
 		add(scoreTxt);
-
-		if (PlayState.instance.inhumanSong)
-		{
-			healthBar.angle = 90;
-			healthBar.x = FlxG.width - healthBarBG.height;
-			healthBar.screenCenter(Y);
-			if (!ClientPrefs.optimize)
-			{
-				iconP1.visible = false;
-				iconP2.visible = false;
-			}
-		}
 
 		botplayTxt = new FlxText(FlxG.width - 250, (ClientPrefs.downScroll ? 120 : FlxG.height - 120), 0, "BOTPLAY", 20);
 		botplayTxt.setFormat(Paths.font("vcr.ttf"), 42, PlayState.instance.inhumancolor1, RIGHT, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
@@ -228,9 +225,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	{
 		super.update(elapsed);
 
-		health = (Math.abs(health - PlayState.instance.health) < .1)
-			&& healthBar.visible ? PlayState.instance.health : FlxMath.lerp(health, PlayState.instance.health,
-				CoolUtil.boundTo(1 - (elapsed * 2 * PlayState.instance.playbackRate), 0, 1)); // kinda inspired by andromeda smooth health bar
+		health = PlayState.instance.health;
 
 		if (!ClientPrefs.optimize)
 		{
@@ -285,9 +280,9 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			if (secondsTotal < 0)
 				secondsTotal = 0;
 
-			if (!kadetimeBar && !fucktimer)
+			if (timeBarUi != 'Kade Engine' && !fucktimer)
 				songNameTxt.text = FlxStringUtil.formatTime(secondsTotal, false)
-					+ (psychtimeBar ? '' : '  ' + songName + '  ' + PlayState.instance.songLengthTxt);
+					+ ((timeBarUi == 'Psych Engine') ? '' : '  ' + songName + '  ' + PlayState.instance.songLengthTxt);
 
 			songNameTxt.screenCenter(X);
 		}
@@ -306,14 +301,42 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		var ratingFC:String = PlayState.instance.ratingFC;
 
 		// of course I would go back and fix my code, of COURSE @BeastlyGhost;
-		tempScore = "Score: " + songScore;
-
-		if (displayRatings)
+		tempScore = 'Score: $songScore';
+		if (kadescore) // vs imposter is sus https://github.com/Clowfoe/IMPOSTOR-UPDATE/blob/9cfceb2aba706a0cf74d00d0a9a7b36b98c18aa7/source/PlayState.hx#L6286
 		{
-			tempScore += scoreSeparator + "Misses: " + songMisses;
-			tempScore += scoreSeparator + "Rating: " + ratingName;
-			tempScore += (ratingName != '?' ? ' (${Highscore.floorDecimal(ratingPercent * 100, 2)}%)' : '');
-			tempScore += (ratingFC != null && ratingFC != '' ? ' - $ratingFC' : '');
+			if (displayRatings)
+			{
+				tempScore += ' | Combo Breaks: $songMisses | Accuracy: ';
+
+				if (ratingName != '?')
+				{
+					tempScore += ((Math.floor(ratingPercent * 10000) / 100)) + '% | ';
+
+					switch (ratingFC)
+					{
+						case 'SFC':
+							tempScore += '(MFC) AAAA:';
+						case 'GFC':
+							tempScore += '(GFC) AAA:';
+						case 'FC':
+							tempScore += '(FC) AA:';
+						default:
+							tempScore += (songMisses < 10) ? '(SDCB) A:' : '(Clear) A:';
+					}
+				}
+				else
+					tempScore += '0% | N/A';
+			}
+		}
+		else
+		{
+			if (displayRatings)
+			{
+				tempScore += scoreSeparator + "Misses: " + songMisses;
+				tempScore += scoreSeparator + "Rating: " + ratingName;
+				tempScore += (ratingName != '?' ? ' (${Highscore.floorDecimal(ratingPercent * 100, 2)}%)' : '');
+				tempScore += (ratingFC != null && ratingFC != '' ? ' - $ratingFC' : '');
+			}
 		}
 		tempScore += '\n';
 
@@ -325,7 +348,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		var dadcolor:FlxColor = 0xFFFF0000;
 		var bfcolor:FlxColor = 0xFF66FF33;
 
-		if (ClientPrefs.coloredHealthBar && !ClientPrefs.optimize)
+		if (coloredHealthBar && !ClientPrefs.optimize)
 		{
 			dadcolor = FlxColor.fromRGB(PlayState.instance.dad.healthColorArray[0], PlayState.instance.dad.healthColorArray[1],
 				PlayState.instance.dad.healthColorArray[2]);
@@ -333,7 +356,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 			bfcolor = FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1],
 				PlayState.instance.boyfriend.healthColorArray[2]);
 		}
-		if (blue && !ClientPrefs.coloredHealthBar)
+		if (blue && coloredHealthBar)
 			healthBar.createGradientBar([FlxColor.CYAN, dadcolor, dadcolor], [FlxColor.CYAN, bfcolor, bfcolor], 1, 90);
 		else
 			healthBar.createFilledBar(dadcolor, bfcolor);
@@ -343,14 +366,15 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 	public function reloadSongPosBarColors(blue:Bool = false)
 	{
-		if (ClientPrefs.timeBarUi != 'Qt Fixes')
-			timeBar.createFilledBar(kadetimeBar ? FlxColor.GRAY : FlxColor.BLACK, kadetimeBar ? FlxColor.LIME : FlxColor.WHITE);
+		if (timeBarUi != 'Qt Fixes')
+			timeBar.createFilledBar((timeBarUi == 'Kade Engine') ? FlxColor.GRAY : FlxColor.BLACK,
+				(timeBarUi == 'Kade Engine') ? FlxColor.LIME : FlxColor.WHITE);
 		else
 		{
 			var dadcolor:FlxColor = 0xFFFF0000;
 			var bfcolor:FlxColor = 0xFF66FF33;
 
-			if (ClientPrefs.coloredHealthBar && !ClientPrefs.optimize)
+			if (coloredHealthBar && !ClientPrefs.optimize)
 			{
 				dadcolor = FlxColor.fromRGB(PlayState.instance.dad.healthColorArray[0], PlayState.instance.dad.healthColorArray[1],
 					PlayState.instance.dad.healthColorArray[2]);

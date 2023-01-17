@@ -57,7 +57,7 @@ class FlxFixedShader extends FlxShader
 		@:privateAccess
 		var gl = __context.gl;
 
-		#if mobile
+		#if android
 		var prefix = "#version 300 es\n";
 		#else
 		var prefix = "#version 120\n";
@@ -75,7 +75,7 @@ class FlxFixedShader extends FlxShader
 			+ "#endif\n\n";
 		#end
 
-		#if mobile
+		#if android
 		prefix += 'out vec4 output_FragColor;\n';
 		var vertex = prefix
 			+ glVertexSource.replace("attribute", "in")

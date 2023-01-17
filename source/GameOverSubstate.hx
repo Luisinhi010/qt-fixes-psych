@@ -250,6 +250,11 @@ class GameOverSubstate extends MusicBeatSubstate
 				killedByTextDisplay = new FlxText(xy[0], xy[1] - 56, 0, "Reset button pressed.", 32);
 				killedByTextDisplay.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
 			}
+			else if (killedByGAMEOVER == "latenote")
+			{
+				killedByTextDisplay = new FlxText(xy[0] - 10, xy[1] - 56, 0, "Died due pressing the notes too late. (Health)", 32);
+				killedByTextDisplay.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
+			}
 			else
 			{
 				killedByTextDisplay = new FlxText(xy[0], xy[1] - 56, 0, "Died to missing a note. (Health)", 32);

@@ -23,9 +23,20 @@ class Conductor
 	public static var lastSongPos:Float;
 	public static var offset:Float = 0;
 
-	// public static var safeFrames:Int = 10;
 	public static var safeZoneOffset:Float = (ClientPrefs.safeFrames / 60) * 1000; // is calculated in create(), is safeFrames in milliseconds
-	public static var safeZoneOffsetHURTNOTE:Float = ((ClientPrefs.safeFrames / 2) / 60) * 1000; // Same as above. Used to make hurt notes much harder to hit.
+	public static final ROWS_PER_BEAT = 48; // from Stepmania //i just take this from impostor mod, no actual reason
+	public static final BEATS_PER_MEASURE = 4; // TODO: time sigs
+	public static final ROWS_PER_MEASURE = ROWS_PER_BEAT * BEATS_PER_MEASURE; // from Stepmania
+	public static final MAX_NOTE_ROW = 1 << 30; // from Stepmania
+
+	public inline static function beatToRow(beat:Float):Int
+		return Math.round(beat * ROWS_PER_BEAT);
+
+	public inline static function rowToBeat(row:Int):Float
+		return row / ROWS_PER_BEAT;
+
+	public inline static function secsToRow(sex:Float):Int
+		return Math.round(getBeat(sex) * ROWS_PER_BEAT);
 
 	// may be unused due of psych having low priority on hurt notes
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];

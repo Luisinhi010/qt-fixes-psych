@@ -363,9 +363,7 @@ class Paths
 		var imageLoaded:FlxGraphic = returnGraphic(key, library, text);
 		var xmlExists:Bool = false;
 		if (FileSystem.exists(modsXml(key)))
-		{
 			xmlExists = true;
-		}
 
 		return FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library, text)),
 			(xmlExists ? File.getContent(modsXml(key)) : file('images/$key.xml', library)));

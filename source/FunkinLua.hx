@@ -55,9 +55,9 @@ using StringTools;
 
 class FunkinLua
 {
-	public static var Function_Stop:Dynamic = 1;
-	public static var Function_Continue:Dynamic = 0;
-	public static var Function_StopLua:Dynamic = 2;
+	public static final Function_Stop:Dynamic = "##PSYCHLUA_FUNCTIONSTOP";
+	public static final Function_Continue:Dynamic = "##PSYCHLUA_FUNCTIONCONTINUE";
+	public static final Function_StopLua:Dynamic = "##PSYCHLUA_FUNCTIONSTOPLUA";
 
 	// public var errorHandler:String->Void;
 	#if LUA_ALLOWED
@@ -331,14 +331,11 @@ class FunkinLua
 			#if (!flash && MODS_ALLOWED && sys)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
-			{
-				Lua.pushnil(lua);
 				return null;
-			}
+
 			return shader.getBool(prop);
 			#else
 			luaTrace("getShaderBool: Platform unsupported for Runtime Shaders!", false, false, FlxColor.RED);
-			Lua.pushnil(lua);
 			return null;
 			#end
 		});
@@ -347,14 +344,11 @@ class FunkinLua
 			#if (!flash && MODS_ALLOWED && sys)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
-			{
-				Lua.pushnil(lua);
 				return null;
-			}
+
 			return shader.getBoolArray(prop);
 			#else
 			luaTrace("getShaderBoolArray: Platform unsupported for Runtime Shaders!", false, false, FlxColor.RED);
-			Lua.pushnil(lua);
 			return null;
 			#end
 		});
@@ -363,14 +357,11 @@ class FunkinLua
 			#if (!flash && MODS_ALLOWED && sys)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
-			{
-				Lua.pushnil(lua);
 				return null;
-			}
+
 			return shader.getInt(prop);
 			#else
 			luaTrace("getShaderInt: Platform unsupported for Runtime Shaders!", false, false, FlxColor.RED);
-			Lua.pushnil(lua);
 			return null;
 			#end
 		});
@@ -379,14 +370,11 @@ class FunkinLua
 			#if (!flash && MODS_ALLOWED && sys)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
-			{
-				Lua.pushnil(lua);
 				return null;
-			}
+
 			return shader.getIntArray(prop);
 			#else
 			luaTrace("getShaderIntArray: Platform unsupported for Runtime Shaders!", false, false, FlxColor.RED);
-			Lua.pushnil(lua);
 			return null;
 			#end
 		});
@@ -395,14 +383,11 @@ class FunkinLua
 			#if (!flash && MODS_ALLOWED && sys)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
-			{
-				Lua.pushnil(lua);
 				return null;
-			}
+
 			return shader.getFloat(prop);
 			#else
 			luaTrace("getShaderFloat: Platform unsupported for Runtime Shaders!", false, false, FlxColor.RED);
-			Lua.pushnil(lua);
 			return null;
 			#end
 		});
@@ -411,14 +396,11 @@ class FunkinLua
 			#if (!flash && MODS_ALLOWED && sys)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
-			{
-				Lua.pushnil(lua);
 				return null;
-			}
+
 			return shader.getFloatArray(prop);
 			#else
 			luaTrace("getShaderFloatArray: Platform unsupported for Runtime Shaders!", false, false, FlxColor.RED);
-			Lua.pushnil(lua);
 			return null;
 			#end
 		});
@@ -615,7 +597,6 @@ class FunkinLua
 					}
 				}
 			}
-			Lua.pushnil(lua);
 		});
 
 		Lua_helper.add_callback(lua, "getGlobalFromScript", function(?luaFile:String, ?global:String)
@@ -682,10 +663,6 @@ class FunkinLua
 						{
 							Lua.pushboolean(lua, Lua.toboolean(luaInstance.lua, -1));
 						}
-						else
-						{
-							Lua.pushnil(lua);
-						}
 						// TODO: table
 
 						Lua.pop(luaInstance.lua, 1); // remove the global
@@ -694,7 +671,6 @@ class FunkinLua
 					}
 				}
 			}
-			Lua.pushnil(lua);
 		});
 		Lua_helper.add_callback(lua, "setGlobalFromScript", function(luaFile:String, global:String, val:Dynamic)
 		{ // returns the global from a script
@@ -737,25 +713,24 @@ class FunkinLua
 					}
 				}
 			}
-			Lua.pushnil(lua);
 		});
 		/*Lua_helper.add_callback(lua, "getGlobals", function(luaFile:String){ // returns a copy of the specified file's globals
 			var cervix = luaFile + ".lua";
 			if(luaFile.endsWith(".lua"))cervix=luaFile;
 			var doPush = false;
 			#if MODS_ALLOWED
-			if(FileSystem.exists(SUtil.getStorageDirectory() +Paths.modFolders(cervix)))
+			if(FileSystem.exists(Paths.modFolders(cervix)))
 			{
 				cervix = Paths.modFolders(cervix);
 				doPush = true;
 			}
-			else if(FileSystem.exists(SUtil.getStorageDirectory() +cervix))
+			else if(FileSystem.exists(cervix))
 			{
 				doPush = true;
 			}
 			else {
 				cervix = Paths.getPreloadPath(cervix);
-				if(FileSystem.exists(SUtil.getStorageDirectory() +cervix)) {
+				if(FileSystem.exists(cervix)) {
 					doPush = true;
 				}
 			}
@@ -821,7 +796,6 @@ class FunkinLua
 
 				}
 			}
-			Lua.pushnil(lua);
 		});*/
 
 		Lua_helper.add_callback(lua, "isRunning", function(luaFile:String)
@@ -989,8 +963,6 @@ class FunkinLua
 
 			if (retVal != null && !isOfTypes(retVal, [Bool, Int, Float, String, Array]))
 				retVal = null;
-			if (retVal == null)
-				Lua.pushnil(lua);
 			return retVal;
 		});
 
@@ -1075,8 +1047,6 @@ class FunkinLua
 			else
 				result = getVarInArray(getInstance(), variable);
 
-			if (result == null)
-				Lua.pushnil(lua);
 			return result;
 		});
 		Lua_helper.add_callback(lua, "setProperty", function(variable:String, value:Dynamic)
@@ -1100,8 +1070,6 @@ class FunkinLua
 			if (Std.isOfType(realObject, FlxTypedGroup))
 			{
 				var result:Dynamic = getGroupStuff(realObject.members[index], variable);
-				if (result == null)
-					Lua.pushnil(lua);
 				return result;
 			}
 
@@ -1114,12 +1082,9 @@ class FunkinLua
 				else
 					result = getGroupStuff(leArray, variable);
 
-				if (result == null)
-					Lua.pushnil(lua);
 				return result;
 			}
 			luaTrace("getPropertyFromGroup: Object #" + index + " from group: " + obj + " doesn't exist!", false, false, FlxColor.RED);
-			Lua.pushnil(lua);
 			return null;
 		});
 		Lua_helper.add_callback(lua, "setPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic, value:Dynamic)
@@ -1628,8 +1593,6 @@ class FunkinLua
 		});
 		Lua_helper.add_callback(lua, "getDominantColor", function(tag:String)
 		{
-			if (tag == null)
-				Lua.pushnil(lua);
 			var result:Int = CoolUtil.dominantColor(getObjectDirectly(tag));
 			return result;
 		});
@@ -2908,7 +2871,6 @@ class FunkinLua
 				return obj.text;
 			}
 			luaTrace("getTextString: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
-			Lua.pushnil(lua);
 			return null;
 		});
 		Lua_helper.add_callback(lua, "getTextSize", function(tag:String)
@@ -2929,7 +2891,6 @@ class FunkinLua
 				return obj.font;
 			}
 			luaTrace("getTextFont: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
-			Lua.pushnil(lua);
 			return null;
 		});
 		Lua_helper.add_callback(lua, "getTextWidth", function(tag:String)

@@ -324,8 +324,10 @@ class Character extends FlxSprite
 
 	public function checkdance()
 	{
-		if (animation.curAnim.name.startsWith('idle') || animation.curAnim.name.startsWith('dance'))
-			return true;
+		if ((animOffsets.exists('idle') || animOffsets.exists('dance'))
+			|| (animation.exists('idle') || animation.exists('dance'))) // check if the animation exists
+			if (animation.curAnim.name.startsWith('idle') || animation.curAnim.name.startsWith('dance'))
+				return true;
 		return false;
 	}
 

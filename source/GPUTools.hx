@@ -27,18 +27,11 @@ class GPUTools
 			graphic = FlxGraphic.fromGraphic(sprite.graphic, Unique, Key);
 		}
 		else if ((Graphic is FlxGraphic))
-		{
 			graphic = FlxGraphic.fromGraphic(cast Graphic, Unique, Key);
-		}
 		else if ((Graphic is BitmapData))
-		{
 			graphic = FlxGraphic.fromBitmapData(cast Graphic, Unique, Key);
-		}
 		else
-		{
-			// String case
 			graphic = FlxGraphic.fromAssetKey(Std.string(Graphic), Unique, Key);
-		}
 
 		if (graphic.bitmap == null)
 			return;

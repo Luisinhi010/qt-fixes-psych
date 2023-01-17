@@ -116,6 +116,7 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 			if (PlayState.instance.forceMiddleScroll || !ClientPrefs.opponentStrums)
 				alert.x -= alert.width / (PlayState.instance.forceMiddleScroll ? 2 : 3);
 			alert.y = 205 + (ClientPrefs.downScroll ? 20 : 0);
+			alert.moves = false;
 			alert.visible = false;
 			add(alert);
 
@@ -128,6 +129,7 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 			tipTxt.screenCenter(X);
 			if (PlayState.instance.forceMiddleScroll || !ClientPrefs.opponentStrums)
 				tipTxt.x -= tipTxt.width / (PlayState.instance.forceMiddleScroll ? 2 : 3);
+			tipTxt.moves = false;
 			tipTxt.visible = false;
 			add(tipTxt);
 

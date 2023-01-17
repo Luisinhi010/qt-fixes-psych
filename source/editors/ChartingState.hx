@@ -2442,7 +2442,7 @@ class ChartingState extends MusicBeatState
 			}
 			audioBuffers[0] = null;
 			#if MODS_ALLOWED
-			if(FileSystem.exists(SUtil.getStorageDirectory() +Paths.modFolders('songs/' + currentSongName + '/Inst.ogg'))) {
+			if(FileSystem.exists(Paths.modFolders('songs/' + currentSongName + '/Inst.ogg'))) {
 				audioBuffers[0] = AudioBuffer.fromFile(Paths.modFolders('songs/' + currentSongName + '/Inst.ogg'));
 				//trace('Custom vocals found');
 			}
@@ -2461,7 +2461,7 @@ class ChartingState extends MusicBeatState
 			}
 			audioBuffers[1] = null;
 			#if MODS_ALLOWED
-			if(FileSystem.exists(SUtil.getStorageDirectory() +Paths.modFolders('songs/' + currentSongName + '/Voices.ogg'))) {
+			if(FileSystem.exists(Paths.modFolders('songs/' + currentSongName + '/Voices.ogg'))) {
 				audioBuffers[1] = AudioBuffer.fromFile(Paths.modFolders('songs/' + currentSongName + '/Voices.ogg'));
 				//trace('Custom vocals found');
 			} else { #end
