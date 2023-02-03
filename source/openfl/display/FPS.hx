@@ -61,7 +61,7 @@ class FPS extends TextField
 	var textShader = new Shader();
 	var debug:Bool = #if debug true #else false #end;
 
-	private var intervalArray:Array<String> = ['MB', 'GB', 'TB']; // og: https://github.com/BeastlyGhost/Forever-Engine-Underscore/blob/master/source/base/debug/Overlay.hx
+	private var intervalArray:Array<String> = ['MB', 'GB', 'TB'];
 
 	private function getInterval(size:Float):String
 	{
@@ -114,7 +114,7 @@ class FPS extends TextField
 		currentFPS = 0;
 		selectable = false;
 		mouseEnabled = false;
-		defaultTextFormat = new TextFormat("VCR OSD Mono", 14, color);
+		defaultTextFormat = new TextFormat(Paths.font("vcr.ttf"), 14, color);
 		autoSize = LEFT;
 		multiline = true;
 		text = '';

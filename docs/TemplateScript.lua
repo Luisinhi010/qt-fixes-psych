@@ -125,11 +125,11 @@ function onMoveCamera(focus)
 end
 
 -- Event notes hooks
-function onEvent(name, value1, value2)
+function onEvent(name, value1, value2, value3)
 	-- event note triggered
 	-- triggerEvent() does not call this function!!
 
-	-- print('Event triggered: ', name, value1, value2);
+	-- print('Event triggered: ', name, value1, value2, value3);
 end
 
 function eventEarlyTrigger(name)
@@ -155,4 +155,13 @@ function onTimerCompleted(tag, loops, loopsLeft)
 	-- A loop from a timer you called has been completed, value "tag" is it's tag
 	-- loops = how many loops it will have done when it ends completely
 	-- loopsLeft = how many are remaining
+end
+
+-- Window/Game hooks
+function onFocus()
+	-- called when the game receives focus
+end
+
+function onFocusLost()
+	-- called when the game loses focus
 end

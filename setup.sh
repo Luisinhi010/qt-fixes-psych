@@ -6,7 +6,7 @@
 haxelib install hxcpp > nul
 haxelib install lime 8.0.0
 haxelib install openfl 9.2.0
-haxelib --never install flixel 4.11.0
+haxelib install flixel 4.11.0
 haxelib install flixel-tools
 haxelib install flixel-ui
 haxelib install flixel-addons 2.11.0
@@ -19,7 +19,7 @@ haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
 haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
 haxelib git SScript https://github.com/TheWorldMachinima/SScript
 haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
-haxelib install hxCodec
+haxelib install hxCodec 2.5.1
 haxelib run flixel-tools setup
 haxelib run lime setup flixel
 haxelib run lime setup

@@ -19,7 +19,7 @@ import haxe.io.Path;
 
 class LoadingState extends MusicBeatState
 {
-	inline static var MIN_TIME = 1.0;
+	inline static final MIN_TIME = 1.0;
 
 	// Browsers will load create(), you can make your song load a custom directory there
 	// If you're compiling to desktop (or something that doesn't use NO_PRELOAD_ALL), search for getNextState instead
@@ -54,7 +54,7 @@ class LoadingState extends MusicBeatState
 		bar.numDivisions = 800;
 		add(bar);
 
-		var text:FlxText = new FlxText(0, bar.y + 2, 0, "Loading...", 34);
+		var text:FlxText = new FlxText(0, bar.y + 2, 0, Locale.get("loadingText"), 34);
 		text.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		text.screenCenter(X);
 		add(text);
@@ -157,6 +157,7 @@ class LoadingState extends MusicBeatState
 		Paths.setCurrentLevel(directory);
 		trace('Setting asset folder to ' + directory);
 
+		#if NO_PRELOAD_ALL
 		var loaded:Bool = false;
 		if (PlayState.SONG != null)
 		{
@@ -168,6 +169,7 @@ class LoadingState extends MusicBeatState
 
 		if (!loaded)
 			return new LoadingState(target, stopMusic, directory);
+		#end
 
 		if (stopMusic && FlxG.sound.music != null)
 			FlxG.sound.music.stop();
@@ -175,6 +177,7 @@ class LoadingState extends MusicBeatState
 		return target;
 	}
 
+	#if NO_PRELOAD_ALL
 	static function isSoundLoaded(path:String):Bool
 	{
 		return Assets.cache.hasSound(path);
@@ -184,6 +187,7 @@ class LoadingState extends MusicBeatState
 	{
 		return Assets.getLibrary(library) != null;
 	}
+	#end
 
 	override function destroy()
 	{

@@ -24,33 +24,26 @@ class ConfirmUserOption extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
-		var text:Alphabet = new Alphabet(0, 180, "would you let this mod", true);
-		text.screenCenter(X);
-		alphabetArray.push(text);
-		text.alpha = 0;
-		text.scrollFactor.set();
-		add(text);
+		var textstring:String = 'would you let this mod\nuse your computer\'s\nusername?';
 
-		var text:Alphabet = new Alphabet(0, text.y + text.height + 10, "use your computer's", true);
-		text.screenCenter(X);
-		alphabetArray.push(text);
-		text.alpha = 0;
-		text.scrollFactor.set();
-		add(text);
+		var tipTextArray:Array<String> = textstring.split('\n');
+		for (i in 0...tipTextArray.length)
+		{
+			var text:Alphabet = new Alphabet(0, 160, tipTextArray[i], true);
+			text.y += i * 80;
+			text.screenCenter(X);
+			alphabetArray.push(text);
+			text.alpha = 0;
+			text.scrollFactor.set();
+			add(text);
+		}
 
-		var text:Alphabet = new Alphabet(0, text.y + text.height + 10, "username?", true);
-		text.screenCenter(X);
-		alphabetArray.push(text);
-		text.alpha = 0;
-		text.scrollFactor.set();
-		add(text);
-
-		yesText = new Alphabet(0, text.y + 150, 'Yes', true);
+		yesText = new Alphabet(0, 490, 'Yes', true);
 		yesText.screenCenter(X);
 		yesText.x -= 150;
 		yesText.scrollFactor.set();
 		add(yesText);
-		noText = new Alphabet(0, text.y + 150, 'No', true);
+		noText = new Alphabet(0, 490, 'No', true);
 		noText.screenCenter(X);
 		noText.x += 150;
 		noText.scrollFactor.set();
@@ -110,8 +103,7 @@ class ConfirmUserOption extends MusicBeatSubstate
 	function accepted()
 	{
 		selectedSomethin = true;
-		FlxG.save.data.usePlayerUsername = onYes;
-		ClientPrefs.usePlayerUsername = onYes;
+		ClientPrefs.usePlayerUsername = FlxG.save.data.usePlayerUsername = onYes;
 		FlxG.sound.play(Paths.sound(onYes ? 'confirmMenu' : 'cancelMenu'), 1);
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{

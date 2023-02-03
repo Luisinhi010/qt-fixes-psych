@@ -45,13 +45,13 @@ function postCreate()
 	var qtVersion:FlxText = new FlxText(FlxG.width - 270, FlxG.height - 44, 0, "QT Mod Version - v" + qtmodVersion, 12);
 	qtVersion.x -= qtVersion.width;
 	qtVersion.scrollFactor.set();
-	qtVersion.setFormat("VCR OSD Mono", 16, 0xFFFFFFFF, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+	qtVersion.setFormat(Paths.font("vcr.ttf"), 16, 0xFFFFFFFF, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
 	MainMenuState.add(qtVersion);
 
 	var fixesVersion:FlxText = new FlxText(qtVersion.x, FlxG.height - 24, 0,
 		"QT Fixes Version - v" + qtfixesVersion /*+ ' (' + MusicBeatState.commitHash + ')'*/, 12);
 	fixesVersion.scrollFactor.set();
-	fixesVersion.setFormat("VCR OSD Mono", 16, 0xFFFFFFFF, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+	fixesVersion.setFormat(Paths.font("vcr.ttf"), 16, 0xFFFFFFFF, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
 	MainMenuState.add(fixesVersion);
 	custommouse = new CustomMouse(FlxG.mouse.x, FlxG.mouse.y);
 	MainMenuState.add(custommouse);

@@ -32,15 +32,38 @@ class ControlsSubState extends MusicBeatSubstate
 	private static var curSelected:Int = 1;
 	private static var curAlt:Bool = false;
 
-	private static var defaultKey:String = 'Reset to Default Keys';
+	var defaultKey:String = Locale.get("resetDefaultKeysNCOText");
 
 	private var bindLength:Int = 0;
 
 	var optionShit:Array<Dynamic> = [
-		['NOTES'], ['Left', 'note_left'], ['Down', 'note_down'], ['Up', 'note_up'], ['Right', 'note_right'], ['Dodge', 'qt_dodge'], ['Taunt', 'qt_taunt'],
-		[''], ['UI'], ['Left', 'ui_left'], ['Down', 'ui_down'], ['Up', 'ui_up'], ['Right', 'ui_right'], [''], ['Reset', 'reset'], ['Accept', 'accept'],
-		['Back', 'back'], ['Pause', 'pause'], [''], ['VOLUME'], ['Mute', 'volume_mute'], ['Up', 'volume_up'], ['Down', 'volume_down'], [''], ['DEBUG'],
-		['Key 1', 'debug_1'], ['Key 2', 'debug_2']];
+		[Locale.get("notesNCOText")],
+		[Locale.get("leftNCOText"), 'note_left'],
+		[Locale.get("downNCOText"), 'note_down'],
+		[Locale.get("upNCOText"), 'note_up'],
+		[Locale.get("rightNCOText"), 'note_right'],
+		[Locale.get("qtdodgeNCOText"), 'qt_dodge'],
+		[Locale.get("qttauntNCOText"), 'qt_taunt'],
+		[Locale.get("uiNCOText")],
+		[Locale.get("leftNCOText"), 'ui_left'],
+		[Locale.get("downNCOText"), 'ui_down'],
+		[Locale.get("upNCOText"), 'ui_up'],
+		[Locale.get("rightNCOText"), 'ui_right'],
+		[''],
+		[Locale.get("resetNCOText"), 'reset'],
+		[Locale.get("acceptNCOText"), 'accept'],
+		[Locale.get("backNCOText"), 'back'],
+		[Locale.get("pauseNCOText"), 'pause'],
+		[''],
+		[Locale.get("volumeNCOText")],
+		[Locale.get("muteNCOText"), 'volume_mute'],
+		[Locale.get("upNCOText"), 'volume_up'],
+		[Locale.get("downNCOText"), 'volume_down'],
+		[''],
+		[Locale.get("debugNCOText")],
+		[Locale.get("key1NCOText"), 'debug_1'],
+		[Locale.get("key2NCOText"), 'debug_2']
+	];
 
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private var grpInputs:Array<AttachedText> = [];

@@ -103,7 +103,6 @@ class Main extends Sprite
 
 		Application.current.window.title = gameTitle;
 		Application.current.window.setIcon(lime.utils.Assets.getImage('assets/art/iconOG.png'));
-		// FlxG.widescreen = true;
 		flxGame = new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate,
 			game.skipSplash, game.startFullscreen);
 		addChild(flxGame);

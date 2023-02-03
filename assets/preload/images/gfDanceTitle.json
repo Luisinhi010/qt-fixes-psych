@@ -9,5 +9,6 @@
   "gfscaley": 1,
   "gfantialiasing": true,
   "backgroundSprite": "",
-  "bpm": 128
+  "bpm": 128,
+  "cameraZoomBeat": true
 }

@@ -120,10 +120,10 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 			alert.visible = false;
 			add(alert);
 
-			var dodgeKey:String = ClientPrefs.getkeys('qt_dodge');
-			tipTxt = new FlxText(0, ClientPrefs.downScroll ? alert.y - 66 : alert.y + alert.height + 36, 0, "Press $" + dodgeKey + "$ to dodge!", 25);
-			tipTxt.applyMarkup("Press $" + dodgeKey + "$ to dodge!", [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
-			tipTxt.setFormat(Paths.font("vcr.ttf"), 25, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			var dodgeWarning:String = Locale.get("dodgeWarningHud").replace("%qt_dodge", ClientPrefs.getkeys('qt_dodge'));
+			tipTxt = new FlxText(0, ClientPrefs.downScroll ? alert.y - 66 : alert.y + alert.height + 36, 0, dodgeWarning, 26);
+			tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
+			tipTxt.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			tipTxt.antialiasing = ClientPrefs.globalAntialiasing;
 			tipTxt.borderSize = 1.1;
 			tipTxt.screenCenter(X);

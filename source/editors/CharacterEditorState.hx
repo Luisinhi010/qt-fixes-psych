@@ -171,7 +171,6 @@ class CharacterEditorState extends MusicBeatState
 		var tabs = [
 			{name: 'Character', label: 'Character'},
 			{name: 'Animations', label: 'Animations'},
-			{name: 'CameraPos', label: 'CameraPos'},
 		];
 		UI_characterbox = new FlxUITabMenu(null, tabs, true);
 		UI_characterbox.cameras = [camMenu];
@@ -187,7 +186,6 @@ class CharacterEditorState extends MusicBeatState
 
 		addCharacterUI();
 		addAnimationsUI();
-		addCameraOffsetUI();
 		UI_characterbox.selected_tab_id = 'Character';
 
 		FlxG.mouse.visible = true;
@@ -499,6 +497,9 @@ class CharacterEditorState extends MusicBeatState
 		positionXStepper = new FlxUINumericStepper(flipXCheckBox.x + 110, flipXCheckBox.y, 10, char.positionArray[0], -9000, 9000, 0);
 		positionYStepper = new FlxUINumericStepper(positionXStepper.x + 60, positionXStepper.y, 10, char.positionArray[1], -9000, 9000, 0);
 
+		positionCameraXStepper = new FlxUINumericStepper(positionXStepper.x, positionXStepper.y + 40, 10, char.cameraPosition[0], -9000, 9000, 0);
+		positionCameraYStepper = new FlxUINumericStepper(positionYStepper.x, positionYStepper.y + 40, 10, char.cameraPosition[1], -9000, 9000, 0);
+
 		var saveCharacterButton:FlxButton = new FlxButton(reloadImage.x, noAntialiasingCheckBox.y + 40, "Save Character", function()
 		{
 			saveCharacter();
@@ -515,6 +516,7 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(new FlxText(15, singDurationStepper.y - 18, 0, 'Sing Animation length:'));
 		tab_group.add(new FlxText(15, scaleStepper.y - 18, 0, 'Scale:'));
 		tab_group.add(new FlxText(positionXStepper.x, positionXStepper.y - 18, 0, 'Character X/Y:'));
+		tab_group.add(new FlxText(positionCameraXStepper.x, positionCameraXStepper.y - 18, 0, 'Camera X/Y:'));
 		tab_group.add(new FlxText(healthColorStepperR.x, healthColorStepperR.y - 18, 0, 'Health bar R/G/B:'));
 		tab_group.add(imageInputText);
 		tab_group.add(noteSkinInputText);
@@ -528,33 +530,12 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(noAntialiasingCheckBox);
 		tab_group.add(positionXStepper);
 		tab_group.add(positionYStepper);
+		tab_group.add(positionCameraXStepper);
+		tab_group.add(positionCameraYStepper);
 		tab_group.add(healthColorStepperR);
 		tab_group.add(healthColorStepperG);
 		tab_group.add(healthColorStepperB);
 		tab_group.add(saveCharacterButton);
-		UI_characterbox.addGroup(tab_group);
-	}
-
-	var animationDropDownCam:FlxUIDropDownMenuCustom;
-	var animPositionCameraXStepper:FlxUINumericStepper;
-	var animPositionCameraYStepper:FlxUINumericStepper;
-
-	function addCameraOffsetUI()
-	{
-		var tab_group = new FlxUI(null, UI_box);
-		tab_group.name = "CameraPos";
-
-		positionCameraXStepper = new FlxUINumericStepper(15, 20, 10, char.cameraPosition[0], -9000, 9000, 0);
-		positionCameraYStepper = new FlxUINumericStepper(positionYStepper.x, positionYStepper.y + 40, 10, char.cameraPosition[1], -9000, 9000, 0);
-
-		animationDropDownCam = new FlxUIDropDownMenuCustom(15, animationInputText.y - 55, FlxUIDropDownMenuCustom.makeStrIdLabelArray([''], true),
-			function(pressed:String)
-			{
-			});
-
-		tab_group.add(new FlxText(positionCameraXStepper.x, positionCameraXStepper.y - 18, 0, 'Camera X/Y:'));
-		tab_group.add(positionCameraXStepper);
-		tab_group.add(positionCameraYStepper);
 		UI_characterbox.addGroup(tab_group);
 	}
 
@@ -565,6 +546,9 @@ class CharacterEditorState extends MusicBeatState
 	var animationIndicesInputText:FlxUIInputText;
 	var animationNameFramerate:FlxUINumericStepper;
 	var animationLoopCheckBox:FlxUICheckBox;
+	var animationDropDownCam:FlxUIDropDownMenuCustom;
+	var animPositionCameraXStepper:FlxUINumericStepper;
+	var animPositionCameraYStepper:FlxUINumericStepper;
 
 	function addAnimationsUI()
 	{
@@ -651,20 +635,14 @@ class CharacterEditorState extends MusicBeatState
 				camOffset: [0, 0]
 			};
 			if (indices != null && indices.length > 0)
-			{
 				char.animation.addByIndices(newAnim.anim, newAnim.name, newAnim.indices, "", newAnim.fps, newAnim.loop);
-			}
 			else
-			{
 				char.animation.addByPrefix(newAnim.anim, newAnim.name, newAnim.fps, newAnim.loop);
-			}
 
 			if (!char.animOffsets.exists(newAnim.anim))
 				char.addOffset(newAnim.anim, 0, 0);
-
 			if (!char.camOffset.exists(newAnim.anim))
 				char.addCamOffset(newAnim.anim, 0, 0);
-
 			char.animationsArray.push(newAnim);
 
 			if (lastAnim == animationInputText.text)

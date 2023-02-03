@@ -28,6 +28,15 @@ using StringTools;
 **/
 class GameHUD extends FlxTypedGroup<FlxBasic>
 {
+	// Locale ['Score: ', 'Misses: ', 'Rating: ', 'Combo Breaks: ', 'Accuracy: ']
+	public var locale:Array<String> = [
+		Locale.get("scoreHud"),
+		Locale.get("missesHud"),
+		Locale.get("ratingHud"),
+		Locale.get("missesKadeHud"),
+		Locale.get("ratingKadeHud")
+	];
+
 	// health
 	public var healthBarBG:AttachedSprite;
 	public var healthBar:FlxBar;
@@ -42,24 +51,24 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 	public var timeBar:FlxBar;
 	public var timeBarUi:String;
 
-	public var songNameTxt:FlxText;
+	public var timeTxt:FlxText;
 	public var songName:String = "";
 	public var fucktimer(default, set):Bool = false;
 
 	public function set_fucktimer(value:Bool):Bool
 	{
 		fucktimer = value;
-		if (songNameTxt != null)
+		if (timeTxt != null)
 		{
 			if (value)
-				songNameTxt.text = (timeBarUi == 'Kade Engine') ? 'ERROR' : (timeBarUi == 'Psych Engine') ? '?:??' : '?:??'
+				timeTxt.text = (timeBarUi == 'Kade Engine') ? 'ERROR' : (timeBarUi == 'Psych Engine') ? '?:??' : '?:??'
 					+ '  '
 					+ "SYSTEM ERROR"
 					+ '  '
 					+ '?:??';
 			else if (timeBarUi == 'Kade Engine')
-				songNameTxt.text = songName;
-			songNameTxt.screenCenter(X);
+				timeTxt.text = songName;
+			timeTxt.screenCenter(X);
 		}
 		return value;
 	}
@@ -98,30 +107,28 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 		var showTime:Bool = ClientPrefs.timeBar;
 
-		songNameTxt = new FlxText(0, ClientPrefs.downScroll ? FlxG.height - 40 : 10, 0, songName, 32);
-		songNameTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
-			PlayState.instance.inhumancolor2);
-		songNameTxt.scrollFactor.set();
-		songNameTxt.alpha = 0;
-		songNameTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
-		songNameTxt.visible = showTime;
-		songNameTxt.screenCenter(X);
+		timeTxt = new FlxText(0, ClientPrefs.downScroll ? FlxG.height - 40 : 10, 0, songName, 32);
+		timeTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
+		timeTxt.scrollFactor.set();
+		timeTxt.alpha = 0;
+		timeTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
+		timeTxt.visible = showTime;
+		timeTxt.screenCenter(X);
 		if (timeBarUi == 'Kade Engine')
 		{
-			songNameTxt.y += ClientPrefs.downScroll ? 5 : -5;
-			songNameTxt.size = 18;
+			timeTxt.y += ClientPrefs.downScroll ? 5 : -5;
+			timeTxt.size = 18;
 		}
 
 		timeBarBG = new AttachedSprite((timeBarUi == 'Kade Engine') ? 'healthBar' : 'timeBar');
-		timeBarBG.y = songNameTxt.y + (songNameTxt.height / 4);
+		timeBarBG.y = timeTxt.y + (timeTxt.height / 4);
 		timeBarBG.scrollFactor.set();
 		timeBarBG.alpha = 0;
 		timeBarBG.visible = showTime;
 		timeBarBG.color = FlxColor.BLACK;
 		timeBarBG.xAdd = -4;
 		timeBarBG.yAdd = -4;
-		if (timeBarUi == 'Kade Engine')
-			timeBarBG.screenCenter(X);
+		timeBarBG.screenCenter(X);
 
 		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4 - ((timeBarUi == 'Kade Engine') ? 5 : 0), LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8),
 			Std.int(timeBarBG.height - 8), this, 'songPercent', 0, 1);
@@ -136,7 +143,7 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 
 		add(timeBarBG);
 		add(timeBar);
-		add(songNameTxt);
+		add(timeTxt);
 
 		updateTime = showTime;
 		set_fucktimer(fucktimer);
@@ -281,10 +288,10 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 				secondsTotal = 0;
 
 			if (timeBarUi != 'Kade Engine' && !fucktimer)
-				songNameTxt.text = FlxStringUtil.formatTime(secondsTotal, false)
+				timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false)
 					+ ((timeBarUi == 'Psych Engine') ? '' : '  ' + songName + '  ' + PlayState.instance.songLengthTxt);
 
-			songNameTxt.screenCenter(X);
+			timeTxt.screenCenter(X);
 		}
 	}
 
@@ -301,16 +308,16 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 		var ratingFC:String = PlayState.instance.ratingFC;
 
 		// of course I would go back and fix my code, of COURSE @BeastlyGhost;
-		tempScore = 'Score: $songScore';
+		tempScore = locale[0] + songScore;
 		if (kadescore) // vs imposter is sus https://github.com/Clowfoe/IMPOSTOR-UPDATE/blob/9cfceb2aba706a0cf74d00d0a9a7b36b98c18aa7/source/PlayState.hx#L6286
 		{
 			if (displayRatings)
 			{
-				tempScore += ' | Combo Breaks: $songMisses | Accuracy: ';
+				tempScore += scoreSeparator + locale[3] + songMisses + scoreSeparator + locale[4];
 
 				if (ratingName != '?')
 				{
-					tempScore += ((Math.floor(ratingPercent * 10000) / 100)) + '% | ';
+					tempScore += ((Math.floor(ratingPercent * 10000) / 100)) + '%' + scoreSeparator;
 
 					switch (ratingFC)
 					{
@@ -325,15 +332,15 @@ class GameHUD extends FlxTypedGroup<FlxBasic>
 					}
 				}
 				else
-					tempScore += '0% | N/A';
+					tempScore += '0%' + scoreSeparator + 'N/A';
 			}
 		}
 		else
 		{
 			if (displayRatings)
 			{
-				tempScore += scoreSeparator + "Misses: " + songMisses;
-				tempScore += scoreSeparator + "Rating: " + ratingName;
+				tempScore += scoreSeparator + locale[1] + songMisses;
+				tempScore += scoreSeparator + locale[2] + ratingName;
 				tempScore += (ratingName != '?' ? ' (${Highscore.floorDecimal(ratingPercent * 100, 2)}%)' : '');
 				tempScore += (ratingFC != null && ratingFC != '' ? ' - $ratingFC' : '');
 			}

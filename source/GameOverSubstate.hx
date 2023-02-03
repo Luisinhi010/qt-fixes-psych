@@ -15,9 +15,21 @@ import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flash.text.TextField;
 
+using StringTools;
+using lore.FlxSpriteTools;
+
 class GameOverSubstate extends MusicBeatSubstate
 {
+	public var deathTexts:Map<String, String> = [
+		'sawblade' => Locale.get("sawbladeDeath"),
+		'hurt' => Locale.get("hurtDeath"),
+		'reset' => Locale.get("resetDeath"),
+		'latenote' => Locale.get("latenoteDeath"),
+		'default' => Locale.get("defaultDeath")
+	];
+
 	public var boyfriend:Boyfriend;
+	public var camHUD:FlxCamera;
 
 	var camFollow:FlxPoint;
 	var camFollowPos:FlxObject;
@@ -25,11 +37,13 @@ class GameOverSubstate extends MusicBeatSubstate
 	var playingDeathSound:Bool = false;
 
 	var stageSuffix:String = "";
-	var TerminationText:FlxSprite;
+	var sawBladeDeath:FlxSprite;
 	var killedByGAMEOVER:String = "idfk";
 	var killedByTextDisplay:FlxText;
 	var textGenerated:Bool = false;
 	var songSpeed:Float = 1;
+
+	var scoreTxt:FlxText;
 
 	public static var characterName:String = 'bf-dead';
 	public static var deathSoundName:String = 'fnf_loss_sfx';
@@ -51,7 +65,11 @@ class GameOverSubstate extends MusicBeatSubstate
 	override function create()
 	{
 		instance = this;
+		camHUD.zoom = camHUD.alpha = 1;
+		camHUD.x = camHUD.y = camHUD.angle = 0;
 		PlayState.instance.callOnLuas('onGameOverStart', []);
+		PlayState.instance.callOnHaxes('GameOverStart', []);
+		PlayState.instance.callOnHaxes('create', []);
 		textGenerated = false;
 		super.create();
 	}
@@ -60,6 +78,8 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		super();
 		this.songSpeed = songSpeed;
+		camHUD = PlayState.instance.camHUD;
+		camHUD.filtersEnabled = false;
 
 		groupSprite = new FlxTypedGroup<FlxSprite>();
 		add(groupSprite);
@@ -95,32 +115,41 @@ class GameOverSubstate extends MusicBeatSubstate
 			groupSprite.add(boyfriend);
 		}
 
-		trace("Cause Of Death: ", killedBy);
+		scoreTxt = new FlxText(0, FlxG.height, FlxG.width, PlayState.gameHUD.scoreTxt.text, 20);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
+		scoreTxt.y -= scoreTxt.height + 5;
+		scoreTxt.scrollFactor.set();
+		scoreTxt.borderSize = 1.5;
+		scoreTxt.screenCenter(X);
+		scoreTxt.updateHitbox();
+		scoreTxt.cameras = [camHUD];
+		groupSprite.add(scoreTxt);
+
 		killedByGAMEOVER = killedBy;
-		if (killedByGAMEOVER == "sawblade" && !ClientPrefs.optimize)
+		if (killedByGAMEOVER == "sawblade")
 		{
 			// For telling the player how to dodge in Termination.
 			// I'm telling the player how to dodge after they've first died to the first saw blade to also communicate that sawblades aren't that healthy.
 			// UPDATE - Tutorial text on TV screens now. This isn't necessary, but might as well reuse this for a custom "funny death" animation. -Haz
-			TerminationText = new FlxSprite();
-			TerminationText.frames = Paths.getSparrowAtlas('hazard/qt-port/sawkillanimation2');
-			TerminationText.animation.addByIndices('normal', 'kb_attack_animation_kill_moving', [0], "", 24, false);
-			TerminationText.animation.addByPrefix('animate', 'kb_attack_animation_kill_moving', 24, true);
-			TerminationText.x = x - 1175; // negative = left
-			TerminationText.y = y + 500; // positive = down
-			TerminationText.antialiasing = ClientPrefs.globalAntialiasing;
-			TerminationText.animation.play("normal");
-			groupSprite.add(TerminationText);
+			if (!ClientPrefs.optimize)
+			{
+				sawBladeDeath = new FlxSprite();
+				sawBladeDeath.frames = Paths.getSparrowAtlas('hazard/qt-port/sawkillanimation2');
+				sawBladeDeath.animation.addByIndices('normal', 'kb_attack_animation_kill_moving', [0], "", 24, false);
+				sawBladeDeath.animation.addByPrefix('animate', 'kb_attack_animation_kill_moving', 24, true);
+				sawBladeDeath.x = x - 1175; // negative = left
+				sawBladeDeath.y = y + 500; // positive = down
+				sawBladeDeath.antialiasing = ClientPrefs.globalAntialiasing;
+				sawBladeDeath.animation.play("normal");
+				groupSprite.add(sawBladeDeath);
+			}
 			#if ACHIEVEMENTS_ALLOWED
 			if (Achievements.sawbladeDeath >= 24 && !Achievements.isAchievementUnlocked('sawblade_death'))
 			{
-				var achievementObj:Achievements.AchievementObject = null;
-				achievementObj = new Achievements.AchievementObject('sawblade_death');
+				var achievementObj:Achievements.AchievementObject = new Achievements.AchievementObject('sawblade_death');
 				Achievements.achievementsMap.set('sawblade_death', true);
 				FlxG.sound.play(Paths.sound('hazard/attack', 'shared'), 0.4);
-				achievementObj.scrollFactor.set();
-				achievementObj.updateHitbox();
-				achievementObj.setPosition(achievementObj.x / FlxG.camera.zoom, achievementObj.y / FlxG.camera.zoom);
+				achievementObj.cameras = [camHUD];
 				add(achievementObj);
 				FlxG.save.flush();
 				ClientPrefs.saveSettings();
@@ -156,10 +185,13 @@ class GameOverSubstate extends MusicBeatSubstate
 		super.update(elapsed);
 
 		PlayState.instance.callOnLuas('onUpdate', [elapsed]);
+		PlayState.instance.callOnHaxes('update', [elapsed]);
 		if (updateCamera && !ClientPrefs.optimize)
 		{
 			var lerpVal:Float = CoolUtil.boundTo(elapsed * 0.6, 0, 1);
 			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
+			/*if (textGenerated)
+				killedByTextDisplay.scale.set(1 / FlxG.camera.zoom, 1 / FlxG.camera.zoom); */
 		}
 
 		if (controls.ACCEPT)
@@ -181,6 +213,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			PlayState.instance.callOnLuas('onGameOverConfirm', [false]);
+			PlayState.instance.callOnHaxes('gameOverConfirm', [false]);
 		}
 
 		if (!ClientPrefs.optimize && boyfriend != null)
@@ -204,11 +237,15 @@ class GameOverSubstate extends MusicBeatSubstate
 			Conductor.songPosition = FlxG.sound.music.time;
 
 		PlayState.instance.callOnLuas('onUpdatePost', [elapsed]);
+		PlayState.instance.callOnHaxes('updatePost', [elapsed]);
 	}
 
 	override function beatHit()
 	{
 		super.beatHit();
+		PlayState.instance.setOnLuas('curBeat', curBeat); // DAWGG?????
+		PlayState.instance.callOnLuas('onBeatHit', []);
+		PlayState.instance.callOnHaxes('beatHit', []);
 
 		// FlxG.log.add('beat');
 	}
@@ -220,7 +257,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		FlxG.sound.playMusic(Paths.music(loopSoundName), volume);
 		FlxG.sound.music.pitch = songSpeed;
 		if (killedByGAMEOVER == "sawblade" && !ClientPrefs.optimize)
-			TerminationText.animation.play("animate");
+			sawBladeDeath.animation.play("animate");
 
 		FlxTween.tween(FlxG.camera, {zoom: 0.86}, 2.2, {ease: FlxEase.quadInOut}); // To ensure you can read the death text.
 		displayDeathText(false);
@@ -228,54 +265,33 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	function displayDeathText(instantAppear:Bool = false):Void
 	{
-		var xy:Array<Float> = [ClientPrefs.optimize ? 0 : boyfriend.x, ClientPrefs.optimize ? 0 : boyfriend.y];
 		if (!textGenerated)
 		{
-			if (killedByGAMEOVER == "sawblade")
-			{
-				var dodgeKey:String = ClientPrefs.getkeys('qt_dodge');
+			var xy:Array<Float> = [ClientPrefs.optimize ? 0 : boyfriend.x, ClientPrefs.optimize ? 0 : boyfriend.y];
 
-				killedByTextDisplay = new FlxText(xy[0] - 130, xy[1] - 56, 0, ("Died due to missing a sawblade. (Press $" + dodgeKey + "$ to dodge!)"), 28);
-				killedByTextDisplay.applyMarkup("Died due to missing a sawblade. (Press $" + dodgeKey + "$ to dodge!)",
-					[new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
-				killedByTextDisplay.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.WHITE, CENTER);
-			}
-			else if (killedByGAMEOVER == "hurt")
-			{
-				killedByTextDisplay = new FlxText(xy[0], xy[1] - 56, 0, "Died to a hurt note. (Health)", 32);
-				killedByTextDisplay.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
-			}
-			else if (killedByGAMEOVER == "reset")
-			{
-				killedByTextDisplay = new FlxText(xy[0], xy[1] - 56, 0, "Reset button pressed.", 32);
-				killedByTextDisplay.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
-			}
-			else if (killedByGAMEOVER == "latenote")
-			{
-				killedByTextDisplay = new FlxText(xy[0] - 10, xy[1] - 56, 0, "Died due pressing the notes too late. (Health)", 32);
-				killedByTextDisplay.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
-			}
-			else
-			{
-				killedByTextDisplay = new FlxText(xy[0], xy[1] - 56, 0, "Died to missing a note. (Health)", 32);
-				killedByTextDisplay.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
-			}
-			textGenerated = true;
-
-			if (!instantAppear)
-			{
-				killedByTextDisplay.alpha = 0;
-				groupSprite.add(killedByTextDisplay);
-				FlxTween.tween(killedByTextDisplay, {alpha: 1}, 1, {ease: FlxEase.sineOut});
-			}
-			else
-				groupSprite.add(killedByTextDisplay);
+			var deathMessage:String = deathTexts.get(deathTexts.exists(killedByGAMEOVER) ? killedByGAMEOVER : 'default')
+				.replace("%qt_dodge", ClientPrefs.getkeys('qt_dodge'));
+			killedByTextDisplay = new FlxText(0, 0, 0, deathMessage, 32);
+			killedByTextDisplay.applyMarkup(deathMessage, [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
+			killedByTextDisplay.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
 
 			if (ClientPrefs.optimize)
 			{
 				killedByTextDisplay.screenCenter();
 				killedByTextDisplay.scrollFactor.set();
 			}
+			else
+			{
+				killedByTextDisplay.setPosition(xy[0], xy[1] - killedByTextDisplay.height - 10);
+				killedByTextDisplay.centerOnSprite(boyfriend, X);
+			}
+			groupSprite.add(killedByTextDisplay);
+			if (!instantAppear)
+			{
+				killedByTextDisplay.alpha = 0;
+				FlxTween.tween(killedByTextDisplay, {alpha: 1}, 1, {ease: FlxEase.sineOut});
+			}
+			textGenerated = true;
 		}
 	}
 
@@ -285,7 +301,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			isEnding = true;
 			if (killedByGAMEOVER == "sawblade" && !ClientPrefs.optimize)
-				TerminationText.animation.stop();
+				sawBladeDeath.animation.stop();
 			displayDeathText(true);
 			if (!ClientPrefs.optimize)
 				boyfriend.playAnim('deathConfirm', true);
@@ -293,12 +309,13 @@ class GameOverSubstate extends MusicBeatSubstate
 			FlxG.sound.play(Paths.music(endSoundName), 1).pitch = songSpeed;
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
-				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
+				camHUD.fade(FlxColor.BLACK, 2, false, function()
 				{
 					MusicBeatState.resetState();
 				});
 			});
 			PlayState.instance.callOnLuas('onGameOverConfirm', [true]);
+			PlayState.instance.callOnHaxes('GameOverConfirm', [true]);
 		}
 	}
 }

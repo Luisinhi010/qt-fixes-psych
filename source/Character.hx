@@ -244,11 +244,20 @@ class Character extends FlxSprite
 				// trace('Loaded file to character ' + curCharacter);
 		}
 		originalFlipX = flipX;
+		var missAnimations:Array<String> = ['singLEFTmiss', 'singDOWNmiss', 'singUPmiss', 'singRIGHTmiss'];
+		for (missAnim in missAnimations)
+			if (animOffsets.exists(missAnim) || animation.exists(missAnim))
+				hasMissAnimations = true;
 
-		if ((animOffsets.exists('singLEFTmiss') || animOffsets.exists('singDOWNmiss') || animOffsets.exists('singUPmiss')
-			|| animOffsets.exists('singRIGHTmiss'))
-			|| (animation.exists('singLEFTmiss') || animation.exists('singDOWNmiss') || animation.exists('singUPmiss') || animation.exists('singRIGHTmiss')))
-			hasMissAnimations = true;
+		// "Preloads" animations so they dont lag in the song
+		var allAnims:Array<String> = animation.getNameList();
+		for (anim in allAnims)
+		{
+			playAnim(anim);
+			if (anim.startsWith("sad"))
+				animation.curAnim.finish();
+		}
+
 		recalculateDanceIdle();
 		dance();
 
@@ -324,10 +333,9 @@ class Character extends FlxSprite
 
 	public function checkdance()
 	{
-		if ((animOffsets.exists('idle') || animOffsets.exists('dance'))
-			|| (animation.exists('idle') || animation.exists('dance'))) // check if the animation exists
-			if (animation.curAnim.name.startsWith('idle') || animation.curAnim.name.startsWith('dance'))
-				return true;
+		// if ((animOffsets.exists('idle') || animOffsets.exists('dance')) || (animation.exists('idle') || animation.exists('dance'))) // check if the animation exists
+		if (animation.curAnim.name.startsWith('idle') || animation.curAnim.name.startsWith('dance'))
+			return true;
 		return false;
 	}
 

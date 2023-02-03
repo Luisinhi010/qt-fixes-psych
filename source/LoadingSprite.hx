@@ -12,7 +12,7 @@ class LoadingSprite extends FlxSprite
 {
 	public var coolColor:FlxColor = FlxColor.PURPLE;
 
-	var name:String = PlayState.SONG.song.replace(" ", "-").toLowerCase();
+	var name:String;
 	var texts:Array<String> = [];
 
 	var updateSize:Bool = true;
@@ -20,6 +20,8 @@ class LoadingSprite extends FlxSprite
 	public function new()
 	{
 		super();
+		if (PlayState.SONG != null && PlayState.SONG.song != null)
+			name = PlayState.SONG.song.replace(" ", "-").toLowerCase();
 		if (FlxG.random.bool(70))
 			switch (name)
 			{

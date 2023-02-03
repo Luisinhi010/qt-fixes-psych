@@ -46,7 +46,19 @@ class FlxSoundTray extends Sprite
 	 */
 	var _width:Int = 80;
 
-	var _defaultScale:Float = 2.0;
+	var _defaultScale(default, set):Float = 2.0;
+
+	public var autoScale:Bool = true;
+
+	@:keep public function set__defaultScale(v:Float)
+	{
+		if (autoScale)
+		{
+			_defaultScale = v;
+			screenCenter();
+		}
+		return _defaultScale;
+	}
 
 	/**The sound used when increasing the volume.**/
 	public var volumeUpSound:String = "assets/sound/volumeUpSound";
@@ -84,11 +96,11 @@ class FlxSoundTray extends Sprite
 		text.gridFitType = GridFitType.PIXEL;
 		#end
 
-		var dtf:TextFormat = new TextFormat(Paths.font("FridayNightFunkin2-Regular.ttf"), 10, 0xffffff);
+		var dtf:TextFormat = new TextFormat(Paths.font("FridayNightFunkin2.ttf"), 10, 0xffffff);
 		dtf.align = TextFormatAlign.CENTER;
 		text.defaultTextFormat = dtf;
 		addChild(text);
-		text.text = "VOLUME";
+		text.text = 'Volume';
 		text.y = 16;
 
 		var bx:Int = 10;
@@ -155,24 +167,12 @@ class FlxSoundTray extends Sprite
 		y = 0;
 		visible = true;
 		active = true;
-		var globalVolume:Int = Math.round(FlxG.sound.volume * 10);
+		var globalVolume:Int = FlxG.sound.muted ? 0 : Math.round(FlxG.sound.volume * 10);
 
-		if (FlxG.sound.muted)
-		{
-			globalVolume = 0;
-		}
+		text.text = Locale.get("volumeText");
 
 		for (i in 0..._bars.length)
-		{
-			if (i < globalVolume)
-			{
-				_bars[i].alpha = 1;
-			}
-			else
-			{
-				_bars[i].alpha = 0.5;
-			}
-		}
+			_bars[i].alpha = (i < globalVolume) ? 1 : 0.5;
 	}
 
 	public function screenCenter():Void

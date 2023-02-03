@@ -31,98 +31,55 @@ class VisualsUISubState extends BaseOptionsMenu
 {
 	public function new()
 	{
-		title = 'Visuals and UI';
+		title = Locale.get("visualsUIOption");
 		rpcTitle = 'Visuals & UI Settings Menu'; // for Discord Rich Presence
 
-		var option:Option = new Option('Colorblind filter: ', "Changes the filter used to make the game more accessible to colorblind people.",
-			'colorblindFilter', 'string', 'NONE', ['NONE', "DEUTERANOPIA", "PROTANOPIA", "TRITANOPIA" /*, "BLACK & WHITE"*/]);
+		var option:Option = new Option(Locale.get("localevisualsUIText"), Locale.get("localevisualsUIDesc"), 'locale', 'string', 'en-US',
+			CoolUtil.coolTextFile(Paths.getPath('locale/list.txt', TEXT)));
+		addOption(option);
+		option.onChange = Locale.init;
+
+		var option:Option = new Option(Locale.get("colorblindFiltervisualsUIText"), Locale.get("colorblindFiltervisualsUIDesc"), 'colorblindFilter', 'string',
+			'NONE', ['NONE', "DEUTERANOPIA", "PROTANOPIA", "TRITANOPIA" /*, "BLACK & WHITE"*/]);
 		#if debug option.description += "\nCan use a lot of resources in debug mode depending on system configuration, so it's recommended to lower the FPS cap."; #end
-		option.onChange = Colorblind.updateFilter;
+		option.onChange = lore.Colorblind.updateFilter;
 		addOption(option);
 
-		var option:Option = new Option('Note Splashes', "If unchecked, hitting \"Sick!\" notes won't show particles.", 'noteSplashes', 'bool', true);
+		var option:Option = new Option(Locale.get("camMovevisualsUIText"), Locale.get("camMovevisualsUIDesc"), 'camMove', 'bool', true);
 		addOption(option);
 
-		var option:Option = new Option('Hurt note transparency', "Allows you to customise how opaque the hurt notes are to allow you to read charts easier.",
-			'hurtNoteAlpha', 'percent', 1);
-		option.scrollSpeed = 1.6;
-		option.minValue = 0.0;
-		option.maxValue = 1;
-		option.changeValue = 0.1;
-		option.decimals = 1;
+		var option:Option = new Option(Locale.get("flashingvisualsUIText"), Locale.get("flashingvisualsUIDesc"), 'flashing', 'bool', true);
 		addOption(option);
 
-		var option:Option = new Option('Lane Underlay', 'If unchecked, will appear a Lane Underlay.', 'laneunderlay', 'bool', false);
+		var option:Option = new Option(Locale.get("camZoomsvisualsUIText"), Locale.get("camZoomsvisualsUIDesc"), 'camZooms', 'bool', true);
 		addOption(option);
 
-		var option:Option = new Option('Lane Underlay transparency', "Allows you to customise how opaque the Lane Underlay are.", 'laneunderlayAlpha',
-			'percent', 0.6);
-		option.scrollSpeed = 1.6;
-		option.minValue = 0.1;
-		option.maxValue = 1;
-		option.changeValue = 0.1;
-		option.decimals = 1;
+		var option:Option = new Option(Locale.get("scoreZoomvisualsUIText"), Locale.get("scoreZoomvisualsUIDesc"), 'scoreZoom', 'bool', true);
 		addOption(option);
 
-		var option:Option = new Option('Camera Movement', 'If unchecked, the camera won\'t move when you hit a note.', 'camMove', 'bool', true);
-		addOption(option);
-
-		var option:Option = new Option('Show Time Bar', 'If checked, will show the bar showing\n how much time was elapsed/song name/song length.', 'timeBar',
-			'bool', true);
-		addOption(option);
-
-		var option:Option = new Option('Time Bar Style:', "What should the Time Bar look like?", 'timeBarUi', 'string', 'Psych Engine',
-			['Qt Fixes', 'Psych Engine', 'Kade Engine']);
-		addOption(option);
-
-		var option:Option = new Option('Flashing Lights', "Uncheck this if you're sensitive to flashing lights!", 'flashing', 'bool', true);
-		addOption(option);
-
-		var option:Option = new Option('Camera Zooms', "If unchecked, the camera won't zoom in on a beat hit.", 'camZooms', 'bool', true);
-		addOption(option);
-
-		var option:Option = new Option('Score Text Zoom on Hit', "If unchecked, disables the Score text zooming\neverytime you hit a note.", 'scoreZoom',
-			'bool', true);
-		addOption(option);
-
-		var option:Option = new Option('Icon Colored Health Bar', "If unchecked, the health bar will have set colors\nrather than colors based on the icons.",
-			'coloredHealthBar', 'bool', true);
-		addOption(option);
-
-		var option:Option = new Option('Health Bar Transparency', 'How much transparent should the health bar and icons be.', 'healthBarAlpha', 'percent', 1);
-		option.scrollSpeed = 1.6;
-		option.minValue = 0.0;
-		option.maxValue = 1;
-		option.changeValue = 0.1;
-		option.decimals = 1;
-		addOption(option);
-
-		/*#if sys
-			var option:Option = new Option("Use username", "If checked, this mod will\nuse your computer's username \nin some menus", 'usePlayerUsername', 'bool',
-				false);
-			addOption(option);
-			#end */
-
-		var option:Option = new Option('Pause Screen Song:', "What song do you prefer for the Pause Screen?", 'pauseMusic', 'string', 'Tea Time',
+		var option:Option = new Option(Locale.get("pauseMusicvisualsUIText"), Locale.get("pauseMusicvisualsUIDesc"), 'pauseMusic', 'string', 'Tea Time',
 			['None', 'Breakfast', 'Tea Time']);
 		addOption(option);
 		option.onChange = onChangePauseMusic;
 
-		var option:Option = new Option('Combo Stacking',
-			"If unchecked, Ratings and Combo won't stack, saving on System Memory and making them easier to read", 'comboStacking', 'bool', true);
+		var option:Option = new Option(Locale.get("comboStackingvisualsUIText"), Locale.get("comboStackingvisualsUIDesc"), 'comboStacking', 'bool', true);
 		addOption(option);
+
+		#if sys
+		var option:Option = new Option(Locale.get("usePlayerUsernamevisualsUIText"), Locale.get("usePlayerUsernamevisualsUIDesc"), 'usePlayerUsername',
+			'bool', false);
+		addOption(option);
+		#end
 
 		#if !mobile
-		var option:Option = new Option('FPS Counter', 'If unchecked, hides FPS Counter.', 'showFPS', 'bool', true);
+		var option:Option = new Option(Locale.get("showFPSvisualsUIText"), Locale.get("showFPSvisualsUIDesc"), 'showFPS', 'bool', true);
 		addOption(option);
 
-		var option:Option = new Option('Memory Counter', 'If unchecked, hides the Memory Counter.', 'showMEM', 'bool',
+		var option:Option = new Option(Locale.get("showMEMvisualsUIText"), Locale.get("showMEMvisualsUIDesc"), 'showMEM', 'bool',
 			true); // Show Mem Pr: https://github.com/ShadowMario/FNF-PsychEngine/pull/9554/
 		addOption(option);
 
-		var option:Option = new Option('Show Current State',
-			"Whether to display the current state and substate of the game example: \n(State: options.OptionsState) \n(SubState: options.VisualsUISubState)",
-			'showState', 'bool', false);
+		var option:Option = new Option(Locale.get("showStatevisualsUIText"), Locale.get("showStatevisualsUIDesc"), 'showState', 'bool', false);
 		addOption(option);
 		#end
 

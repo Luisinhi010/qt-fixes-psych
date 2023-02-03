@@ -40,9 +40,10 @@ class InitLoader extends FlxState
 		#if cpp
 		WindowsData.enableVisualStyles();
 		WindowsData.setWindowColorMode(DARK);
-		Colorblind.updateFilter();
+		lore.Colorblind.updateFilter();
 		checkSpecs(Cpu, Ram);
 		ClientPrefs.loadSettings(); // precache is disabled for testing
+		Locale.init();
 		/*if (FlxG.save.data.precache == null)
 			{
 				FlashingState.precachewarning = true;

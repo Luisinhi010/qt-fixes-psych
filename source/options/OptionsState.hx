@@ -29,15 +29,19 @@ using StringTools;
 
 class OptionsState extends MusicBeatState
 {
-	var options:Array<String> = [
+	static var options:Array<String> = [
 		'Note Colors',
 		'Controls',
 		'Adjust Delay and Combo',
 		'Graphics',
 		'Visuals and UI',
-		'Gameplay'
+		'Gameplay',
+		'Game Hud'
 	];
+
 	private var grpOptions:FlxTypedGroup<Alphabet>;
+
+	public static var things:Map<String, Void->Void>;
 
 	public static var pauseMenu:Bool = false;
 
@@ -46,21 +50,24 @@ class OptionsState extends MusicBeatState
 
 	function openSelectedSubstate(label:String)
 	{
-		switch (label)
-		{
-			case 'Note Colors':
-				openSubState(new options.NotesSubState());
-			case 'Controls':
-				openSubState(new options.ControlsSubState());
-			case 'Graphics':
-				openSubState(new options.GraphicsSettingsSubState());
-			case 'Visuals and UI':
-				openSubState(new options.VisualsUISubState());
-			case 'Gameplay':
-				openSubState(new options.GameplaySettingsSubState());
-			case 'Adjust Delay and Combo':
-				LoadingState.loadAndSwitchState(new options.NoteOffsetState());
-		}
+		/*switch (label)
+			{
+				case 'Note Colors':
+					openSubState(new options.NotesSubState());
+				case 'Controls':
+					openSubState(new options.ControlsSubState());
+				case 'Graphics':
+					openSubState(new options.GraphicsSettingsSubState());
+				case 'Visuals and UI':
+					openSubState(new options.VisualsUISubState());
+				case 'Game Hud':
+					openSubState(new options.GameHudSubState());
+				case 'Gameplay':
+					openSubState(new options.GameplaySettingsSubState());
+				case 'Adjust Delay and Combo':
+					LoadingState.loadAndSwitchState(new options.NoteOffsetState());
+		}*/
+		things.get(label)();
 	}
 
 	var selectorLeft:Alphabet;
@@ -68,6 +75,25 @@ class OptionsState extends MusicBeatState
 
 	override function create()
 	{
+		options = [
+			Locale.get("noteColorsOption"),
+			Locale.get("controlsOption"),
+			Locale.get("delayOption"),
+			Locale.get("graphicsOption"),
+			Locale.get("visualsUIOption"),
+			Locale.get("gameplayOption"),
+			Locale.get("gameHUDOption")
+		];
+		things = [
+			options[0] => function() openSubState(new options.NotesSubState()),
+			options[1] => function() openSubState(new options.ControlsSubState()),
+			options[2] => function() LoadingState.loadAndSwitchState(new options.NoteOffsetState()),
+			options[3] => function() openSubState(new options.GraphicsSettingsSubState()),
+			options[4] => function() openSubState(new options.VisualsUISubState()),
+			options[5] => function() openSubState(new options.GameplaySettingsSubState()),
+			options[6] => function() openSubState(new options.GameHudSubState())
+		];
+
 		#if desktop
 		DiscordClient.changePresence("Options Menu", null);
 		#end
@@ -86,14 +112,20 @@ class OptionsState extends MusicBeatState
 		for (i in 0...options.length)
 		{
 			var optionText:Alphabet = new Alphabet(0, 0, options[i], true);
+			optionText.scaleX = 0.9;
+			optionText.scaleY = 0.9;
 			optionText.screenCenter();
-			optionText.y += (100 * (i - (options.length / 2))) + 50;
+			optionText.y += (90 * (i - (options.length / 2))) + 40;
 			grpOptions.add(optionText);
 		}
 
 		selectorLeft = new Alphabet(0, 0, '>', true);
+		selectorLeft.scaleX = 0.9;
+		selectorLeft.scaleY = 0.9;
 		add(selectorLeft);
 		selectorRight = new Alphabet(0, 0, '<', true);
+		selectorRight.scaleX = 0.9;
+		selectorRight.scaleY = 0.9;
 		add(selectorRight);
 
 		changeSelection();

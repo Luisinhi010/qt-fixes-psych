@@ -27,7 +27,8 @@ class ClientPrefs
 	public static var optimize:Bool = false; // Pr: https://github.com/ShadowMario/FNF-PsychEngine/pull/10532
 	public static var colorblindFilter:String = "OFF";
 	public static var inputSystem:String = 'Psych';
-	public static var verticalHealthBar:String = 'Disabled';
+
+	public static var locale:String = "en-US"; // from lore engine, cuz i cant be original, never
 
 	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
@@ -152,7 +153,7 @@ class ClientPrefs
 		FlxG.save.data.downScroll = downScroll;
 		FlxG.save.data.colorblindFilter = colorblindFilter;
 		FlxG.save.data.inputSystem = inputSystem;
-		FlxG.save.data.verticalHealthBar = verticalHealthBar;
+		FlxG.save.data.locale = locale;
 
 		FlxG.save.data.middleScroll = middleScroll;
 		FlxG.save.data.opponentStrums = opponentStrums;
@@ -263,8 +264,8 @@ class ClientPrefs
 		if (FlxG.save.data.inputSystem != null)
 			inputSystem = FlxG.save.data.inputSystem;
 
-		if (FlxG.save.data.verticalHealthBar != null)
-			verticalHealthBar = FlxG.save.data.verticalHealthBar;
+		if (FlxG.save.data.locale != null)
+			locale = FlxG.save.data.locale;
 
 		if (FlxG.save.data.downScroll != null)
 			downScroll = FlxG.save.data.downScroll;
@@ -427,7 +428,7 @@ class ClientPrefs
 		return /*PlayState.isStoryMode ? defaultValue : */ (gameplaySettings.exists(name) ? gameplaySettings.get(name) : defaultValue);
 	}
 
-	public static function getkeys(keyname:String) // for lazyness
+	public static function getkeys(keyname:String, separator:String = ' | ') // for lazyness
 	{
 		var keys:Array<String> = [];
 		for (i in 0...2)
@@ -435,7 +436,7 @@ class ClientPrefs
 			var dodgeKey:String = InputFormatter.getKeyName(keyBinds.get(keyname)[i]);
 			keys[i] = dodgeKey;
 		}
-		return keys[0] == '---' ? keys[1] : keys[1] == '---' ? keys[0] : keys[0] + ' or ' + keys[1];
+		return keys[0] == '---' ? keys[1] : keys[1] == '---' ? keys[0] : keys[0] + separator + keys[1];
 	}
 
 	public static function reloadControls()

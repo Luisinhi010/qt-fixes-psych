@@ -22,8 +22,8 @@ using StringTools;
 
 class CoolUtil
 {
-	public static var defaultDifficulties:Array<String> = ['Easy', 'Normal', 'Hard', 'Harder'];
-	public static var defaultDifficulty:String = 'Normal'; // The chart that has no suffix and starting difficulty on Freeplay/Story Mode
+	public static final defaultDifficulties:Array<String> = ['Easy', 'Normal', 'Hard', 'Harder'];
+	public static final defaultDifficulty:String = 'Normal'; // The chart that has no suffix and starting difficulty on Freeplay/Story Mode
 
 	public static var difficulties:Array<String> = [];
 
@@ -244,6 +244,8 @@ class CoolUtil
 				return FlxColor.BROWN;
 			case "cyan":
 				return FlxColor.CYAN;
+			case "yellow":
+				return FlxColor.YELLOW;
 			case "gray":
 				return FlxColor.GRAY;
 			case "green":
@@ -294,4 +296,58 @@ class CoolUtil
 
 	public static function fromString(str:String):FlxColor
 		return FlxColor.fromString(str);
+
+	public static function getUsername()
+	{
+		#if sys
+		if (ClientPrefs.usePlayerUsername)
+		{
+			var envs = Sys.environment();
+			if (envs.exists("USERNAME"))
+				return envs["USERNAME"];
+			if (envs.exists("USER"))
+				return envs["USER"];
+		}
+		#end
+		return null;
+	}
+
+	public static function getUsernameOption()
+	{
+		#if sys
+		if (getUsername() != null && ClientPrefs.usePlayerUsername && FlxG.save.data.usePlayerUsername != null)
+			return true;
+		#end
+		return false;
+	}
+
+	/*public static function getGitCommitHash() // BeastlyGhost said to me to put this here. -Luis
+		{
+			#if sys
+			var process:sys.io.Process = new sys.io.Process('git', ['rev-parse', 'HEAD']);
+
+			var commitHash:String;
+
+			try // read the output of the process
+			{
+				commitHash = process.stdout.readLine();
+			}
+			catch (e) // leave it as blank in the event of an error
+			{
+				commitHash = '';
+			}
+			var trimmedCommitHash:String = commitHash.substr(0, 7);
+
+			// Generates a string expression
+			return trimmedCommitHash;
+			#end
+			return '';
+	}*/
+	public static function getFramerate(Int:Int, multiply:Bool = false)
+	{
+		var frame:Int = Int;
+		if (MusicBeatState.multAnims)
+			frame = multiply ? Std.int(Int * PlayState.instance.playbackRate) : Std.int(Int / PlayState.instance.playbackRate);
+		return frame;
+	}
 }

@@ -41,8 +41,6 @@ typedef DialogueAnimArray =
 	var idle_offsets:Array<Int>;
 }
 
-// Gonna try to kind of make it compatible to Forever Engine,
-// love u Shubs no homo :flushedh4:
 typedef DialogueFile =
 {
 	var dialogue:Array<DialogueLine>;
@@ -123,8 +121,8 @@ class DialogueCharacter extends FlxSprite
 		{
 			for (anim in jsonFile.animations)
 			{
-				animation.addByPrefix(anim.anim, anim.loop_name, MusicBeatState.getFramerate(24), isGhost);
-				animation.addByPrefix(anim.anim + IDLE_SUFFIX, anim.idle_name, MusicBeatState.getFramerate(24), true);
+				animation.addByPrefix(anim.anim, anim.loop_name, CoolUtil.getFramerate(24), isGhost);
+				animation.addByPrefix(anim.anim + IDLE_SUFFIX, anim.idle_name, CoolUtil.getFramerate(24), true);
 				dialogueAnimations.set(anim.anim, anim);
 			}
 		}
@@ -221,14 +219,14 @@ class DialogueBoxPsych extends FlxSpriteGroup
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
 		box.antialiasing = ClientPrefs.globalAntialiasing;
-		box.animation.addByPrefix('normal', 'speech bubble normal', MusicBeatState.getFramerate(24));
-		box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', MusicBeatState.getFramerate(24), false);
-		box.animation.addByPrefix('angry', 'AHH speech bubble', MusicBeatState.getFramerate(24));
-		box.animation.addByPrefix('angryOpen', 'speech bubble loud open', MusicBeatState.getFramerate(24), false);
-		box.animation.addByPrefix('center-normal', 'speech bubble middle', MusicBeatState.getFramerate(24));
-		box.animation.addByPrefix('center-normalOpen', 'Speech Bubble Middle Open', MusicBeatState.getFramerate(24), false);
-		box.animation.addByPrefix('center-angry', 'AHH Speech Bubble middle', MusicBeatState.getFramerate(24));
-		box.animation.addByPrefix('center-angryOpen', 'speech bubble Middle loud open', MusicBeatState.getFramerate(24), false);
+		box.animation.addByPrefix('normal', 'speech bubble normal', CoolUtil.getFramerate(24));
+		box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', CoolUtil.getFramerate(24), false);
+		box.animation.addByPrefix('angry', 'AHH speech bubble', CoolUtil.getFramerate(24));
+		box.animation.addByPrefix('angryOpen', 'speech bubble loud open', CoolUtil.getFramerate(24), false);
+		box.animation.addByPrefix('center-normal', 'speech bubble middle', CoolUtil.getFramerate(24));
+		box.animation.addByPrefix('center-normalOpen', 'Speech Bubble Middle Open', CoolUtil.getFramerate(24), false);
+		box.animation.addByPrefix('center-angry', 'AHH Speech Bubble middle', CoolUtil.getFramerate(24));
+		box.animation.addByPrefix('center-angryOpen', 'speech bubble Middle loud open', CoolUtil.getFramerate(24), false);
 		box.animation.play('normal', true);
 		box.visible = false;
 		box.setGraphicSize(Std.int(box.width * 0.9));
@@ -570,11 +568,11 @@ class DialogueBoxPsych extends FlxSpriteGroup
 			char.playAnim(curDialogue.expression, daText.finishedText);
 			if (char.animation.curAnim != null)
 			{
-				var rate:Float = MusicBeatState.getFramerate(24, true) - (((curDialogue.speed - 0.05) / 5) * 480);
-				if (rate < MusicBeatState.getFramerate(12, true))
-					rate = MusicBeatState.getFramerate(12, true);
-				else if (rate > MusicBeatState.getFramerate(48, true))
-					rate = MusicBeatState.getFramerate(48, true);
+				var rate:Float = CoolUtil.getFramerate(24, true) - (((curDialogue.speed - 0.05) / 5) * 480);
+				if (rate < CoolUtil.getFramerate(12, true))
+					rate = CoolUtil.getFramerate(12, true);
+				else if (rate > CoolUtil.getFramerate(48, true))
+					rate = CoolUtil.getFramerate(48, true);
 				char.animation.curAnim.frameRate = rate;
 			}
 		}

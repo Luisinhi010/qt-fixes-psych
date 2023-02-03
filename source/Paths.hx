@@ -34,8 +34,8 @@ class Paths
 
 	#if MODS_ALLOWED
 	public static var ignoreModFolders:Array<String> = [
-		'characters', 'custom_events', 'custom_notetypes', 'data', 'songs', 'music', 'sounds', 'shaders', 'videos', 'images', 'stages', 'weeks', 'fonts',
-		'scripts', 'achievements', 'classes'
+		'characters', 'custom_events', 'custom_notetypes', 'data', 'songs', 'music', 'sounds', 'shaders', 'locale', 'videos', 'images', 'stages', 'weeks',
+		'fonts', 'scripts', 'achievements', 'classes'
 	];
 	#end
 
@@ -153,9 +153,7 @@ class Paths
 	}
 
 	static public function getLibraryPath(file:String, library = "preload")
-	{
 		return if (library == "preload" || library == "default") getPreloadPath(file); else getLibraryPathForce(file, library);
-	}
 
 	inline static function getLibraryPathForce(file:String, library:String)
 	{
@@ -164,44 +162,31 @@ class Paths
 	}
 
 	inline public static function getPreloadPath(file:String = '')
-	{
 		return 'assets/$file';
-	}
 
 	inline static public function file(file:String, type:AssetType = TEXT, ?library:String)
-	{
 		return getPath(file, type, library);
-	}
 
 	inline static public function txt(key:String, ?library:String)
-	{
 		return getPath('data/$key.txt', TEXT, library);
-	}
 
 	inline static public function xml(key:String, ?library:String)
-	{
 		return getPath('data/$key.xml', TEXT, library);
-	}
 
 	inline static public function json(key:String, ?library:String)
-	{
 		return getPath('data/$key.json', TEXT, library);
-	}
 
 	inline static public function shaderFragment(key:String, ?library:String)
-	{
 		return getPath('shaders/$key.frag', TEXT, library);
-	}
 
 	inline static public function shaderVertex(key:String, ?library:String)
-	{
 		return getPath('shaders/$key.vert', TEXT, library);
-	}
+
+	inline static public function localeFile(key:String, ?library:String)
+		return getPath('locale/$key/lang.json', TEXT, library);
 
 	inline static public function lua(key:String, ?library:String)
-	{
 		return getPath('$key.lua', TEXT, library);
-	}
 
 	inline static public function Script(key:String)
 	{
@@ -347,7 +332,7 @@ class Paths
 	inline static public function fileExists(key:String, type:AssetType, ?ignoreMods:Bool = false, ?library:String)
 	{
 		#if MODS_ALLOWED
-		if (FileSystem.exists(mods(currentModDirectory + '/' + key)) || FileSystem.exists(mods(key)))
+		if ((FileSystem.exists(mods(currentModDirectory + '/' + key)) || FileSystem.exists(mods(key))) && !ignoreMods)
 			return true;
 		#end
 
@@ -530,6 +515,9 @@ class Paths
 
 	inline static public function modsTxt(key:String)
 		return modFolders('images/' + key + '.txt');
+
+	inline static public function modsLocaleFile(key:String)
+		return modFolders('locale/$key/lang.json');
 
 	static public function modFolders(key:String)
 	{

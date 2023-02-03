@@ -285,16 +285,16 @@ class PauseSubState extends MusicBeatSubstate
 				case 'Toggle Botplay':
 					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
 					PlayState.changedDifficulty = true;
-					GameHUD.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
-					GameHUD.instance.scoreTxt.visible = !PlayState.instance.cpuControlled;
-					GameHUD.instance.healthBarBG.visible = !PlayState.instance.cpuControlled;
-					GameHUD.instance.healthBar.visible = !PlayState.instance.cpuControlled;
-					GameHUD.instance.healthBarFG.visible = !PlayState.instance.cpuControlled;
-					GameHUD.instance.iconP1.visible = !PlayState.instance.cpuControlled;
-					GameHUD.instance.iconP2.visible = !PlayState.instance.cpuControlled;
-					GameHUD.instance.scoreTxt.visible = !PlayState.instance.cpuControlled;
-					GameHUD.instance.botplayTxt.alpha = 1;
-					GameHUD.instance.botplaySine = 0;
+					PlayState.gameHUD.botplayTxt.visible = PlayState.instance.cpuControlled;
+					PlayState.gameHUD.scoreTxt.visible = !PlayState.instance.cpuControlled;
+					PlayState.gameHUD.healthBarBG.visible = !PlayState.instance.cpuControlled;
+					PlayState.gameHUD.healthBar.visible = !PlayState.instance.cpuControlled;
+					PlayState.gameHUD.healthBarFG.visible = !PlayState.instance.cpuControlled;
+					PlayState.gameHUD.iconP1.visible = !PlayState.instance.cpuControlled;
+					PlayState.gameHUD.iconP2.visible = !PlayState.instance.cpuControlled;
+					PlayState.gameHUD.scoreTxt.visible = !PlayState.instance.cpuControlled;
+					PlayState.gameHUD.botplayTxt.alpha = 1;
+					PlayState.gameHUD.botplaySine = 0;
 				case "Go to Options":
 					options.OptionsState.pauseMenu = true;
 					MusicBeatState.switchState(new options.OptionsState());

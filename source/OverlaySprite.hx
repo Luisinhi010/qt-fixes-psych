@@ -23,7 +23,7 @@ class OverlaySprite extends FlxSprite
 		super(x, y);
 		if (image == null || !Paths.fileExists('images/' + image + '.png', IMAGE, false, library))
 			return;
-		loadGraphic(Paths.image(image, library, ClientPrefs.gpurendering));
+		loadGraphic(Paths.image(image, library));
 		create();
 	}
 

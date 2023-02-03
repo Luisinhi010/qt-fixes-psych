@@ -23,20 +23,11 @@ class FlashingState extends MusicBeatState
 
 	var warnText:FlxText;
 	var transGradient:FlxSprite;
-
-	var zoom:Float = 0.0;
-	var width:Int = 0;
-	var height:Int = 0;
 	var text:String = '';
 
 	override function create()
 	{
 		super.create();
-
-		zoom = CoolUtil.boundTo(FlxG.camera.zoom, 0.05, 1);
-		width = Std.int(FlxG.width / zoom);
-		height = Std.int(FlxG.height / zoom);
-
 		var bg:FlxSprite = new FlxSprite(-FlxG.width, -FlxG.height).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
 		add(bg);
 
@@ -44,10 +35,8 @@ class FlashingState extends MusicBeatState
 		if (!precachewarning)
 		{
 		#end
-			transGradient = FlxGradient.createGradientFlxSprite(width, height, [0x0, FlxColor.WHITE], 1);
+			transGradient = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0x0, FlxColor.WHITE], 1);
 			transGradient.scrollFactor.set();
-			transGradient.x -= (width - FlxG.width) / 2;
-			transGradient.y = (height - transGradient.height) + 100;
 			add(transGradient);
 			text = "Hey, watch out!\n
 			This Mod contains some minor flashing lights!\n
@@ -68,8 +57,8 @@ class FlashingState extends MusicBeatState
 		}
 		#end
 
-		warnText = new FlxText(0, 0, #if sys precachewarning ? 0 : #end FlxG.width, text, 32);
-		warnText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		warnText = new FlxText(0, 0, 0, text, 32);
+		warnText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		warnText.borderSize = 2;
 		warnText.screenCenter();
 		#if sys

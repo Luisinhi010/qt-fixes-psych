@@ -39,63 +39,7 @@ class MusicBeatState extends FlxUIState
 		return PlayerSettings.player1.controls;
 
 	override function destroy()
-	{
 		super.destroy();
-	}
-
-	public static function getUsername()
-	{
-		#if sys
-		if (ClientPrefs.usePlayerUsername)
-		{
-			var envs = Sys.environment();
-			if (envs.exists("USERNAME"))
-				return envs["USERNAME"];
-			if (envs.exists("USER"))
-				return envs["USER"];
-		}
-		#end
-		return null;
-	}
-
-	public static function getUsernameOption()
-	{
-		#if sys
-		if (getUsername() != null && ClientPrefs.usePlayerUsername && FlxG.save.data.usePlayerUsername != null)
-			return true;
-		#end
-		return false;
-	}
-
-	/*public static function getGitCommitHash() // BeastlyGhost said to me to put this here. -Luis
-		{
-			#if sys
-			var process:sys.io.Process = new sys.io.Process('git', ['rev-parse', 'HEAD']);
-
-			var commitHash:String;
-
-			try // read the output of the process
-			{
-				commitHash = process.stdout.readLine();
-			}
-			catch (e) // leave it as blank in the event of an error
-			{
-				commitHash = '';
-			}
-			var trimmedCommitHash:String = commitHash.substr(0, 7);
-
-			// Generates a string expression
-			return trimmedCommitHash;
-			#end
-			return '';
-	}*/
-	public static function getFramerate(Int:Int, multiply:Bool = false)
-	{
-		var frame:Int = Int;
-		if (multAnims)
-			frame = multiply ? Std.int(Int * PlayState.instance.playbackRate) : Std.int(Int / PlayState.instance.playbackRate);
-		return frame;
-	}
 
 	public static function updatewindowres(?width:Int, ?height:Int)
 	{

@@ -34,9 +34,10 @@ class MainMenuState extends MusicBeatState
 	public static var qtfixesVersion:String = '1.0';
 	public static var curSelected:Int = 0;
 
-	/*#if sys
-		var helloText:Alphabet;
-		#end */
+	#if sys
+	var helloText:FlxText;
+	#end
+
 	public var alignment:MainMenuItemAlignment = CENTER;
 
 	public var menuItems:FlxTypedGroup<MainMenuItem>;
@@ -180,9 +181,10 @@ class MainMenuState extends MusicBeatState
 		usecontrols = true;
 		selectedSomethin = false;
 		super.closeSubState();
-		/*	#if sys
-			helloText.visible = MusicBeatState.getUsernameOption();
-			#end */
+		#if sys
+		helloText.visible = CoolUtil.getUsernameOption();
+		helloText.text = "Hello " + CoolUtil.getUsername();
+		#end
 		menuScript.callFunc('postCloseSubState', []);
 	}
 
@@ -201,8 +203,8 @@ class MainMenuState extends MusicBeatState
 
 		trace(dateNow);
 		#if sys
-		if (MusicBeatState.getUsernameOption())
-			trace(MusicBeatState.getUsername());
+		if (CoolUtil.getUsernameOption())
+			trace(CoolUtil.getUsername());
 		#end
 
 		camGame = new FlxCamera();
@@ -297,24 +299,21 @@ class MainMenuState extends MusicBeatState
 
 		versionShit = new FlxText(12, FlxG.height - 44, 0, "Psych Engine v" + psychEngineVersion, 12);
 		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		versionShit.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 
 		versionShitfnf = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' v" + Application.current.meta.get('version'), 12);
 		versionShitfnf.scrollFactor.set();
-		versionShitfnf.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		versionShitfnf.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShitfnf);
 
-		/*#if sys
-			helloText = new Alphabet(30, 170, "Hello " + MusicBeatState.getUsername(), true, false, 0.05, 0.2);
-			helloText.angle -= 6;
-			helloText.visible = MusicBeatState.getUsernameOption();
-			helloText.scrollFactor.set();
-			helloText.scale.set(0.6, 0.6);
-			add(helloText);
-			#end */
-
-		// NG.core.calls.event.logEvent('swag').send();
+		#if sys
+		helloText = new FlxText(30, 100, 0, 'Hello ' + CoolUtil.getUsername(), 32);
+		helloText.scrollFactor.set();
+		helloText.setFormat(Paths.font("FridayNightFunkin.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		helloText.visible = CoolUtil.getUsernameOption();
+		add(helloText);
+		#end
 
 		changeItem();
 
@@ -324,10 +323,10 @@ class MainMenuState extends MusicBeatState
 		if (leDate.getDay() == 5 && leDate.getHours() >= 18)
 		{
 			var achieveID:Int = Achievements.getAchievementIndex('friday_night_play');
-			if (!Achievements.isAchievementUnlocked(Achievements.achievementsStuff[achieveID][2]))
+			if (!Achievements.isAchievementUnlocked('friday_night_play'))
 			{ // It's a friday night. WEEEEEEEEEEEEEEEEEE
-				Achievements.achievementsMap.set(Achievements.achievementsStuff[achieveID][2], true);
-				giveAchievement();
+				Achievements.achievementsMap.set('friday_night_play', true);
+				giveAchievement('friday_night_play');
 				ClientPrefs.saveSettings();
 			}
 		}
@@ -336,13 +335,12 @@ class MainMenuState extends MusicBeatState
 		super.create();
 		/*#if sys
 			if (TitleState.getplayernameoption)
-				{
-					openSubState(new ConfirmUserOption());
-					FlxG.sound.play(Paths.sound('scrollMenu'));
-					usecontrols = false;
-					selectedSomethin = true;
-					if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
-						vignette1.alpha = 0.7;
+			{
+				openSubState(new ConfirmUserOption());
+				FlxG.sound.play(Paths.sound('scrollMenu'));
+				usecontrols = false;
+				selectedSomethin = true;
+				TitleState.getplayernameoption = false;
 			}
 			#end */
 		menuScript.callFunc('postCreate', []);
@@ -350,11 +348,11 @@ class MainMenuState extends MusicBeatState
 
 	#if ACHIEVEMENTS_ALLOWED
 	// Unlocks "Freaky on a Friday Night" achievement
-	function giveAchievement()
+	function giveAchievement(achievement:String)
 	{
-		add(new AchievementObject('friday_night_play', camAchievement));
+		add(new AchievementObject(achievement, camAchievement));
 		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
-		trace('Giving achievement "friday_night_play"');
+		trace('Giving achievement "$achievement"');
 	}
 	#end
 

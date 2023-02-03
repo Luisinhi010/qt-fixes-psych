@@ -42,15 +42,16 @@ typedef TitleData =
 {
 	titlex:Float,
 	titley:Float,
-	startx:Float,
-	starty:Float,
+	startx:Null<Float>,
+	starty:Null<Float>,
 	gfx:Float,
 	gfy:Float,
-	gfscalex:Float,
-	gfscaley:Float,
+	gfscalex:Null<Float>,
+	gfscaley:Null<Float>,
 	gfantialiasing:Bool,
 	backgroundSprite:String,
-	bpm:Int
+	bpm:Int,
+	cameraZoomBeat:Bool
 }
 
 class TitleState extends MusicBeatState
@@ -84,21 +85,17 @@ class TitleState extends MusicBeatState
 			Paths.clearUnusedMemory();
 		}
 
-		#if android
-		FlxG.android.preventDefaultKeys = [BACK];
+		#if sys
+		getplayernameoption = false;
 		#end
-
-		/*#if sys
-			getplayernameoption = false;
-			#end */
 
 		#if LUA_ALLOWED
 		Paths.pushGlobalMods();
 		#end
 		// Just to load a mod on start up if ya got one. For mods that change the menu music and bg
 		WeekData.loadTheFirstEnabledMod();
-
 		ClientPrefs.loadSettings();
+		Locale.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
@@ -138,9 +135,9 @@ class TitleState extends MusicBeatState
 		else
 		{
 			#if sys
-			/*if (FlxG.save.data.usePlayerUsername == null)
-				getplayernameoption = true; */
-			FlxG.save.data.usePlayerUsername = null;
+			// FlxG.save.data.usePlayerUsername = null;
+			if (FlxG.save.data.usePlayerUsername == null)
+				getplayernameoption = true;
 			#end
 
 			if (initialized)
@@ -198,7 +195,7 @@ class TitleState extends MusicBeatState
 
 		Conductor.changeBPM(titleJSON.bpm);
 		persistentUpdate = true;
-		Colorblind.updateFilter();
+		lore.Colorblind.updateFilter();
 
 		var bg:FlxSprite = new FlxSprite();
 
@@ -228,7 +225,8 @@ class TitleState extends MusicBeatState
 		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-		gfDance.scale.set(titleJSON.gfscalex, titleJSON.gfscaley);
+		if (titleJSON.gfscalex != null && titleJSON.gfscaley != null)
+			gfDance.scale.set(titleJSON.gfscalex, titleJSON.gfscaley);
 
 		gfDance.antialiasing = ClientPrefs.globalAntialiasing;
 		if (titleJSON.gfantialiasing == false)
@@ -480,7 +478,8 @@ class TitleState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-		FlxG.camera.zoom += 0.03;
+		if (titleJSON.cameraZoomBeat)
+			FlxG.camera.zoom += 0.03;
 
 		if (logoBl != null)
 			logoBl.animation.play('bump', true);
@@ -506,53 +505,37 @@ class TitleState extends MusicBeatState
 				case 2:
 					createCoolText(['Psych Engine by'], 15);
 				case 3:
-					#if PSYCH_WATERMARKS
 					addMoreText('Shadow Mario', 15);
 					addMoreText('RiverOaken', 15);
 					addMoreText('bb-panzu', 15);
-					case 5:
-						deleteCoolText();
-					case 6:
-						createCoolText(['Not associated', 'with'], -40);
-					#end
+				case 5:
+					deleteCoolText();
+				case 6:
+					createCoolText(['Not associated', 'with'], -40);
 				case 7:
 					addMoreText('newgrounds', -40);
-				// credTextShit.text += '\nNewgrounds';
 				case 8:
 					ngSpr.visible = true;
 				case 9:
 					deleteCoolText();
 					ngSpr.visible = false;
-				// credTextShit.visible = false;
-
-				// credTextShit.text = 'Shoutouts to Simpleflips';
-				// credTextShit.screenCenter();
 				case 10:
 					createCoolText(['Hazard24 and Nightshade']);
-				// credTextShit.visible = true;
 				case 11:
 					addMoreText('Proudly');
-				// credTextShit.text += '\nlmao';
 				case 12:
 					addMoreText('Presents');
 				case 13:
 					deleteCoolText();
-				// credTextShit.visible = false;
-				// credTextShit.text = "Friday";
-				// credTextShit.screenCenter();
 				case 14:
 					addMoreText("Friday Night Funkin'");
-				// credTextShit.visible = true;
 				case 15:
 					addMoreText('QT');
-				// credTextShit.text += '\nNight';
 				case 16:
-					addMoreText('Mod'); // credTextShit.text += '\nFunkin';
-
+					addMoreText('Mod');
 				case 17:
 					if (!skippedIntro)
 						FlxG.camera.fade(FlxColor.WHITE, 0.435, false);
-
 				case 18:
 					skipIntro();
 			}

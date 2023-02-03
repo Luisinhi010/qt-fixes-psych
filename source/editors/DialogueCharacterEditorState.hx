@@ -115,8 +115,8 @@ class DialogueCharacterEditorState extends MusicBeatState
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
 		box.antialiasing = ClientPrefs.globalAntialiasing;
-		box.animation.addByPrefix('normal', 'speech bubble normal', MusicBeatState.getFramerate(24));
-		box.animation.addByPrefix('center', 'speech bubble middle', MusicBeatState.getFramerate(24));
+		box.animation.addByPrefix('normal', 'speech bubble normal', CoolUtil.getFramerate(24));
+		box.animation.addByPrefix('center', 'speech bubble middle', CoolUtil.getFramerate(24));
 		box.animation.play('normal', true);
 		box.setGraphicSize(Std.int(box.width * 0.9));
 		box.updateHitbox();

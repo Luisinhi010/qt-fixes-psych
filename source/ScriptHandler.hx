@@ -111,6 +111,10 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyabl
 		set('Cache', Cache);
 		set('FogThing', FogThing);
 
+		// CLASSES (Lore engine):
+		set('Locale', Locale);
+		set('Colorblind', lore.Colorblind);
+
 		// CLASSES (BASE);
 		set('BGSprite', BGSprite);
 		set('HealthIcon', HealthIcon);
@@ -137,112 +141,6 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyabl
 		set('getVarFromClass', function(instance:String, variable:String)
 		{
 			Reflect.field(Type.resolveClass(instance), variable);
-		});
-
-		set("create", function()
-		{
-		});
-		set("createPost", function()
-		{
-		});
-		set("update", function(elapsed:Float)
-		{
-		});
-		set("updatePost", function(elapsed:Float)
-		{
-		});
-		set("startCountdown", function()
-		{
-		});
-		set("onCountdownStarted", function()
-		{
-		});
-		set("onCountdownTick", function(tick:Int)
-		{
-		});
-		set("onUpdateScore", function(miss:Bool)
-		{
-		});
-		set("onNextDialogue", function(counter:Int)
-		{
-		});
-		set("onSkipDialogue", function()
-		{
-		});
-		set("onSongStart", function()
-		{
-		});
-		set("eventEarlyTrigger", function(eventName:String)
-		{
-		});
-		set("onResume", function()
-		{
-		});
-		set("onPause", function()
-		{
-		});
-		set("onSpawnNote", function(note:Note)
-		{
-		});
-		set("onGameOver", function()
-		{
-		});
-		set("onEvent", function(name:String, val1:Dynamic, val2:Dynamic)
-		{
-		});
-		set("onMoveCamera", function(char:String)
-		{
-		});
-		set("onEndSong", function()
-		{
-		});
-		set("onGhostTap", function(key:Int)
-		{
-		});
-		set("onKeyPress", function(key:Int)
-		{
-		});
-		set("onKeyRelease", function(key:Int)
-		{
-		});
-		set("noteMiss", function(note:Note)
-		{
-		});
-		set("noteMissPress", function(direction:Int)
-		{
-		});
-		set("opponentNoteHit", function(note:Note)
-		{
-		});
-		set("goodNoteHit", function(note:Note)
-		{
-		});
-		set("noteHit", function(note:Note)
-		{
-		});
-		set("stepHit", function()
-		{
-		});
-		set("beatHit", function()
-		{
-		});
-		set("sectionHit", function()
-		{
-		});
-		set("onRecalculateRating", function()
-		{
-		});
-		set("onHeadBop", function(name:String)
-		{
-		});
-		set("onGameOverStart", function()
-		{
-		});
-		set("onGameOverConfirm", function()
-		{
-		});
-		set("destroy", function()
-		{
 		});
 
 		FlxG.signals.focusGained.add(function()
@@ -287,6 +185,8 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyabl
 		#else
 		set('buildTarget', 'unknown');
 		#end
+
+		set('sys', #if sys true #else false #end);
 	}
 	#end
 

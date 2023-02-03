@@ -2346,8 +2346,8 @@ class FunkinLua
 			if (!rightHex.startsWith('0x'))
 				right = Std.parseInt('0xff' + rightHex);
 
-			GameHUD.instance.healthBar.createFilledBar(left, right);
-			GameHUD.instance.healthBar.updateBar();
+			PlayState.gameHUD.healthBar.createFilledBar(left, right);
+			PlayState.gameHUD.healthBar.updateBar();
 		});
 		Lua_helper.add_callback(lua, "setTimeBarColors", function(leftHex:String, rightHex:String)
 		{
@@ -2358,8 +2358,8 @@ class FunkinLua
 			if (!rightHex.startsWith('0x'))
 				right = Std.parseInt('0xff' + rightHex);
 
-			GameHUD.instance.timeBar.createFilledBar(right, left);
-			GameHUD.instance.timeBar.updateBar();
+			PlayState.gameHUD.timeBar.createFilledBar(right, left);
+			PlayState.gameHUD.timeBar.updateBar();
 		});
 
 		Lua_helper.add_callback(lua, "setObjectCamera", function(obj:String, camera:String = '')

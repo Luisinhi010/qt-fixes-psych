@@ -88,43 +88,32 @@ class Option
 
 	public function change()
 	{
-		// nothing lol
 		if (onChange != null)
-		{
 			onChange();
-		}
 	}
 
 	public function getValue():Dynamic
-	{
 		return Reflect.getProperty(ClientPrefs, variable);
-	}
 
 	public function setValue(value:Dynamic)
-	{
 		Reflect.setProperty(ClientPrefs, variable, value);
-	}
 
 	public function setChild(child:Alphabet)
-	{
 		this.child = child;
-	}
 
 	private function get_text()
 	{
 		if (child != null)
-		{
 			return child.text;
-		}
+
 		return null;
 	}
 
 	private function set_text(newValue:String = '')
 	{
 		if (child != null)
-		{
 			child.text = newValue;
-		}
+
 		return null;
 	}
 
