@@ -35,7 +35,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.display.FlxRuntimeShader;
 #end
 #if sys
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 import sys.io.File;
 #end
 import Type.ValueType;
@@ -49,7 +49,6 @@ import hscript.Expr;
 #if desktop
 import Discord;
 #end
-import hud.GameHUD;
 
 using StringTools;
 
@@ -1588,13 +1587,11 @@ class FunkinLua
 		});
 		Lua_helper.add_callback(lua, "getColorFromRgb", function(r:Int, g:Int, b:Int)
 		{
-			var color:Int = FlxColor.fromRGB(r, g, b);
-			return color;
+			return FlxColor.fromRGB(r, g, b);
 		});
 		Lua_helper.add_callback(lua, "getDominantColor", function(tag:String)
 		{
-			var result:Int = CoolUtil.dominantColor(getObjectDirectly(tag));
-			return result;
+			return CoolUtil.dominantColor(getObjectDirectly(tag));
 		});
 		Lua_helper.add_callback(lua, "keyboardJustPressed", function(name:String)
 		{
@@ -2340,14 +2337,28 @@ class FunkinLua
 		Lua_helper.add_callback(lua, "setHealthBarColors", function(leftHex:String, rightHex:String)
 		{
 			var left:FlxColor = Std.parseInt(leftHex);
-			if (!leftHex.startsWith('0x'))
-				left = Std.parseInt('0xff' + leftHex);
 			var right:FlxColor = Std.parseInt(rightHex);
-			if (!rightHex.startsWith('0x'))
-				right = Std.parseInt('0xff' + rightHex);
 
-			PlayState.gameHUD.healthBar.createFilledBar(left, right);
-			PlayState.gameHUD.healthBar.updateBar();
+			if (leftHex != null && leftHex != '')
+			{
+				if (!leftHex.startsWith('0x'))
+					left = Std.parseInt('0xff' + leftHex);
+			}
+			else
+				left = FlxColor.fromRGB(PlayState.instance.dad.healthColorArray[0], PlayState.instance.dad.healthColorArray[1],
+					PlayState.instance.dad.healthColorArray[2]);
+
+			if (rightHex != null && rightHex != '')
+			{
+				if (!rightHex.startsWith('0x'))
+					right = Std.parseInt('0xff' + rightHex);
+			}
+			else
+				right = FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1],
+					PlayState.instance.boyfriend.healthColorArray[2]);
+
+			PlayState.instance.gameHUD.healthBar.createFilledBar(left, right);
+			PlayState.instance.gameHUD.healthBar.updateBar();
 		});
 		Lua_helper.add_callback(lua, "setTimeBarColors", function(leftHex:String, rightHex:String)
 		{
@@ -2358,8 +2369,8 @@ class FunkinLua
 			if (!rightHex.startsWith('0x'))
 				right = Std.parseInt('0xff' + rightHex);
 
-			PlayState.gameHUD.timeBar.createFilledBar(right, left);
-			PlayState.gameHUD.timeBar.updateBar();
+			PlayState.instance.gameHUD.timeBar.createFilledBar(right, left);
+			PlayState.instance.gameHUD.timeBar.updateBar();
 		});
 
 		Lua_helper.add_callback(lua, "setObjectCamera", function(obj:String, camera:String = '')
@@ -3970,6 +3981,25 @@ class FunkinLua
 	{
 		return PlayState.instance.isDead ? GameOverSubstate.instance : PlayState.instance;
 	}
+
+	static inline var CLENSE:String = "
+	os.execute = nil;
+	package.loaded.os.execute = nil;
+	os.getenv = nil;
+	os.remove = nil;
+	os.rename = nil;
+	os.chdir = nil;
+	os.popen = nil;
+	os.close = nil;
+	os.makedir = nil;
+	os.makedirs =nil;
+	require = nil;
+	package.loaded.require = nil;
+	package.preload.require = nil; -- Double remove require, this isn't needed for os since os just references package.loaded.os
+	ffi = nil;
+	package.loaded.ffi = nil;
+	package.preload.ffi = nil;
+	"; // Fuck this, I can't figure out linc_lua, so I'mma set everything in Lua itself - Super
 }
 
 class ModchartSprite extends FlxSprite

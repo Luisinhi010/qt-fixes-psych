@@ -36,8 +36,9 @@ import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
 import lime.system.Clipboard;
 import flixel.animation.FlxAnimation;
 #if MODS_ALLOWED
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 #end
+
 using StringTools;
 
 /**

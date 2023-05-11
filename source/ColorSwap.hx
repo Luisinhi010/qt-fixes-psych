@@ -1,7 +1,6 @@
 package;
 
-import flixel.FlxG;
-import flixel.system.FlxAssets.FlxShader;
+import codename.FlxFixedShader;
 
 class ColorSwap
 {

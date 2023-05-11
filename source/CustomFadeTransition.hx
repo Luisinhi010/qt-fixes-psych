@@ -1,5 +1,6 @@
 package;
 
+import flixel.text.FlxText;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.addons.ui.FlxUIState;
@@ -64,7 +65,13 @@ class CustomFadeTransition extends MusicBeatSubstate
 				onComplete: function(twn:FlxTween)
 				{
 					if (finishCallback != null)
+					{
+						var text:FlxText = new FlxText(0, FlxG.height - 48, 0, Locale.get("loadingText"), 34);
+						text.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+						text.screenCenter(X);
+						add(text);
 						finishCallback();
+					}
 				},
 				ease: FlxEase.linear
 			});

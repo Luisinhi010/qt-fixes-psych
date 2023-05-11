@@ -29,7 +29,7 @@ import lime.system.Clipboard;
 import haxe.Json;
 #if sys
 import sys.io.File;
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 #end
 import WeekData;
 
@@ -117,7 +117,7 @@ class WeekEditorState extends MusicBeatState
 		addEditorBox();
 		reloadAllShit();
 
-		FlxG.mouse.visible = true;
+		FlxG.mouse.visible = FlxG.mouse.useSystemCursor = true;
 
 		super.create();
 	}

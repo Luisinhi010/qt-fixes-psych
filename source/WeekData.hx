@@ -2,7 +2,7 @@ package;
 
 #if MODS_ALLOWED
 import sys.io.File;
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 #end
 import lime.utils.Assets;
 import openfl.utils.Assets as OpenFlAssets;

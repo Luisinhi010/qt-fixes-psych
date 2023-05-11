@@ -24,7 +24,6 @@ class GameOverSubstate extends MusicBeatSubstate
 		'sawblade' => Locale.get("sawbladeDeath"),
 		'hurt' => Locale.get("hurtDeath"),
 		'reset' => Locale.get("resetDeath"),
-		'latenote' => Locale.get("latenoteDeath"),
 		'default' => Locale.get("defaultDeath")
 	];
 
@@ -65,8 +64,6 @@ class GameOverSubstate extends MusicBeatSubstate
 	override function create()
 	{
 		instance = this;
-		camHUD.zoom = camHUD.alpha = 1;
-		camHUD.x = camHUD.y = camHUD.angle = 0;
 		PlayState.instance.callOnLuas('onGameOverStart', []);
 		PlayState.instance.callOnHaxes('GameOverStart', []);
 		PlayState.instance.callOnHaxes('create', []);
@@ -79,6 +76,8 @@ class GameOverSubstate extends MusicBeatSubstate
 		super();
 		this.songSpeed = songSpeed;
 		camHUD = PlayState.instance.camHUD;
+		camHUD.zoom = camHUD.alpha = 1;
+		camHUD.x = camHUD.y = camHUD.angle = 0;
 		camHUD.filtersEnabled = false;
 
 		groupSprite = new FlxTypedGroup<FlxSprite>();
@@ -115,14 +114,15 @@ class GameOverSubstate extends MusicBeatSubstate
 			groupSprite.add(boyfriend);
 		}
 
-		scoreTxt = new FlxText(0, FlxG.height, FlxG.width, PlayState.gameHUD.scoreTxt.text, 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE, PlayState.instance.inhumancolor2);
+		scoreTxt = new FlxText(0, FlxG.height, FlxG.width, PlayState.instance.gameHUD.scoreTxt.text, 20);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.y -= scoreTxt.height + 5;
 		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = 1.5;
 		scoreTxt.screenCenter(X);
 		scoreTxt.updateHitbox();
 		scoreTxt.cameras = [camHUD];
+		scoreTxt.visible = !PlayState.instance.cpuControlled;
 		groupSprite.add(scoreTxt);
 
 		killedByGAMEOVER = killedBy;
@@ -190,8 +190,6 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			var lerpVal:Float = CoolUtil.boundTo(elapsed * 0.6, 0, 1);
 			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
-			/*if (textGenerated)
-				killedByTextDisplay.scale.set(1 / FlxG.camera.zoom, 1 / FlxG.camera.zoom); */
 		}
 
 		if (controls.ACCEPT)
@@ -259,7 +257,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (killedByGAMEOVER == "sawblade" && !ClientPrefs.optimize)
 			sawBladeDeath.animation.play("animate");
 
-		FlxTween.tween(FlxG.camera, {zoom: 0.86}, 2.2, {ease: FlxEase.quadInOut}); // To ensure you can read the death text.
+		FlxTween.tween(FlxG.camera, {zoom: 0.86}, 2, {ease: FlxEase.quadInOut}); // To ensure you can read the death text.
 		displayDeathText(false);
 	}
 
@@ -269,8 +267,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			var xy:Array<Float> = [ClientPrefs.optimize ? 0 : boyfriend.x, ClientPrefs.optimize ? 0 : boyfriend.y];
 
-			var deathMessage:String = deathTexts.get(deathTexts.exists(killedByGAMEOVER) ? killedByGAMEOVER : 'default')
-				.replace("%qt_dodge", ClientPrefs.getkeys('qt_dodge'));
+			var deathMessage:String = deathTexts.get(deathTexts.exists(killedByGAMEOVER) ? killedByGAMEOVER : 'default');
 			killedByTextDisplay = new FlxText(0, 0, 0, deathMessage, 32);
 			killedByTextDisplay.applyMarkup(deathMessage, [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
 			killedByTextDisplay.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);

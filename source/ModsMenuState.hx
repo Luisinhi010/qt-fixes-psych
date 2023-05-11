@@ -18,7 +18,7 @@ import lime.utils.Assets;
 import flixel.system.FlxSound;
 import openfl.utils.Assets as OpenFlAssets;
 import sys.io.File;
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 import haxe.Json;
 import haxe.format.JsonParser;
 import openfl.display.BitmapData;
@@ -43,7 +43,7 @@ class ModsMenuState extends MusicBeatState
 	var intendedColor:Int;
 	var colorTween:FlxTween;
 	var noModsTxt:FlxText;
-	var selector:AttachedSprite;
+	var selector:AttachedFlxSprite;
 	var descriptionTxt:FlxText;
 	var needaReset = false;
 
@@ -127,7 +127,7 @@ class ModsMenuState extends MusicBeatState
 		}
 		saveTxt();
 
-		selector = new AttachedSprite();
+		selector = new AttachedFlxSprite();
 		selector.xAdd = -205;
 		selector.yAdd = -68;
 		selector.alphaMult = 0.5;
@@ -344,7 +344,7 @@ class ModsMenuState extends MusicBeatState
 			if (FileSystem.exists(iconToUse))
 				loadedIcon = BitmapData.fromFile(iconToUse);
 
-			newMod.icon = new AttachedSprite();
+			newMod.icon = new AttachedFlxSprite();
 			if (loadedIcon != null)
 			{
 				newMod.icon.loadGraphic(loadedIcon, true, 150, 150); // animated icon support
@@ -376,7 +376,7 @@ class ModsMenuState extends MusicBeatState
 		updatePosition();
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 
-		FlxG.mouse.visible = true;
+		FlxG.mouse.visible = FlxG.mouse.useSystemCursor = true;
 
 		super.create();
 	}
@@ -483,7 +483,7 @@ class ModsMenuState extends MusicBeatState
 				colorTween.cancel();
 
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-			FlxG.mouse.visible = false;
+			FlxG.mouse.visible = FlxG.mouse.useSystemCursor = false;
 			saveTxt();
 			if (needaReset)
 			{
@@ -740,7 +740,7 @@ class ModMetadata
 	public var color:FlxColor;
 	public var restart:Bool; // trust me. this is very important
 	public var alphabet:Alphabet;
-	public var icon:AttachedSprite;
+	public var icon:AttachedFlxSprite;
 
 	public function new(folder:String)
 	{

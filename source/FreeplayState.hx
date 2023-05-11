@@ -22,8 +22,9 @@ import flixel.system.FlxSound;
 import openfl.utils.Assets as OpenFlAssets;
 import WeekData;
 #if MODS_ALLOWED
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 #end
+
 using StringTools;
 
 class FreeplayState extends MusicBeatState
@@ -39,6 +40,7 @@ class FreeplayState extends MusicBeatState
 	public var scoreBG:FlxSprite;
 	public var scoreText:FlxText;
 	public var diffText:FlxText;
+	public var countText:FlxText;
 	public var lerpScore:Int = 0;
 	public var lerpRating:Float = 0;
 	public var intendedScore:Int = 0;
@@ -205,6 +207,12 @@ class FreeplayState extends MusicBeatState
 		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
 		diffText.font = scoreText.font;
 		add(diffText);
+
+		countText = new FlxText(scoreText.x, scoreText.y + 12, 0, "", 32);
+		countText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		countText.borderSize = 1.25;
+
+		add(countText);
 
 		add(scoreText);
 
@@ -494,7 +502,7 @@ class FreeplayState extends MusicBeatState
 
 	function changeDiff(change:Int = 0, ?jank:Bool = false)
 	{
-		menuScript.callFunc('changeDiff', [change]);
+		menuScript.callFunc('changeDiff', [change, jank]);
 		if (jank)
 			curDifficulty = 1;
 		else
@@ -566,12 +574,12 @@ class FreeplayState extends MusicBeatState
 			});
 
 		positionHighscore();
-		menuScript.callFunc('postChangeDiff', [change]);
+		menuScript.callFunc('postChangeDiff', [change, jank]);
 	}
 
 	function changeSelection(change:Int = 0, playSound:Bool = true)
 	{
-		menuScript.callFunc('changeSelection', [change]);
+		menuScript.callFunc('changeSelection', [change, playSound]);
 		if (playSound)
 			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
@@ -721,18 +729,24 @@ class FreeplayState extends MusicBeatState
 		var newPos:Int = CoolUtil.difficulties.indexOf(lastDifficultyName);
 		if (newPos > -1)
 			curDifficulty = newPos;
-		menuScript.callFunc('postChangeSelection', [change]);
+		menuScript.callFunc('postChangeSelection', [change, playSound]);
 	}
 
 	private function positionHighscore()
 	{
 		menuScript.callFunc('positionHighscore', []);
+		var songlength:Int = songs.length - 21;
+		if (songlength < (curSelected + 1))
+			songlength = curSelected + 1;
+		countText.text = "(" + ((curSelected + 1) + "/" + (songlength)) + ")";
 		scoreText.x = FlxG.width - scoreText.width - 6;
 
 		scoreBG.scale.x = FlxG.width - scoreText.x + 6;
 		scoreBG.x = FlxG.width - (scoreBG.scale.x / 2);
 		diffText.x = Std.int(scoreBG.x + (scoreBG.width / 2));
 		diffText.x -= diffText.width / 2;
+		countText.x = Std.int(scoreBG.x - (scoreBG.scale.x / 2));
+		countText.x -= countText.width;
 	}
 
 	override function beatHit()
@@ -743,11 +757,7 @@ class FreeplayState extends MusicBeatState
 		{
 			if (iconArray != null)
 				if (iconArray[curInstPlaying] != null)
-					iconArray[curInstPlaying].bounce(); // xd --BedrockEngine Luis, xd indeed. -Luis now
-			// https://github.com/Luisinhi010/FNF-BedrockEngine-Legacy/blob/9c750504dfe6f65b746600d138c23f9b24f991d8/source/meta/state/menus/FreeplayState.hx#L428
-			/**
-			 * good times. -Luis
-			 */
+					iconArray[curInstPlaying].bounce();
 			if (amountToTakeAway < 1 && ClientPrefs.camZooms && curBeat % 4 == 0)
 				FlxG.camera.zoom += 0.015;
 		}

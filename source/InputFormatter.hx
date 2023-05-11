@@ -1,4 +1,3 @@
-import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
 
 using StringTools;
@@ -75,14 +74,10 @@ class InputFormatter
 				return ",";
 			case PERIOD:
 				return ".";
-			// case SLASH:
-			//	return "/";
 			case GRAVEACCENT:
 				return "`";
 			case LBRACKET:
 				return "[";
-			// case BACKSLASH:
-			//	return "\\";
 			case RBRACKET:
 				return "]";
 			case QUOTE:
@@ -91,6 +86,8 @@ class InputFormatter
 				return "PrtScrn";
 			case NONE:
 				return '---';
+			// case SPACE:
+			//	return Locale.get("SpaceKey");
 			default:
 				var label:String = '' + key;
 				if (label.toLowerCase() == 'null')

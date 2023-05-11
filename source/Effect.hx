@@ -1,6 +1,7 @@
 package;
 
 import FlxFixedShader;
+import codename.FlxFixedShader;
 
 // this helps stable the FlxFixedShader code
 class Effect

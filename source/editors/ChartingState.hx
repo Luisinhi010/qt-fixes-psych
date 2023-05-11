@@ -60,12 +60,13 @@ import flixel.util.FlxTimer;
 import flash.system.System;
 import openfl.Lib;
 import openfl.utils.ByteArray;
+import FunkinLua;
 
 using StringTools;
 
 #if sys
 import flash.media.Sound;
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 import sys.io.File;
 #end
 
@@ -260,7 +261,7 @@ class ChartingState extends MusicBeatState
 
 	var camPos:FlxObject;
 	var strumLine:FlxSprite;
-	var quant:AttachedSprite;
+	var quant:AttachedFlxSprite;
 	var strumLineNotes:FlxTypedGroup<StrumNote>;
 	var curSong:String = 'Test';
 	var amountSteps:Int = 0;
@@ -324,6 +325,8 @@ class ChartingState extends MusicBeatState
 	public static var curQuant = 3;
 
 	public var quantizations:Array<Int> = [4, 8, 12, 16, 20, 24, 32, 48, 64, 96, 192];
+
+	private var debugGroup:FlxTypedGroup<DebugLuaText>;
 
 	var text:String = "";
 
@@ -445,7 +448,8 @@ class ChartingState extends MusicBeatState
 		if (curSec >= _song.notes.length)
 			curSec = _song.notes.length - 1;
 
-		FlxG.mouse.visible = true;
+		FlxG.mouse.visible = FlxG.mouse.useSystemCursor = true;
+
 		// FlxG.save.bind('settings', CoolUtil.getSavePath('Luis'));
 
 		tempBpm = _song.bpm;
@@ -467,7 +471,7 @@ class ChartingState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(GRID_SIZE * 9), 4);
 		add(strumLine);
 
-		quant = new AttachedSprite('chart_quant', 'chart_quant');
+		quant = new AttachedFlxSprite('chart_quant', 'chart_quant');
 		quant.animation.addByPrefix('q', 'chart_quant', 0, false);
 		quant.animation.play('q', true, false, 0);
 		quant.sprTracker = strumLine;
@@ -560,6 +564,8 @@ class ChartingState extends MusicBeatState
 		Main.fpsVar.y = zoomTxt.y + zoomTxt.height;
 
 		updateGrid();
+		debugGroup = new FlxTypedGroup<DebugLuaText>();
+		add(debugGroup);
 		super.create();
 	}
 
@@ -2007,6 +2013,7 @@ class ChartingState extends MusicBeatState
 
 			if (FlxG.keys.justPressed.BACKSPACE)
 			{
+				autosaveSong();
 				PlayState.chartingMode = false;
 				MusicBeatState.switchState(new editors.MasterEditorMenu());
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
@@ -3469,15 +3476,64 @@ class ChartingState extends MusicBeatState
 		{
 			// shitty null fix, i fucking hate it when this happens
 			// make it look sexier if possible
-			if (CoolUtil.difficulties[PlayState.storyDifficulty] != CoolUtil.defaultDifficulty)
+			try
 			{
-				if (CoolUtil.difficulties[PlayState.storyDifficulty] == null)
-					PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
-				else
-					PlayState.SONG = Song.loadFromJson(song.toLowerCase() + "-" + CoolUtil.difficulties[PlayState.storyDifficulty], song.toLowerCase());
+				var defaultDiff:String = CoolUtil.defaultDifficulty.toLowerCase();
+				var songLower:String = song.toLowerCase();
+
+				var ind:Int = song.lastIndexOf("-");
+				var success:Bool = false;
+				if (ind != -1)
+				{
+					try
+					{
+						PlayState.SONG = Song.loadFromJson(songLower, songLower.substring(0, ind));
+						success = true;
+
+						// after loaded
+						var diff:String = songLower.substring(ind + 1);
+						var ind:Int = CoolUtil.lowerDifficulties.indexOf(diff);
+						if (ind != -1)
+							PlayState.storyDifficulty = ind;
+					}
+					catch (e)
+					{
+					}
+				}
+				if (!success)
+				{
+					var diff:String = CoolUtil.difficulties[PlayState.storyDifficulty];
+					if (diff != null)
+						diff = diff.toLowerCase();
+
+					var success:Bool = false;
+					if (diff != null && diff != defaultDiff)
+					{
+						try
+						{
+							PlayState.SONG = Song.loadFromJson(songLower + "-" + diff, songLower);
+							success = true;
+						}
+						catch (e)
+						{
+						}
+					}
+					if (!success)
+					{
+						PlayState.SONG = Song.loadFromJson(songLower, songLower);
+
+						// after loaded
+						var ind:Int = CoolUtil.lowerDifficulties.indexOf(defaultDiff);
+						if (ind != -1)
+							PlayState.storyDifficulty = ind;
+					}
+				}
 			}
-			else
-				PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+			catch (e)
+			{
+				addTextToDebug("Problem with Loading Song data \"" + song.toLowerCase() + "\"", 0xFFFF0000);
+				return;
+			}
 
 			MusicBeatState.resetState();
 		}
@@ -3527,16 +3583,13 @@ class ChartingState extends MusicBeatState
 				CoolUtil.difficulties[PlayState.storyDifficulty].toLowerCase() : "";
 
 		var path:String;
-		if (Main.__justcompiled)
-			path = './../../../../assets/data' + currentSongName + "/" + currentSongName + diffSuffix + '.json';
-		else
-		{
-			#if MODS_ALLOWED
-			path = Paths.modsJson(currentSongName + "/" + currentSongName + diffSuffix);
-			if (!FileSystem.exists(path))
-			#end
-			path = Paths.json(currentSongName + "/" + currentSongName + diffSuffix);
-		}
+		var suffix:String = /*(Main.__justcompiled) ? './../../../../' : */ '';
+		#if MODS_ALLOWED
+		path = suffix + Paths.modsJson(currentSongName + "/" + currentSongName + diffSuffix);
+		if (!FileSystem.exists(path))
+		#end
+		path = suffix + Paths.json(currentSongName + "/" + currentSongName + diffSuffix);
+
 		return path;
 	}
 
@@ -3581,7 +3634,7 @@ class ChartingState extends MusicBeatState
 		_file.removeEventListener(Event.CANCEL, onSaveCancel);
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
-		FlxG.log.notice("Successfully saved LEVEL DATA.");
+		addTextToDebug("Successfully saved Song data");
 	}
 
 	/**
@@ -3604,7 +3657,7 @@ class ChartingState extends MusicBeatState
 		_file.removeEventListener(Event.CANCEL, onSaveCancel);
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
-		FlxG.log.error("Problem saving Level data");
+		addTextToDebug("Problem saving Song data", 0xFFFF0000);
 	}
 
 	function fuckingtext():Void
@@ -3627,28 +3680,25 @@ class ChartingState extends MusicBeatState
 			val = _song.notes[section].sectionBeats;
 		return val != null ? val : 4;
 	}
-}
 
-class AttachedFlxText extends FlxText
-{
-	public var sprTracker:FlxSprite;
-	public var xAdd:Float = 0;
-	public var yAdd:Float = 0;
-
-	public function new(X:Float = 0, Y:Float = 0, FieldWidth:Float = 0, ?Text:String, Size:Int = 8, EmbeddedFont:Bool = true)
+	public function addTextToDebug(text:String, color:FlxColor = 0xFFFFFFFF)
 	{
-		super(X, Y, FieldWidth, Text, Size, EmbeddedFont);
-	}
-
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
-
-		if (sprTracker != null)
+		debugGroup.forEachAlive(function(spr:DebugLuaText)
 		{
-			setPosition(sprTracker.x + xAdd, sprTracker.y + yAdd);
-			angle = sprTracker.angle;
-			alpha = sprTracker.alpha;
+			spr.y += 20;
+		});
+
+		if (debugGroup.members.length > 34)
+		{
+			var blah = debugGroup.members[34];
+			blah.destroy();
+			debugGroup.remove(blah);
 		}
+		debugGroup.insert(0, new DebugLuaText(text, debugGroup, color));
+		#if debug
+		FlxG.log.notice(text);
+		#else
+		trace(text);
+		#end
 	}
 }

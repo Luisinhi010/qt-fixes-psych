@@ -1,20 +1,19 @@
 @echo off
 title Friday Night Funkin': Psych Engine Setup - Start
-echo Make sure Haxe 4.2.5 and HaxeFlixel 4.11.0 is installed!
+echo Make sure to have Haxe 4.3.0 and HaxeFlixel 4.11.0 is installed!
 echo Press any key to install required libraries.
 pause >nul
 title Installing libraries
 echo Installing haxelib libraries...
 haxelib install hxcpp > nul
-haxelib install lime 8.0.0
-haxelib install openfl 9.2.0
+haxelib install lime 
+haxelib install openfl 
 haxelib install flixel 4.11.0
 haxelib run lime setup flixel
 haxelib run lime setup
 haxelib install flixel-tools
 haxelib install flixel-ui
 haxelib install flixel-addons 2.11.0
-haxelib install tjson
 haxelib install hxjsonast
 haxelib install hscript
 haxelib install hxcpp-debug-server

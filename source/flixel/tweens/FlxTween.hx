@@ -87,6 +87,10 @@ class FlxTween implements IFlxDestroyable
 	 */
 	public static var globalManager:FlxTweenManager;
 
+	public static var globalSpeed:Float = 1; // taken from FlxAnimationController :kbge:
+
+	public var followGlobalSpeed:Bool = true;
+
 	/**
 	 * Tweens numeric public properties of an Object. Shorthand for creating a VarTween, starting it and adding it to the TweenManager.
 	 *
@@ -467,7 +471,10 @@ class FlxTween implements IFlxDestroyable
 
 	function update(elapsed:Float):Void
 	{
-		_secondsSinceStart += elapsed;
+		var e:Float = elapsed;
+		if (followGlobalSpeed)
+			e *= globalSpeed;
+		_secondsSinceStart += e;
 		var delay:Float = (executions > 0) ? loopDelay : startDelay;
 		if (_secondsSinceStart < delay)
 		{
@@ -686,8 +693,8 @@ class FlxTween implements IFlxDestroyable
 	 */
 	function setDelays(?StartDelay:Null<Float>, ?LoopDelay:Null<Float>):FlxTween
 	{
-		set_startDelay((StartDelay != null) ? StartDelay : 0); // imagine breaking the code so hard that you need to do this type of thing
-		set_loopDelay((LoopDelay != null) ? LoopDelay : 0);
+		startDelay = (StartDelay != null) ? StartDelay : 0;
+		loopDelay = (LoopDelay != null) ? LoopDelay : 0;
 		return this;
 	}
 
@@ -697,7 +704,7 @@ class FlxTween implements IFlxDestroyable
 		if (executions == 0)
 			_delayToUse = dly;
 
-		return startDelay = MusicBeatState.multAnims ? dly / PlayState.instance.playbackRate : dly;
+		return startDelay = dly;
 	}
 
 	function set_loopDelay(value:Null<Float>):Float
@@ -708,7 +715,7 @@ class FlxTween implements IFlxDestroyable
 			_secondsSinceStart = duration * percent + Math.max((dly - loopDelay), 0);
 			_delayToUse = dly;
 		}
-		return loopDelay = MusicBeatState.multAnims ? dly / PlayState.instance.playbackRate : dly;
+		return loopDelay = dly;
 	}
 
 	inline function get_percent():Float
@@ -823,9 +830,8 @@ class FlxTweenManager extends FlxBasic
 	 */
 	public function tween(Object:Dynamic, Values:Dynamic, Duration:Float = 1, ?Options:TweenOptions):VarTween
 	{
-		var Realduration:Float = MusicBeatState.multAnims ? Duration / PlayState.instance.playbackRate : Duration;
 		var tween = new VarTween(Options, this);
-		tween.tween(Object, Values, Realduration);
+		tween.tween(Object, Values, Duration);
 		return add(tween);
 	}
 
@@ -852,9 +858,8 @@ class FlxTweenManager extends FlxBasic
 	 */
 	public function num(FromValue:Float, ToValue:Float, Duration:Float = 1, ?Options:TweenOptions, ?TweenFunction:Float->Void):NumTween
 	{
-		var Realduration:Float = MusicBeatState.multAnims ? Duration / PlayState.instance.playbackRate : Duration;
 		var tween = new NumTween(Options, this);
-		tween.tween(FromValue, ToValue, Realduration, TweenFunction);
+		tween.tween(FromValue, ToValue, Duration, TweenFunction);
 		return add(tween);
 	}
 
@@ -875,9 +880,8 @@ class FlxTweenManager extends FlxBasic
 	 */
 	public function angle(?Sprite:FlxSprite, FromAngle:Float, ToAngle:Float, Duration:Float = 1, ?Options:TweenOptions):AngleTween
 	{
-		var Realduration:Float = MusicBeatState.multAnims ? Duration / PlayState.instance.playbackRate : Duration;
 		var tween = new AngleTween(Options, this);
-		tween.tween(FromAngle, ToAngle, Realduration, Sprite);
+		tween.tween(FromAngle, ToAngle, Duration, Sprite);
 		return add(tween);
 	}
 
@@ -898,9 +902,8 @@ class FlxTweenManager extends FlxBasic
 	 */
 	public function color(?Sprite:FlxSprite, Duration:Float = 1, FromColor:FlxColor, ToColor:FlxColor, ?Options:TweenOptions):ColorTween
 	{
-		var Realduration:Float = MusicBeatState.multAnims ? Duration / PlayState.instance.playbackRate : Duration;
 		var tween = new ColorTween(Options, this);
-		tween.tween(Realduration, FromColor, ToColor, Sprite);
+		tween.tween(Duration, FromColor, ToColor, Sprite);
 		return add(tween);
 	}
 
@@ -925,10 +928,9 @@ class FlxTweenManager extends FlxBasic
 	public function linearMotion(Object:FlxObject, FromX:Float, FromY:Float, ToX:Float, ToY:Float, DurationOrSpeed:Float = 1, UseDuration:Bool = true,
 			?Options:TweenOptions):LinearMotion
 	{
-		var Realduration:Float = UseDuration ? MusicBeatState.multAnims ? DurationOrSpeed / PlayState.instance.playbackRate : DurationOrSpeed : DurationOrSpeed;
 		var tween = new LinearMotion(Options, this);
 		tween.setObject(Object);
-		tween.setMotion(FromX, FromY, ToX, ToY, Realduration, UseDuration);
+		tween.setMotion(FromX, FromY, ToX, ToY, DurationOrSpeed, UseDuration);
 		return add(tween);
 	}
 
@@ -955,10 +957,9 @@ class FlxTweenManager extends FlxBasic
 	public function quadMotion(Object:FlxObject, FromX:Float, FromY:Float, ControlX:Float, ControlY:Float, ToX:Float, ToY:Float, DurationOrSpeed:Float = 1,
 			UseDuration:Bool = true, ?Options:TweenOptions):QuadMotion
 	{
-		var Realduration:Float = UseDuration ? MusicBeatState.multAnims ? DurationOrSpeed / PlayState.instance.playbackRate : DurationOrSpeed : DurationOrSpeed;
 		var tween = new QuadMotion(Options, this);
 		tween.setObject(Object);
-		tween.setMotion(FromX, FromY, ControlX, ControlY, ToX, ToY, Realduration, UseDuration);
+		tween.setMotion(FromX, FromY, ControlX, ControlY, ToX, ToY, DurationOrSpeed, UseDuration);
 		return add(tween);
 	}
 
@@ -986,10 +987,9 @@ class FlxTweenManager extends FlxBasic
 	public function cubicMotion(Object:FlxObject, FromX:Float, FromY:Float, aX:Float, aY:Float, bX:Float, bY:Float, ToX:Float, ToY:Float, Duration:Float = 1,
 			?Options:TweenOptions):CubicMotion
 	{
-		var Realduration:Float = MusicBeatState.multAnims ? Duration / PlayState.instance.playbackRate : Duration;
 		var tween = new CubicMotion(Options, this);
 		tween.setObject(Object);
-		tween.setMotion(FromX, FromY, aX, aY, bX, bY, ToX, ToY, Realduration);
+		tween.setMotion(FromX, FromY, aX, aY, bX, bY, ToX, ToY, Duration);
 		return add(tween);
 	}
 
@@ -1016,10 +1016,9 @@ class FlxTweenManager extends FlxBasic
 	public function circularMotion(Object:FlxObject, CenterX:Float, CenterY:Float, Radius:Float, Angle:Float, Clockwise:Bool, DurationOrSpeed:Float = 1,
 			UseDuration:Bool = true, ?Options:TweenOptions):CircularMotion
 	{
-		var Realduration:Float = UseDuration ? MusicBeatState.multAnims ? DurationOrSpeed / PlayState.instance.playbackRate : DurationOrSpeed : DurationOrSpeed;
 		var tween = new CircularMotion(Options, this);
 		tween.setObject(Object);
-		tween.setMotion(CenterX, CenterY, Radius, Angle, Clockwise, Realduration, UseDuration);
+		tween.setMotion(CenterX, CenterY, Radius, Angle, Clockwise, DurationOrSpeed, UseDuration);
 		return add(tween);
 	}
 
@@ -1040,7 +1039,6 @@ class FlxTweenManager extends FlxBasic
 	 */
 	public function linearPath(Object:FlxObject, Points:Array<FlxPoint>, DurationOrSpeed:Float = 1, UseDuration:Bool = true, ?Options:TweenOptions):LinearPath
 	{
-		var Realduration:Float = UseDuration ? MusicBeatState.multAnims ? DurationOrSpeed / PlayState.instance.playbackRate : DurationOrSpeed : DurationOrSpeed;
 		var tween = new LinearPath(Options, this);
 
 		if (Points != null)
@@ -1052,7 +1050,7 @@ class FlxTweenManager extends FlxBasic
 		}
 
 		tween.setObject(Object);
-		tween.setMotion(Realduration, UseDuration);
+		tween.setMotion(DurationOrSpeed, UseDuration);
 		return add(tween);
 	}
 
@@ -1073,7 +1071,6 @@ class FlxTweenManager extends FlxBasic
 	 */
 	public function quadPath(Object:FlxObject, Points:Array<FlxPoint>, DurationOrSpeed:Float = 1, UseDuration:Bool = true, ?Options:TweenOptions):QuadPath
 	{
-		var Realduration:Float = UseDuration ? MusicBeatState.multAnims ? DurationOrSpeed / PlayState.instance.playbackRate : DurationOrSpeed : DurationOrSpeed;
 		var tween = new QuadPath(Options, this);
 
 		if (Points != null)
@@ -1085,7 +1082,7 @@ class FlxTweenManager extends FlxBasic
 		}
 
 		tween.setObject(Object);
-		tween.setMotion(Realduration, UseDuration);
+		tween.setMotion(DurationOrSpeed, UseDuration);
 		return add(tween);
 	}
 
@@ -1099,13 +1096,16 @@ class FlxTweenManager extends FlxBasic
 	{
 		// process finished tweens after iterating through main list, since finish() can manipulate FlxTween.list
 		var finishedTweens:Array<FlxTween> = null;
+		var e:Float = elapsed;
+		/*if (followGlobalSpeed)
+			e *= globalSpeed; */
 
 		for (tween in _tweens)
 		{
 			if (!tween.active)
 				continue;
 
-			tween.update(elapsed);
+			tween.update(e);
 			if (tween.finished)
 			{
 				if (finishedTweens == null)

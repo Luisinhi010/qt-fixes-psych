@@ -629,7 +629,7 @@ class EditorPlayState extends MusicBeatState
 						}
 					}
 				}
-				else if (canMiss && ClientPrefs.ghostTapping)
+				else if (canMiss)
 					noteMiss();
 
 				// more accurate hit time for the ratings? part 2 (Now that the calculations are done, go back to the time it was before for not causing a note stutter)
@@ -808,6 +808,8 @@ class EditorPlayState extends MusicBeatState
 
 	function noteMiss():Void
 	{
+		if (ClientPrefs.ghostTapping)
+			return;
 		combo = 0;
 
 		// songScore -= 10;

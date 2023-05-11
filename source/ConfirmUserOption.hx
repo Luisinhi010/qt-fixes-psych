@@ -13,7 +13,6 @@ class ConfirmUserOption extends MusicBeatSubstate
 	var onYes:Bool = false;
 	var yesText:Alphabet;
 	var noText:Alphabet;
-	var custommouse:CustomMouse;
 	var selectedSomethin = false;
 
 	public function new()
@@ -48,8 +47,6 @@ class ConfirmUserOption extends MusicBeatSubstate
 		noText.x += 150;
 		noText.scrollFactor.set();
 		add(noText);
-		custommouse = new CustomMouse(FlxG.mouse.x, FlxG.mouse.y);
-		add(custommouse);
 		updateOptions();
 	}
 

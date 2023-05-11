@@ -199,7 +199,7 @@ class Alphabet extends FlxSpriteGroup
 				if (spaceChar)
 					consecutiveSpaces++;
 
-				var isAlphabet:Bool = AlphaCharacter.isTypeAlphabet(character.toLowerCase());
+				var isAlphabet:Bool = CoolUtil.isTypeAlphabet(character.toLowerCase());
 				if (AlphaCharacter.allLetters.exists(character.toLowerCase()) && (!bold || !spaceChar))
 				{
 					if (consecutiveSpaces > 0)
@@ -387,7 +387,7 @@ class AlphaCharacter extends FlxSprite
 		var suffix:String = '';
 		if (!bold)
 		{
-			if (isTypeAlphabet(lowercase))
+			if (CoolUtil.isTypeAlphabet(lowercase))
 			{
 				if (lowercase != character)
 					suffix = ' uppercase';
@@ -431,24 +431,6 @@ class AlphaCharacter extends FlxSprite
 		}
 		updateHitbox();
 		updateLetterOffset();
-	}
-
-	public static function isTypeAlphabet(c:String) // thanks kade
-	{
-		var ascii = StringTools.fastCodeAt(c, 0);
-		return (ascii >= 65 && ascii <= 90) || (ascii >= 97 && ascii <= 122) || // A-Z, a-z
-			specialCharCheck(c);
-	}
-
-	public static function specialCharCheck(c:String):Bool
-	{
-		switch (c.toLowerCase())
-		{
-			case 'á' | 'é' | 'í' | 'ó' | 'ú' | 'ñ' | 'ï' | 'õ' | 'ü' | 'ê' | 'ç' | 'ã' | 'â' | 'ô':
-				return true;
-		}
-
-		return false;
 	}
 
 	private function set_image(name:String)

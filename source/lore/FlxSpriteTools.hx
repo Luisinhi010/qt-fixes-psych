@@ -15,4 +15,10 @@ class FlxSpriteTools
 		if (axes == FlxAxes.XY || axes == FlxAxes.Y)
 			s.y = t.y + (t.height / 2) - (s.height / 2);
 	}
+
+	public static function exactSetGraphicSize(obj:FlxSprite, width:Float, height:Float)
+	{
+		obj.scale.set(Math.abs(((obj.width - width) / obj.width) - 1), Math.abs(((obj.height - height) / obj.height) - 1));
+		obj.updateHitbox();
+	}
 }

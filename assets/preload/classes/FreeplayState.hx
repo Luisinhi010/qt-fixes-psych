@@ -17,7 +17,7 @@ function postCreate()
 	if (!ClientPrefs.lowQuality)
 	{
 		qt_gas = new FlxSprite();
-		qt_gas.frames = Paths.getSparrowAtlas('hazard/qt-port/stage/Gas_Release', 'shared'); // for some reason this returning null?
+		qt_gas.frames = Paths.getSparrowAtlas('hazard/qt-port/stage/Gas_Release', 'shared'); // for some reason this is returning null?
 		qt_gas.animation.addByPrefix('burst', 'Gas_Release', 38, false);
 		qt_gas.animation.addByPrefix('burstALT', 'Gas_Release', 49, false);
 		qt_gas.animation.addByPrefix('burstFAST', 'Gas_Release', 76, false);

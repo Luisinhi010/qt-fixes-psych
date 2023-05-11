@@ -15,7 +15,7 @@ import haxe.Json;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 #if MODS_ALLOWED
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 import sys.io.File;
 #end
 import options.GraphicsSettingsSubState;
@@ -94,8 +94,6 @@ class TitleState extends MusicBeatState
 		#end
 		// Just to load a mod on start up if ya got one. For mods that change the menu music and bg
 		WeekData.loadTheFirstEnabledMod();
-		ClientPrefs.loadSettings();
-		Locale.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
@@ -195,8 +193,6 @@ class TitleState extends MusicBeatState
 
 		Conductor.changeBPM(titleJSON.bpm);
 		persistentUpdate = true;
-		lore.Colorblind.updateFilter();
-
 		var bg:FlxSprite = new FlxSprite();
 
 		if (titleJSON.backgroundSprite != null && titleJSON.backgroundSprite.length > 0 && titleJSON.backgroundSprite != "none")
@@ -550,6 +546,7 @@ class TitleState extends MusicBeatState
 		{
 			remove(ngSpr);
 			remove(credGroup);
+			FlxG.camera.stopFX();
 			FlxG.camera.fade(FlxColor.WHITE, 0.01, true);
 			FlxG.camera.flash(FlxColor.WHITE, 4);
 			skippedIntro = true;

@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.FlxTimer;
 import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -20,8 +21,15 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = [];
+	var menuItems:Array<Array<String>> = [[], []];
 	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Go to Options', 'Exit to menu'];
+	var menuItemsShown:Array<String> = [
+		Locale.get("resumePauseText"),
+		Locale.get("restartPauseText"),
+		Locale.get("changediffPauseText"),
+		Locale.get("optionsPauseText"),
+		Locale.get("exitPauseText")
+	];
 	var difficultyChoices = [];
 	var curSelected:Int = 0;
 
@@ -34,6 +42,8 @@ class PauseSubState extends MusicBeatSubstate
 	// var botplayText:FlxText;
 	public static var songName:String = '';
 
+	private var selectedSomethin:Bool = false;
+
 	public function new(x:Float, y:Float)
 	{
 		super();
@@ -42,23 +52,32 @@ class PauseSubState extends MusicBeatSubstate
 			|| PlayState.SONG.song.toLowerCase() == 'termination'
 			|| PlayState.SONG.song.toLowerCase() == 'cessation'
 			|| PlayState.SONG.song.toLowerCase() == 'interlope')
+		{
 			menuItemsOG.remove('Change Difficulty'); // No need to change difficulty if there is only one!
+			menuItemsShown.remove(Locale.get("changediffPauseText"));
+		}
 
 		if (PlayState.chartingMode)
 		{
 			menuItemsOG.insert(2, 'Leave Charting Mode');
+			menuItemsShown.insert(2, Locale.get("leavechartingPauseText"));
 
 			var num:Int = 0;
 			if (!PlayState.instance.startingSong)
 			{
 				num = 1;
 				menuItemsOG.insert(3, 'Skip Time');
+				menuItemsShown.insert(3, Locale.get("skiptimePauseText"));
 			}
 			menuItemsOG.insert(3 + num, 'End Song');
+			menuItemsShown.insert(3 + num, Locale.get("endsongPauseText"));
 			menuItemsOG.insert(4 + num, 'Toggle Practice Mode');
+			menuItemsShown.insert(4 + num, Locale.get("togglepracticePauseText"));
 			menuItemsOG.insert(5 + num, 'Toggle Botplay');
+			menuItemsShown.insert(5 + num, Locale.get("togglebotPauseText"));
 		}
-		menuItems = menuItemsOG;
+		menuItems[0] = menuItemsOG;
+		menuItems[1] = menuItemsShown;
 
 		for (i in 0...CoolUtil.difficulties.length)
 		{
@@ -183,136 +202,143 @@ class PauseSubState extends MusicBeatSubstate
 		super.update(elapsed);
 		updateSkipTextStuff();
 
-		var upP = controls.UI_UP_P;
-		var downP = controls.UI_DOWN_P;
-		var accepted = controls.ACCEPT;
-
-		if (upP)
-			changeSelection(-1);
-
-		if (downP)
-			changeSelection(1);
-
-		var daSelected:String = menuItems[curSelected];
-		switch (daSelected)
+		if (!selectedSomethin)
 		{
-			case 'Skip Time':
-				if (controls.UI_LEFT_P)
-				{
-					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-					curTime -= 1000;
-					holdTime = 0;
-				}
-				if (controls.UI_RIGHT_P)
-				{
-					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-					curTime += 1000;
-					holdTime = 0;
-				}
+			var upP = controls.UI_UP_P;
+			var downP = controls.UI_DOWN_P;
+			var accepted = controls.ACCEPT;
 
-				if (controls.UI_LEFT || controls.UI_RIGHT)
-				{
-					holdTime += elapsed;
-					if (holdTime > 0.5)
-					{
-						curTime += 45000 * elapsed * (controls.UI_LEFT ? -1 : 1);
-					}
+			if (upP)
+				changeSelection(-1);
 
-					if (curTime >= FlxG.sound.music.length)
-						curTime -= FlxG.sound.music.length;
-					else if (curTime < 0)
-						curTime += FlxG.sound.music.length;
-					updateSkipTimeText();
-				}
-		}
+			if (downP)
+				changeSelection(1);
 
-		if (accepted && (cantUnpause <= 0 || !ClientPrefs.controllerMode))
-		{
-			if (menuItems == difficultyChoices)
-			{
-				if (menuItems.length - 1 != curSelected && difficultyChoices.contains(daSelected))
-				{
-					var name:String = PlayState.SONG.song;
-					var poop = Highscore.formatSong(name, curSelected);
-					PlayState.SONG = Song.loadFromJson(poop, name);
-					PlayState.storyDifficulty = curSelected;
-					MusicBeatState.resetState();
-					FlxG.sound.music.volume = 0;
-					PlayState.changedDifficulty = true;
-					PlayState.chartingMode = false;
-					return;
-				}
-
-				menuItems = menuItemsOG;
-				regenMenu();
-			}
-
+			var daSelected:String = menuItems[0][curSelected];
 			switch (daSelected)
 			{
-				case "Resume":
-					close();
-				case 'Change Difficulty':
-					menuItems = difficultyChoices;
-					deleteSkipTimeText();
-					regenMenu();
-				case 'Toggle Practice Mode':
-					PlayState.instance.practiceMode = !PlayState.instance.practiceMode;
-					PlayState.changedDifficulty = true;
-					practiceText.visible = PlayState.instance.practiceMode;
-				case "Restart Song":
-					restartSong();
-				case "Leave Charting Mode":
-					restartSong();
-					PlayState.chartingMode = false;
 				case 'Skip Time':
-					if (curTime < Conductor.songPosition)
+					if (controls.UI_LEFT_P)
 					{
-						PlayState.startOnTime = curTime;
-						restartSong(true);
+						FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+						curTime -= 1000;
+						holdTime = 0;
 					}
-					else
+					if (controls.UI_RIGHT_P)
 					{
-						if (curTime != Conductor.songPosition)
-						{
-							PlayState.instance.clearNotesBefore(curTime);
-							PlayState.instance.setSongTime(curTime);
-						}
-						close();
+						FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+						curTime += 1000;
+						holdTime = 0;
 					}
-				case "End Song":
-					close();
-					PlayState.instance.finishSong(true);
-				case 'Toggle Botplay':
-					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
-					PlayState.changedDifficulty = true;
-					PlayState.gameHUD.botplayTxt.visible = PlayState.instance.cpuControlled;
-					PlayState.gameHUD.scoreTxt.visible = !PlayState.instance.cpuControlled;
-					PlayState.gameHUD.healthBarBG.visible = !PlayState.instance.cpuControlled;
-					PlayState.gameHUD.healthBar.visible = !PlayState.instance.cpuControlled;
-					PlayState.gameHUD.healthBarFG.visible = !PlayState.instance.cpuControlled;
-					PlayState.gameHUD.iconP1.visible = !PlayState.instance.cpuControlled;
-					PlayState.gameHUD.iconP2.visible = !PlayState.instance.cpuControlled;
-					PlayState.gameHUD.scoreTxt.visible = !PlayState.instance.cpuControlled;
-					PlayState.gameHUD.botplayTxt.alpha = 1;
-					PlayState.gameHUD.botplaySine = 0;
-				case "Go to Options":
-					options.OptionsState.pauseMenu = true;
-					MusicBeatState.switchState(new options.OptionsState());
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
-				case "Exit to menu":
-					PlayState.deathCounter = 0;
-					PlayState.seenCutscene = false;
-					PlayState.THISISFUCKINGDISGUSTINGPLEASESAVEME = false;
-					WeekData.loadTheFirstEnabledMod();
-					if (PlayState.isStoryMode)
-						MusicBeatState.switchState(new StoryMenuState());
-					else
-						MusicBeatState.switchState(new FreeplayState());
 
-					PlayState.cancelMusicFadeTween();
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
-					PlayState.changedDifficulty = false;
-					PlayState.chartingMode = false;
+					if (controls.UI_LEFT || controls.UI_RIGHT)
+					{
+						holdTime += elapsed;
+						if (holdTime > 0.5)
+						{
+							curTime += 45000 * elapsed * (controls.UI_LEFT ? -1 : 1);
+						}
+
+						if (curTime >= FlxG.sound.music.length)
+							curTime -= FlxG.sound.music.length;
+						else if (curTime < 0)
+							curTime += FlxG.sound.music.length;
+						updateSkipTimeText();
+					}
+			}
+
+			if (accepted && (cantUnpause <= 0 || !ClientPrefs.controllerMode))
+			{
+				if (menuItems[0] == difficultyChoices)
+				{
+					if (menuItems[0].length - 1 != curSelected && difficultyChoices.contains(daSelected))
+					{
+						var name:String = PlayState.SONG.song;
+						var poop = Highscore.formatSong(name, curSelected);
+						PlayState.SONG = Song.loadFromJson(poop, name);
+						PlayState.storyDifficulty = curSelected;
+						MusicBeatState.resetState();
+						FlxG.sound.music.volume = 0;
+						PlayState.changedDifficulty = true;
+						PlayState.chartingMode = false;
+						return;
+					}
+
+					menuItems[0] = menuItemsOG;
+					menuItems[1] = menuItemsShown;
+
+					regenMenu();
+				}
+
+				switch (daSelected)
+				{
+					case "Resume":
+						selectedSomethin = true;
+						close();
+					case 'Change Difficulty':
+						menuItems[0] = difficultyChoices;
+						menuItems[1] = difficultyChoices;
+						deleteSkipTimeText();
+						regenMenu();
+					case 'Toggle Practice Mode':
+						PlayState.instance.practiceMode = !PlayState.instance.practiceMode;
+						PlayState.changedDifficulty = true;
+						practiceText.visible = PlayState.instance.practiceMode;
+					case "Restart Song":
+						restartSong();
+					case "Leave Charting Mode":
+						restartSong();
+						PlayState.chartingMode = false;
+					case 'Skip Time':
+						if (curTime < Conductor.songPosition)
+						{
+							PlayState.startOnTime = curTime;
+							restartSong(true);
+						}
+						else
+						{
+							if (curTime != Conductor.songPosition)
+							{
+								PlayState.instance.clearNotesBefore(curTime);
+								PlayState.instance.setSongTime(curTime);
+							}
+							close();
+						}
+					case "End Song":
+						close();
+						PlayState.instance.finishSong(true);
+					case 'Toggle Botplay':
+						PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
+						PlayState.changedDifficulty = true;
+						PlayState.instance.gameHUD.botplayTxt.visible = PlayState.instance.cpuControlled;
+						PlayState.instance.gameHUD.scoreTxt.visible = !PlayState.instance.cpuControlled;
+						PlayState.instance.gameHUD.healthBarBG.visible = !PlayState.instance.cpuControlled;
+						PlayState.instance.gameHUD.healthBar.visible = !PlayState.instance.cpuControlled;
+						PlayState.instance.gameHUD.healthBarFG.visible = !PlayState.instance.cpuControlled;
+						PlayState.instance.gameHUD.iconP1.visible = !PlayState.instance.cpuControlled;
+						PlayState.instance.gameHUD.iconP2.visible = !PlayState.instance.cpuControlled;
+						PlayState.instance.gameHUD.scoreTxt.visible = !PlayState.instance.cpuControlled;
+						PlayState.instance.gameHUD.botplayTxt.alpha = 1;
+						PlayState.instance.gameHUD.botplaySine = 0;
+					case "Go to Options":
+						options.OptionsState.pauseMenu = true;
+						MusicBeatState.switchState(new options.OptionsState());
+						FlxG.sound.playMusic(Paths.music('freakyMenu'));
+					case "Exit to menu":
+						PlayState.deathCounter = 0;
+						PlayState.seenCutscene = false;
+						PlayState.THISISFUCKINGDISGUSTINGPLEASESAVEME = false;
+						WeekData.loadTheFirstEnabledMod();
+						if (PlayState.isStoryMode)
+							MusicBeatState.switchState(new StoryMenuState());
+						else
+							MusicBeatState.switchState(new FreeplayState());
+
+						PlayState.cancelMusicFadeTween();
+						FlxG.sound.playMusic(Paths.music('freakyMenu'));
+						PlayState.changedDifficulty = false;
+						PlayState.chartingMode = false;
+				}
 			}
 		}
 	}
@@ -360,8 +386,8 @@ class PauseSubState extends MusicBeatSubstate
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
 		if (curSelected < 0)
-			curSelected = menuItems.length - 1;
-		if (curSelected >= menuItems.length)
+			curSelected = menuItems[0].length - 1;
+		if (curSelected >= menuItems[0].length)
 			curSelected = 0;
 
 		var bullShit:Int = 0;
@@ -398,14 +424,14 @@ class PauseSubState extends MusicBeatSubstate
 			obj.destroy();
 		}
 
-		for (i in 0...menuItems.length)
+		for (i in 0...menuItems[0].length)
 		{
-			var item = new Alphabet(90, 320, menuItems[i], true);
+			var item = new Alphabet(90, 320, menuItems[1][i], true);
 			item.isMenuItem = true;
 			item.targetY = i;
 			grpMenuShit.add(item);
 
-			if (menuItems[i] == 'Skip Time')
+			if (menuItems[0][i] == 'Skip Time')
 			{
 				skipTimeText = new FlxText(0, 0, 0, '', 64);
 				skipTimeText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);

@@ -2,6 +2,7 @@ package;
 
 #if cpp
 import cpp.ConstCharStar;
+import cpp.UInt64;
 #end
 import flixel.FlxG;
 import flixel.FlxState;
@@ -10,7 +11,7 @@ import openfl.system.Capabilities;
 class InitLoader extends FlxState
 {
 	public static final Cpu:Bool = Capabilities.supports64BitProcesses; // too lazy for changing this
-	public static final Ram:Int = WindowsData.obtainRAM(); // cuz i cant put a cpp code with uncaughtErrorEvents
+	public static final Ram:UInt64 = WindowsData.obtainRAM(); // cuz i cant put a cpp code with uncaughtErrorEvents
 	public static var System(get, null):String = '';
 
 	static function get_System():String
@@ -37,30 +38,36 @@ class InitLoader extends FlxState
 	override public function create()
 	{
 		super.create();
+
 		#if cpp
 		WindowsData.enableVisualStyles();
 		WindowsData.setWindowColorMode(DARK);
+
+		trace('${Capabilities.screenResolutionX}, ${Capabilities.screenResolutionY}, ${Capabilities.screenDPI}');
+
 		lore.Colorblind.updateFilter();
 		checkSpecs(Cpu, Ram);
 		ClientPrefs.loadSettings(); // precache is disabled for testing
 		Locale.init();
-		/*if (FlxG.save.data.precache == null)
-			{
-				FlashingState.precachewarning = true;
-				FlxG.switchState(new FlashingState());
-			}
-			else
-			{
-				if (ClientPrefs.precache && !Cache.loaded)
-					FlxG.switchState(new Cache());
-				else */
+		/*
+				 #if (!debug && desktop) 
+			if (FlxG.save.data.precache == null)
+				{
+					FlashingState.precachewarning = true;
+					FlxG.switchState(new FlashingState());
+				}
+				else
+				{
+					if (ClientPrefs.precache && !Cache.loaded)
+						FlxG.switchState(new Cache());
+					else #end */
 		#end
 		FlxG.switchState(new TitleState());
-		// }
+		// #if (!debug && desktop)} #end
 	}
 
-	function checkSpecs(cpu:Bool, ram:Int)
-		if (!cpu && ram < 4096)
+	function checkSpecs(cpu:Bool, ram:UInt64)
+		if (!cpu && ram <= 4096)
 			messageBox("QT Fixes",
 				"Your PC does not meet the requirements Qt fixes has.\nWhile you can still play the mod, you may experience frame drops and/or lag spikes.\n\nDo you want to play anyway?");
 

@@ -1,5 +1,6 @@
 package;
 
+import codename.FlxFixedShader;
 
 class OverlayShader extends FlxFixedShader
 {

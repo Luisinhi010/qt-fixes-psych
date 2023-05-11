@@ -1,4 +1,4 @@
-package; // https://github.com/TheRetroSpecter/VsRetro-Psych-Public/blob/main/source/MemoryUtils.hx
+package; // https://github.com/YoshiCrafter29/CodenameEngine/blob/main/source/funkin/utils/MemoryUtil.hx
 
 #if cpp
 import cpp.vm.Gc;
@@ -9,9 +9,30 @@ import java.vm.Gc;
 #elseif neko
 import neko.vm.Gc;
 #end
+import openfl.system.System;
 
 class MemoryUtils
 {
+	public static var disableCount:Int = 0;
+
+	public static function askDisable()
+	{
+		disableCount++;
+		if (disableCount > 0)
+			disable();
+		else
+			enable();
+	}
+
+	public static function askEnable()
+	{
+		disableCount--;
+		if (disableCount > 0)
+			disable();
+		else
+			enable();
+	}
+
 	public static function clearMinor()
 	{
 		#if (cpp || java || neko)
@@ -50,9 +71,33 @@ class MemoryUtils
 		#if cpp
 		return Gc.memInfo64(Gc.MEM_INFO_USAGE);
 		#elseif sys
-		return System.totalMemory;
+		return cast(cast(System.totalMemory, UInt), Float);
 		#else
 		return 0;
+		#end
+	}
+
+	private static var _nb:Int = 0;
+	private static var _nbD:Int = 0;
+	private static var _zombie:Dynamic;
+
+	public static function destroyFlixelZombies()
+	{
+		#if cpp
+		// Gc.enterGCFreeZone();
+
+		while ((_zombie = Gc.getNextZombie()) != null)
+		{
+			_nb++;
+			if (_zombie is flixel.util.FlxDestroyUtil.IFlxDestroyable)
+			{
+				flixel.util.FlxDestroyUtil.destroy(cast(_zombie, flixel.util.FlxDestroyUtil.IFlxDestroyable));
+				_nbD++;
+			}
+		}
+		Sys.println('Zombies: ${_nb}; IFlxDestroyable Zombies: ${_nbD}');
+
+		// Gc.exitGCFreeZone();
 		#end
 	}
 }

@@ -8,7 +8,7 @@ class OverlaySprite extends FlxSprite
 {
 	public var usewindowscale(default, set):Bool = true;
 
-	function set_usewindowscale(value:Bool):Bool
+	public function set_usewindowscale(value:Bool):Bool
 	{
 		usewindowscale = value;
 		repos();
@@ -20,11 +20,12 @@ class OverlaySprite extends FlxSprite
 
 	public function new(image:String, ?library:String)
 	{
-		super(x, y);
-		if (image == null || !Paths.fileExists('images/' + image + '.png', IMAGE, false, library))
-			return;
-		loadGraphic(Paths.image(image, library));
-		create();
+		super();
+		if (image != null && Paths.fileExists('images/' + image + '.png', IMAGE, false, library))
+		{
+			loadGraphic(Paths.image(image, library));
+			create();
+		}
 	}
 
 	public function create()
@@ -39,13 +40,10 @@ class OverlaySprite extends FlxSprite
 		updateHitbox();
 		antialiasing = ClientPrefs.globalAntialiasing;
 
-		FlxG.signals.gameResized.add(function(w:Int, h:Int)
-		{
-			repos();
-		});
+		FlxG.signals.gameResized.add(repos);
 	}
 
-	public function repos()
+	public function repos(w:Int = 0, h:Int = 0)
 	{
 		var res:Array<Int> = [Application.current.window.width, Application.current.window.height];
 		if (!usewindowscale)

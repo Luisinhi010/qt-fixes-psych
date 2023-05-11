@@ -52,6 +52,8 @@ class ClientPrefs
 	public static var camZooms:Bool = true;
 	public static var noteOffset:Int = 0;
 	public static var arrowHSV:Array<Array<Int>> = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
+	public static var useRGB:Bool = true;
+	public static var arrowRGB:Array<Array<Int>> = [[194, 75, 153], [0, 255, 255], [18, 250, 5], [249, 57, 63]];
 	public static var ghostTapping:Bool = true;
 	public static var timeBar:Bool = true;
 	public static var timeBarUi:String = 'Qt Fixes';
@@ -102,8 +104,8 @@ class ClientPrefs
 		'note_down' => [S, DOWN],
 		'note_up' => [W, UP],
 		'note_right' => [D, RIGHT],
-		'qt_dodge' => [SPACE, NONE],
-		'qt_taunt' => [SHIFT, NONE],
+		'qt_dodge' => [SPACE, NUMPADZERO],
+		'qt_taunt' => [SHIFT, ALT],
 		'ui_left' => [A, LEFT],
 		'ui_down' => [S, DOWN],
 		'ui_up' => [W, UP],
@@ -176,6 +178,8 @@ class ClientPrefs
 		FlxG.save.data.camZooms = camZooms;
 		FlxG.save.data.noteOffset = noteOffset;
 		FlxG.save.data.arrowHSV = arrowHSV;
+		FlxG.save.data.useRGB = useRGB;
+		FlxG.save.data.arrowRGB = arrowRGB;
 		FlxG.save.data.ghostTapping = ghostTapping;
 		FlxG.save.data.timeBar = timeBar;
 		FlxG.save.data.timeBarUi = timeBarUi;
@@ -334,6 +338,12 @@ class ClientPrefs
 
 		if (FlxG.save.data.arrowHSV != null)
 			arrowHSV = FlxG.save.data.arrowHSV;
+
+		if (FlxG.save.data.useRGB != null)
+			useRGB = FlxG.save.data.useRGB;
+
+		if (FlxG.save.data.arrowRGB != null)
+			arrowRGB = FlxG.save.data.arrowRGB;
 
 		if (FlxG.save.data.ghostTapping != null)
 			ghostTapping = FlxG.save.data.ghostTapping;

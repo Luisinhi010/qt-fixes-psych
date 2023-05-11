@@ -17,7 +17,7 @@ import flixel.FlxCamera;
 import flixel.FlxBasic;
 import lime.app.Application;
 
-class MusicBeatState extends FlxUIState
+class MusicBeatState extends #if ZoroModchartingTools modcharting.ModchartMusicBeatState #else FlxUIState #end
 {
 	private var curSection:Int = 0;
 	private var stepsToDo:Int = 0;
@@ -41,26 +41,21 @@ class MusicBeatState extends FlxUIState
 	override function destroy()
 		super.destroy();
 
-	public static function updatewindowres(?width:Int, ?height:Int)
+	public static function updatewindowres(?width:Int, ?height:Int):Void
 	{
 		#if desktop
 		if (!FlxG.fullscreen)
 		{
-			var lastres:Array<Int> = [Application.current.window.width, Application.current.window.height];
-			var windowspos:Array<Int> = [Application.current.window.x, Application.current.window.y];
+			var lastRes:Array<Int> = [Application.current.window.width, Application.current.window.height];
+			var windowsPos:Array<Int> = [Application.current.window.x, Application.current.window.y];
 			var res:Array<Int> = [
-				Std.parseInt(ClientPrefs.screenRes.split('x')[0]),
-				Std.parseInt(ClientPrefs.screenRes.split('x')[1])
+				width != null ? width : Std.parseInt(ClientPrefs.screenRes.split('x')[0]),
+				height != null ? height : Std.parseInt(ClientPrefs.screenRes.split('x')[1])
 			];
-			if (width != null)
-				res[0] = width;
-			if (height != null)
-				res[1] = height;
 			FlxG.resizeWindow(res[0], res[1]);
-			Application.current.window.move(Std.int(windowspos[0] - (res[0] - lastres[0]) / 2), Std.int(windowspos[1] - (res[1] - lastres[1]) / 2));
+			Application.current.window.move(Std.int(windowsPos[0] - (res[0] - lastRes[0]) / 2), Std.int(windowsPos[1] - (res[1] - lastRes[1]) / 2));
 		}
 		#end
-		// this is the most stupid code i ever done -Luis
 	}
 
 	public static function updatescreenratio()
@@ -85,6 +80,9 @@ class MusicBeatState extends FlxUIState
 	{
 		camBeat = FlxG.camera;
 		var skip:Bool = FlxTransitionableState.skipNextTransOut;
+
+		var mousecursor:FlxSprite = new FlxSprite().loadGraphic(Paths.image('Default/cursor'));
+		FlxG.mouse.load(mousecursor.pixels);
 		super.create();
 
 		if (!skip)
@@ -173,19 +171,25 @@ class MusicBeatState extends FlxUIState
 		curStep = lastChange.stepTime + Math.floor(shit);
 	}
 
-	public static function switchStateStuff(nextState:FlxState) // yes, this is a mess. -Luis
+	public static function switchStateStuff()
 	{
 		updatescreenratio();
-		FlxG.cameras.bgColor = FlxColor.BLACK; // since someone called Luis decided to make the fucking playstate's bg dynamic on qt's stages, he needed to put this here.
+		FlxG.mouse.visible = false;
+		FlxG.cameras.bgColor = FlxColor.BLACK;
 		multAnims = false;
 		Main.fpsVar.setPosition(10, 3);
+		setwindowproperties();
+	}
+
+	private static function setwindowproperties()
+	{
 		Application.current.window.title = Main.gameTitle;
 		Application.current.window.setIcon(lime.utils.Assets.getImage('assets/art/iconOG.png'));
 	}
 
-	public static function justswitchState(nextState:FlxState) // without the custom transition
+	public static function justswitchState(nextState:FlxState)
 	{
-		switchStateStuff(nextState);
+		switchStateStuff();
 		FlxTransitionableState.skipNextTransIn = true;
 		FlxTransitionableState.skipNextTransOut = true;
 		if (nextState == FlxG.state)
@@ -195,35 +199,33 @@ class MusicBeatState extends FlxUIState
 		return nextState;
 	}
 
-	public static function switchState(nextState:FlxState)
+	public static function switchState(nextState:FlxState, transitionToState:Bool = true)
 	{
 		// Custom made Trans in
 		FlxTransitionableState.skipNextTransIn = false;
 		FlxTransitionableState.skipNextTransOut = false;
-		var curState:Dynamic = FlxG.state;
-		var leState:MusicBeatState = curState;
-		if (!FlxTransitionableState.skipNextTransIn)
+		if (transitionToState)
 		{
-			leState.openSubState(new CustomFadeTransition(0.6, false));
-			if (nextState == FlxG.state)
+			var curState:Dynamic = FlxG.state;
+			var leState:MusicBeatState = curState;
+			if (!FlxTransitionableState.skipNextTransIn)
 			{
+				leState.openSubState(new CustomFadeTransition(0.6, false));
 				CustomFadeTransition.finishCallback = function()
 				{
-					switchStateStuff(nextState);
-					FlxG.resetState();
+					switchStateStuff();
+					if (nextState == FlxG.state)
+						FlxG.resetState();
+					else
+						FlxG.switchState(nextState);
 				};
+				return;
 			}
-			else
-			{
-				CustomFadeTransition.finishCallback = function()
-				{
-					switchStateStuff(nextState);
-					FlxG.switchState(nextState);
-				};
-			}
-			return;
 		}
-		FlxG.switchState(nextState);
+		if (nextState == FlxG.state)
+			FlxG.resetState();
+		else
+			FlxG.switchState(nextState);
 	}
 
 	public static function resetState()

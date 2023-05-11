@@ -3,9 +3,6 @@ package options;
 #if desktop
 import Discord.DiscordClient;
 #end
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;

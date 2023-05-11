@@ -50,7 +50,7 @@ class LoadingState extends MusicBeatState
 		add(menuBG);
 
 		bar = new FlxBar(10, FlxG.height - 50, FlxBarFillDirection.HORIZONTAL_INSIDE_OUT, FlxG.width - 20, 40, this, 'targetShit', 0, 1);
-		bar.createFilledBar(FlxColor.BLACK, menuBG.coolColor, true);
+		bar.createFilledBar(FlxColor.BLACK, menuBG.coolColor);
 		bar.numDivisions = 800;
 		add(bar);
 

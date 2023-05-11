@@ -14,7 +14,7 @@ import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 #if MODS_ALLOWED
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 import sys.io.File;
 #end
 import lime.utils.Assets;
@@ -26,14 +26,14 @@ class CreditsState extends MusicBeatState
 	var curSelected:Int = -1;
 
 	private var grpOptions:FlxTypedGroup<Alphabet>;
-	private var iconArray:Array<AttachedSprite> = [];
+	private var iconArray:Array<AttachedFlxSprite> = [];
 	private var creditsStuff:Array<Array<String>> = [];
 
 	var bg:FlxSprite;
 	var descText:FlxText;
 	var intendedColor:Int;
 	var colorTween:FlxTween;
-	var descBox:AttachedSprite;
+	var descBox:AttachedFlxSprite;
 
 	var offsetThing:Float = -75;
 
@@ -287,7 +287,7 @@ class CreditsState extends MusicBeatState
 				if (creditsStuff[i][5] != null)
 					Paths.currentModDirectory = creditsStuff[i][5];
 
-				var icon:AttachedSprite = new AttachedSprite('credits/' + creditsStuff[i][1]);
+				var icon:AttachedFlxSprite = new AttachedFlxSprite('credits/' + creditsStuff[i][1]);
 				icon.xAdd = optionText.width + 10;
 				icon.height = 150;
 				icon.width = 150;
@@ -305,7 +305,7 @@ class CreditsState extends MusicBeatState
 				optionText.alignment = CENTERED;
 		}
 
-		descBox = new AttachedSprite();
+		descBox = new AttachedFlxSprite();
 		descBox.makeGraphic(1, 1, FlxColor.BLACK);
 		descBox.xAdd = -10;
 		descBox.yAdd = -10;

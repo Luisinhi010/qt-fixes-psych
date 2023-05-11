@@ -53,11 +53,13 @@ class DiscordClient
 	static function onError(_code:Int, _message:String)
 	{
 		trace('Error! $_code : $_message');
+		CoolUtil.windowsToast(null, 'Error! $_code : $_message');
 	}
 
 	static function onDisconnected(_code:Int, _message:String)
 	{
 		trace('Disconnected! $_code : $_message');
+		CoolUtil.windowsToast(null, 'Disconnected! $_code : $_message');
 	}
 
 	public static function initialize()
@@ -65,6 +67,7 @@ class DiscordClient
 		sys.thread.Thread.create(() ->
 		{
 			new DiscordClient();
+			CoolUtil.windowsToast(null, 'Discord Client initialized');
 		});
 		trace("Discord Client initialized");
 		isInitialized = true;

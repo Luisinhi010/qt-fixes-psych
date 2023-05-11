@@ -4,14 +4,17 @@ import flixel.FlxCamera;
 import flixel.graphics.frames.FlxFrame;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.util.FlxColor;
 import flixel.graphics.frames.FlxAtlasFrames;
 
 class NoteSplash extends FlxSprite
 {
 	public var colorSwap:ColorSwap = null;
+	public var colorMask:ColorMask = null;
 
 	private var idleAnim:String;
 	private var textureLoaded:String = null;
+	private var isPlayer:Bool = false;
 
 	public function new(x:Float = 0, y:Float = 0, ?note:Int = 0)
 	{
@@ -22,27 +25,35 @@ class NoteSplash extends FlxSprite
 		loadAnims(realtexture);
 
 		colorSwap = new ColorSwap();
-		shader = colorSwap.shader;
+		colorMask = new ColorMask();
 
 		setupNoteSplash(x, y, note);
 		antialiasing = ClientPrefs.globalAntialiasing;
 	}
 
-	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = 'noteSplashes', hueColor:Float = 0, satColor:Float = 0,
-			brtColor:Float = 0, ?isPlayer:Bool = false, thealpha:Float = 0.6)
+	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = 'noteSplashes', color:FlxColor = FlxColor.WHITE, hueColor:Float = 0,
+			satColor:Float = 0, brtColor:Float = 0, ?isPlayer:Bool = false, thealpha:Float = 0.6)
 	{
+		shader = null;
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 		alpha = thealpha;
+		this.isPlayer = isPlayer;
 
 		if (texture == null)
 			texture = 'noteSplashes';
 
 		if (textureLoaded != texture)
-			loadAnims(texture);
+			loadAnims(texture, true);
 
-		colorSwap.hue = hueColor;
-		colorSwap.saturation = satColor;
-		colorSwap.brightness = brtColor;
+		if (isPlayer)
+			if (ClientPrefs.useRGB)
+				colorMask.rCol = color;
+			else
+			{
+				colorSwap.hue = hueColor;
+				colorSwap.saturation = satColor;
+				colorSwap.brightness = brtColor;
+			}
 		offset.set(10, 10);
 
 		var animNum:Int = FlxG.random.int(1, 2);
@@ -51,13 +62,22 @@ class NoteSplash extends FlxSprite
 			animation.curAnim.frameRate = 24 + FlxG.random.int(-2, 2);
 	}
 
-	public function loadAnims(skin:String)
+	public function loadAnims(skin:String, reloadshaders:Bool = false)
 	{
 		var name:String = 'Splashes/' + skin;
 		if (!Paths.fileExists('images/' + name + '.png', IMAGE, false, 'shared'))
 			name = skin;
 		if (!Paths.fileExists('images/' + name + '.png', IMAGE, false, 'shared'))
 			name = 'Splashes/noteSplashes';
+
+		if (isPlayer && reloadshaders)
+			if (ClientPrefs.useRGB && skin == 'noteSplashes')
+			{
+				name = 'Splashes/noteSplashesRGB';
+				shader = colorMask.shader;
+			}
+			else
+				shader = colorSwap.shader;
 
 		frames = Paths.getSparrowAtlas(name, null, ClientPrefs.gpurendering);
 		for (i in 1...3)
@@ -76,32 +96,5 @@ class NoteSplash extends FlxSprite
 				kill();
 
 		super.update(elapsed);
-	}
-
-	@:noCompletion
-	override function drawComplex(camera:FlxCamera):Void
-	{
-		_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
-		_matrix.translate(-origin.x, -origin.y);
-		_matrix.scale(scale.x, scale.y);
-
-		if (bakedRotationAngle <= 0)
-		{
-			updateTrig();
-
-			if (angle != 0)
-				_matrix.rotateWithTrig(_cosAngle, _sinAngle);
-		}
-
-		_point.add(origin.x, origin.y);
-		_matrix.translate(_point.x, _point.y);
-
-		if (isPixelPerfectRender(camera))
-		{
-			_matrix.tx = Math.floor(_matrix.tx);
-			_matrix.ty = Math.floor(_matrix.ty);
-		}
-
-		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
 	}
 }

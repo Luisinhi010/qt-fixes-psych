@@ -27,7 +27,7 @@ package;
 #elseif linux
 @:headerCode("#include <stdio.h>")
 #end
-class WindowsData
+class WindowsData // majority of the stuff in here is from yoshi crafter29, hes so chad
 {
 	#if windows
 	@:functionCode("
@@ -150,12 +150,10 @@ class WindowsData
 
 		float a = alpha;
 
-		if (alpha > 1) {
+		if (alpha > 1) 
 			a = 1;
-		} 
-		if (alpha < 0) {
+		if (alpha < 0) 
 			a = 0;
-		}
 
        	SetLayeredWindowAttributes(window, 0, (255 * (a * 100)) / 100, LWA_ALPHA);
 

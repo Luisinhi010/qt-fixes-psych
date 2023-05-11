@@ -1,4 +1,3 @@
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
 import flixel.tweens.FlxEase;
@@ -6,6 +5,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
+import flixel.FlxG;
 
 using StringTools;
 
@@ -205,7 +205,8 @@ class AchievementObject extends FlxSpriteGroup
 		add(achievementText);
 		add(achievementIcon);
 
-		@:privateAccess var cam:Array<FlxCamera> = FlxG.cameras.defaults;
+		@:privateAccess
+		var cam:Array<FlxCamera> = FlxG.cameras.defaults;
 		if (camera != null)
 			cam = [camera];
 

@@ -13,8 +13,9 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.system.FlxSound;
 #if MODS_ALLOWED
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 #end
+
 using StringTools;
 
 class MasterEditorMenu extends MusicBeatState

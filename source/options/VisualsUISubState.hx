@@ -3,9 +3,6 @@ package options;
 #if desktop
 import Discord.DiscordClient;
 #end
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
@@ -40,7 +37,17 @@ class VisualsUISubState extends BaseOptionsMenu
 		option.onChange = Locale.init;
 
 		var option:Option = new Option(Locale.get("colorblindFiltervisualsUIText"), Locale.get("colorblindFiltervisualsUIDesc"), 'colorblindFilter', 'string',
-			'NONE', ['NONE', "DEUTERANOPIA", "PROTANOPIA", "TRITANOPIA" /*, "BLACK & WHITE"*/]);
+			'NONE', [
+				'NONE',
+				"DEUTERANOPIA",
+				"DEUTERANOMALY",
+				"PROTANOPIA",
+				"PROTANOMALY",
+				"TRITANOPIA",
+				"TRITANOMALY",
+				"BLACK & WHITE",
+				"INVERT"
+			]);
 		#if debug option.description += "\nCan use a lot of resources in debug mode depending on system configuration, so it's recommended to lower the FPS cap."; #end
 		option.onChange = lore.Colorblind.updateFilter;
 		addOption(option);

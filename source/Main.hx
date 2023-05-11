@@ -21,7 +21,7 @@ import flixel.FlxG;
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
 import haxe.io.Path;
-#if cpp import sys.FileSystem; #end
+#if sys import sys.FileSystem; #end
 import sys.io.Process;
 #end
 
@@ -32,7 +32,7 @@ class Main extends Sprite
 	var game = {
 		width: 1280, // WINDOW width
 		height: 720, // WINDOW height
-		initialState: #if (!debug && desktop) InitLoader #else TitleState #end, // initial game state
+		initialState: InitLoader, // initial game state
 		zoom: -1.0, // game state bounds
 		framerate: 60, // default framerate
 		skipSplash: true, // if the default flixel splash screen should be skipped
@@ -51,7 +51,7 @@ class Main extends Sprite
 
 	public static var fpsVar:FPS;
 
-	var flxGame:FlxGame;
+	var flxGame:codename.FunkinGame;
 
 	public static var __justcompiled:Bool = false; // useless but cool
 	public static var __curBuild:Int;
@@ -103,20 +103,18 @@ class Main extends Sprite
 
 		Application.current.window.title = gameTitle;
 		Application.current.window.setIcon(lime.utils.Assets.getImage('assets/art/iconOG.png'));
-		flxGame = new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate,
+		flxGame = new codename.FunkinGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate,
 			game.skipSplash, game.startFullscreen);
 		addChild(flxGame);
 
 		#if sys
-		if (Sys.args().contains("-livereload")) // yoshi please dont kill me
+		if (__justcompiled = Sys.args().contains("-livereload")) // yoshi please dont kill me
 		{
-			__justcompiled = true;
-
 			var buildNum:Int = Std.parseInt(File.getContent("./../../../../buildnumber.txt"));
 			buildNum++;
 			File.saveContent("./../../../../buildnumber.txt", Std.string(buildNum));
 			__curBuild = buildNum;
-			trace(__curBuild);
+			Sys.println('Build Number: $__curBuild');
 		}
 		#end
 		MusicBeatState.updatewindowres();
@@ -153,9 +151,8 @@ class Main extends Sprite
 			});
 		}
 		#end
-	}
+	} // Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
 
-	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
 	// very cool person for real they don't get enough credit for their work
 	#if CRASH_HANDLER
 	function onCrash(e:UncaughtErrorEvent):Void
@@ -194,16 +191,6 @@ class Main extends Sprite
 
 		Sys.println(errMsgPrint + '\n' + e.error);
 		Sys.println("Crash dump saved in " + Path.normalize(path));
-
-		/*var os:String = lime.system.System.platformLabel;
-			if (os.contains("Windows 8"))
-				FlxG.sound.play(Paths.sound('Windows8Background', 'preload'));
-			else if (os.contains("Windows 10"))
-				FlxG.sound.play(Paths.sound('Windows10Background', 'preload'));
-			else if (os.contains("Windows 11"))
-				FlxG.sound.play(Paths.sound('Windows11Background', 'preload'));
-			else
-				FlxG.sound.play(Paths.sound('cancelMenu')); */
 
 		Application.current.window.alert(errMsg, "Error!");
 		DiscordClient.shutdown();

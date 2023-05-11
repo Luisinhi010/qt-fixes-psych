@@ -2,7 +2,7 @@ package;
 
 #if MODS_ALLOWED
 import sys.io.File;
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 #else
 import openfl.utils.Assets;
 #end

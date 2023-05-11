@@ -11,7 +11,6 @@ var iconBG:FlxSprite;
 var icon:HealthIcon;
 var vignette1:OverlaySprite;
 var lastalpha:Float;
-var custommouse:CustomMouse;
 
 function postCreate()
 {
@@ -53,8 +52,8 @@ function postCreate()
 	fixesVersion.scrollFactor.set();
 	fixesVersion.setFormat(Paths.font("vcr.ttf"), 16, 0xFFFFFFFF, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
 	MainMenuState.add(fixesVersion);
-	custommouse = new CustomMouse(FlxG.mouse.x, FlxG.mouse.y);
-	MainMenuState.add(custommouse);
+	FlxG.mouse.visible = true;
+	FlxG.mouse.useSystemCursor = false;
 
 	if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 	{
@@ -123,7 +122,6 @@ function postCreate()
 	{
 		if (checker != null)
 			checker.color = iconBG.color;
-		custommouse.setcolor(iconBG.color);
 
 		lastalpha = vignette1.alpha;
 	}
@@ -134,7 +132,6 @@ function postcloseSubState()
 	if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 	{
 		vignette1.alpha = lastalpha;
-		custommouse.setcolor(iconBG.color);
 	}
 }
 /*function beatHit(curBeat)//testing other functions

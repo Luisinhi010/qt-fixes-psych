@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
+import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import flash.display.BitmapData;
 import editors.ChartingState;
@@ -21,6 +22,11 @@ typedef EventNote =
 
 class Note extends FlxSprite
 {
+	#if ZoroModchartingTools
+	public var mesh:flixel.FlxStrip = null;
+	public var z:Float = 0;
+	#end
+
 	public var extraData:Map<String, Dynamic> = [];
 
 	public var strumTime:Float = 0;
@@ -53,6 +59,7 @@ class Note extends FlxSprite
 	public var eventVal3:String = '';
 
 	public var colorSwap:ColorSwap;
+	public var colorMask:ColorMask;
 	public var inEditor:Bool = false;
 
 	public var animSuffix:String = '';
@@ -73,6 +80,7 @@ class Note extends FlxSprite
 	public var noteSplashHue:Float = 0;
 	public var noteSplashSat:Float = 0;
 	public var noteSplashBrt:Float = 0;
+	public var noteSplashColor:FlxColor = FlxColor.WHITE;
 
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;
@@ -135,11 +143,19 @@ class Note extends FlxSprite
 
 	private function set_noteType(value:String):String
 	{
-		if (isPlayer)
+		if (noteData > -1 && isPlayer)
 		{
-			colorSwap.hue = ClientPrefs.arrowHSV[noteData % 4][0] / 360;
-			colorSwap.saturation = ClientPrefs.arrowHSV[noteData % 4][1] / 100;
-			colorSwap.brightness = ClientPrefs.arrowHSV[noteData % 4][2] / 100;
+			if (ClientPrefs.useRGB && noteData < ClientPrefs.arrowRGB.length)
+			{
+				colorMask.rCol = FlxColor.fromRGB(ClientPrefs.arrowRGB[noteData][0], ClientPrefs.arrowRGB[noteData][1], ClientPrefs.arrowRGB[noteData][2]);
+				colorMask.gCol = colorMask.rCol.getDarkened(0.6);
+			}
+			else if (noteData < ClientPrefs.arrowHSV.length)
+			{
+				colorSwap.hue = ClientPrefs.arrowHSV[noteData][0] / 360;
+				colorSwap.saturation = ClientPrefs.arrowHSV[noteData][1] / 100;
+				colorSwap.brightness = ClientPrefs.arrowHSV[noteData][2] / 100;
+			}
 		}
 
 		if (noteData > -1 && noteType != value)
@@ -151,29 +167,21 @@ class Note extends FlxSprite
 					{
 						copyAlpha = false;
 						alpha = 0; // Makes them invisible.
-
-						if (isSustainNote)
-							missHealth = 0.05;
-						else
-							missHealth = 0.15;
+						missHealth = isSustainNote ? 0.05 : 0.15;
 					}
 					else
+					{
+						missHealth = isSustainNote ? 0.1 : 0.3;
 						copyHurtNoteAlpha = true;
+					}
 					ignoreNote = mustPress;
 					reloadNote('', 'HURTNOTE_assets');
 					haveCustomTexture = true;
-					copyAngle = false;
 					noteSplashTexture = 'HURTnoteSplashes';
 					colorSwap.hue = 0;
 					colorSwap.saturation = 0;
 					colorSwap.brightness = 0;
 					lowPriority = true;
-
-					if (isSustainNote)
-						missHealth = 0.1;
-					else
-						missHealth = 0.3;
-
 					hitCausesMiss = true;
 				case 'Alt Animation':
 					animSuffix = '-alt';
@@ -209,6 +217,8 @@ class Note extends FlxSprite
 			noteSplashHue = colorSwap.hue;
 			noteSplashSat = colorSwap.saturation;
 			noteSplashBrt = colorSwap.brightness;
+
+			noteSplashColor = colorMask.rCol;
 		}
 		else
 		{
@@ -249,8 +259,9 @@ class Note extends FlxSprite
 			texture = skinnote;
 
 			colorSwap = new ColorSwap();
-			if (isPlayer)
-				shader = colorSwap.shader;
+			colorMask = new ColorMask();
+			if (isPlayer && !inEditor)
+				shader = ClientPrefs.useRGB ? colorMask.shader : colorSwap.shader;
 
 			x += swagWidth * (noteData);
 			if ((!isSustainNote && !isFakeSustainNote) && noteData > -1 && noteData < 4)
@@ -309,6 +320,8 @@ class Note extends FlxSprite
 
 	function reloadNote(?prefix:String = '', ?texture:String = '', ?suffix:String = '')
 	{
+		if (ClientPrefs.useRGB && isPlayer && !inEditor)
+			shader = null;
 		if (prefix == null)
 			prefix = '';
 		if (texture == null)
@@ -338,6 +351,8 @@ class Note extends FlxSprite
 			name = blahblah;
 		if (!Paths.fileExists('images/' + name + '.png', IMAGE, false, 'shared'))
 			name = 'Notes/NOTE_assets';
+		if (ClientPrefs.useRGB && isPlayer && !inEditor && blahblah == 'NOTE_assets')
+			name = skin = 'Notes/NOTE_assets_RGB';
 
 		frames = Paths.getSparrowAtlas(name, null, ClientPrefs.gpurendering);
 		loadNoteAnims();
@@ -346,16 +361,15 @@ class Note extends FlxSprite
 		if (isSustainNote || isFakeSustainNote)
 			scale.y = lastScaleY;
 
-		updateHitbox();
+		// updateHitbox();
 
 		if (animName != null)
 			animation.play(animName, true);
 
 		if (inEditor)
-		{
 			setGraphicSize(ChartingState.GRID_SIZE, ChartingState.GRID_SIZE);
-			updateHitbox();
-		}
+
+		updateHitbox();
 	}
 
 	function loadNoteAnims()
@@ -399,5 +413,16 @@ class Note extends FlxSprite
 			if (alpha > 0.3)
 				alpha = 0.3;
 		}
+	}
+
+	@:noCompletion
+	override function set_clipRect(rect:FlxRect):FlxRect
+	{
+		clipRect = rect;
+
+		if (frames != null)
+			frame = frames.frames[animation.frameIndex];
+
+		return rect;
 	}
 }

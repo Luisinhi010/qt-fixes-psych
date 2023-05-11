@@ -1,6 +1,6 @@
 package hud;
 
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
 import flixel.FlxBasic;
 import flixel.graphics.frames.FlxFrame;
 import flixel.text.FlxText;
@@ -11,27 +11,36 @@ import flixel.util.FlxColor;
 import lime.app.Application;
 
 using StringTools;
+using lore.FlxSpriteTools;
 
-class KbAttackAlert extends FlxTypedGroup<FlxBasic>
+class KbAttackAlert extends FlxGroup
 {
 	public var alert:FlxSprite;
 	public var tipTxt:FlxText;
 	public var newalert:Bool = false;
-	public var lastPlayedAnim:String; // may be usefull
 	public var multiplier:Float = 1;
+	public var colorMask:ColorMask;
+	public var color(default, set):FlxColor = FlxColor.RED;
 
 	var alertAdded:Bool = false;
+	var dodgeWarning:String = Locale.get("dodgeWarningHudText");
+
+	function set_color(value:FlxColor):FlxColor
+	{
+		tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(value), "$")]);
+		return colorMask.rCol = color = value;
+	}
 
 	public var alpha(default, set):Float = 1;
 
-	function set_alpha(value:Float):Float
+	@:noCompletion function set_alpha(value:Float):Float
 	{
 		alpha = value;
 		if (alertAdded)
 		{
-			if (newalert && alert != null && alert.visible)
+			if (newalert && alert != null)
 				alert.alpha = alpha;
-			if (tipTxt != null && tipTxt.visible)
+			if (tipTxt != null)
 				tipTxt.alpha = alpha;
 		}
 
@@ -40,7 +49,7 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 
 	public var x(default, set):Float = 0;
 
-	function set_x(value:Float):Float
+	@:noCompletion function set_x(value:Float):Float
 	{
 		x = value;
 		if (alertAdded)
@@ -54,7 +63,7 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 
 	public var y(default, set):Float = 0;
 
-	function set_y(value:Float):Float
+	@:noCompletion function set_y(value:Float):Float
 	{
 		y = value;
 		if (alertAdded)
@@ -64,6 +73,54 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 		}
 
 		return y;
+	}
+
+	@:noCompletion override function set_visible(value:Bool):Bool
+	{
+		visible = value;
+		if (alertAdded)
+		{
+			alert.visible = value;
+			tipTxt.visible = value;
+		}
+
+		return visible;
+	}
+
+	@:noCompletion override function set_active(value:Bool):Bool
+	{
+		active = value;
+		if (alertAdded)
+		{
+			alert.active = value;
+			tipTxt.active = value;
+		}
+
+		return active = value;
+	}
+
+	@:noCompletion override function set_exists(value:Bool):Bool
+	{
+		exists = value;
+		if (alertAdded)
+		{
+			alert.exists = value;
+			tipTxt.exists = value;
+		}
+
+		return exists;
+	}
+
+	@:noCompletion override function set_alive(value:Bool):Bool
+	{
+		alive = value;
+		if (alertAdded)
+		{
+			alert.alive = value;
+			tipTxt.alive = value;
+		}
+
+		return alive;
 	}
 
 	private var pos:Array<Float> = [];
@@ -79,6 +136,7 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 		// Alert!
 		if (!alertAdded)
 		{
+			colorMask = new ColorMask();
 			alert = new FlxSprite();
 			alert.frames = Paths.getSparrowAtlas('hazard/qt-port/attack_alert_NEW', 'shared', ClientPrefs.gpurendering);
 			alert.antialiasing = ClientPrefs.globalAntialiasing;
@@ -117,21 +175,19 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 				alert.x -= alert.width / (PlayState.instance.forceMiddleScroll ? 2 : 3);
 			alert.y = 205 + (ClientPrefs.downScroll ? 20 : 0);
 			alert.moves = false;
-			alert.visible = false;
 			add(alert);
+			alert.shader = colorMask.shader;
 
-			var dodgeWarning:String = Locale.get("dodgeWarningHud").replace("%qt_dodge", ClientPrefs.getkeys('qt_dodge'));
 			tipTxt = new FlxText(0, ClientPrefs.downScroll ? alert.y - 66 : alert.y + alert.height + 36, 0, dodgeWarning, 26);
 			tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
 			tipTxt.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			tipTxt.antialiasing = ClientPrefs.globalAntialiasing;
 			tipTxt.borderSize = 1.1;
-			tipTxt.screenCenter(X);
-			if (PlayState.instance.forceMiddleScroll || !ClientPrefs.opponentStrums)
-				tipTxt.x -= tipTxt.width / (PlayState.instance.forceMiddleScroll ? 2 : 3);
+			tipTxt.centerOnSprite(alert, X);
+			tipTxt.x -= tipTxt.width / 4;
 			tipTxt.moves = false;
-			tipTxt.visible = false;
 			add(tipTxt);
+			// tipTxt.shader = colorMask.shader;
 
 			for (i in [alert.x, alert.y, tipTxt.x, tipTxt.y])
 				pos.push(i);
@@ -145,9 +201,6 @@ class KbAttackAlert extends FlxTypedGroup<FlxBasic>
 	{
 		if (alertAdded)
 		{
-			alert.visible = true;
-			tipTxt.visible = true;
-			lastPlayedAnim = Anim;
 			alert.animation.play(Anim, true);
 			switch (Anim)
 			{

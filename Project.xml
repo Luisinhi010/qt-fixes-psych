@@ -16,6 +16,12 @@
 	<!--Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2-->
 	<set name="SWF_VERSION" value="11.8" />
 
+	<haxedef name="FLX_NO_MOUSE" if="mobile" />
+	<haxedef name="FLX_NO_KEYBOARD" if="mobile" />
+	<haxedef name="FLX_NO_TOUCH" if="web || windows"/>
+	<haxedef name="FLX_NO_GAMEPAD" if="web"/>
+	
+
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
@@ -43,14 +49,16 @@
 	<define name="LUA_ALLOWED" if="desktop"/>
 	<define name="ACHIEVEMENTS_ALLOWED" />
 	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32bits || HXCPP_M32"/>
+	<define name="PSYCH_WATERMARKS"/>
 	<!-- DELETE THIS TO REMOVE WATERMARKS/DEV NAMES ON TITLE SCREEN -->
 	<define name="CRASH_HANDLER" if="desktop release" />
 	<define name="HAXE_EXTENSION" unless="web" />
 
 	<!-- Qt Fixes Customization -->
 	<!-- <define name="INGAME_HAXESCRIPTS" if="HAXE_EXTENSION"/>-->
+	<!--<define name="ZoroModchartingTools"/>-->
 
-	<assets path="mobile" rename="assets/mobile" if="mobile" />
+	<!--<assets path="mobile" rename="assets/mobile" if="mobile" />-->
 	<!-- in order to not have the mobile assets in another builds -saw -->
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
@@ -104,6 +112,10 @@
 	<haxelib name="hscript" />
 	<define name="hscriptPos" />
 	<haxelib name="SScript" if="HAXE_EXTENSION" />
+
+	<!--Set this to the engine you're using!-->
+	<define name="PSYCH" if="ZoroModchartingTools"  />
+	<haxelib name="fnf-modcharting-tools" if="ZoroModchartingTools" />
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />

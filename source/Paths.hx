@@ -1,21 +1,16 @@
 package;
 
-import animateatlas.AtlasFrameMaker;
-import flixel.math.FlxPoint;
-import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
-import openfl.geom.Rectangle;
-import flixel.math.FlxRect;
-import haxe.xml.Access;
-import openfl.system.System;
+import openfl.geom.Point;
+import openfl.filters.BlurFilter;
+import openfl.geom.Matrix;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
 import lime.utils.Assets;
-import flixel.FlxSprite;
 #if sys
 import sys.io.File;
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 #end
 import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
@@ -432,6 +427,7 @@ class Paths
 				{
 					trace('texture to $path');
 					var newBitmap:BitmapData = OpenFlAssets.getBitmapData(path);
+					// newBitmap = reduceBitmapDataQuality(newBitmap);
 					var texture:RectangleTexture = FlxG.stage.context3D.createRectangleTexture(newBitmap.width, newBitmap.height, BGRA, true);
 					texture.uploadFromBitmapData(newBitmap);
 					currentTrackedTextures.set(key, texture);
@@ -453,6 +449,26 @@ class Paths
 		}
 		trace('oh no $key is returning null NOOOO');
 		return null;
+	}
+
+	public static function reduceBitmapDataQuality(source:BitmapData, applyblur:Bool = true, by:Int = 2):BitmapData
+	{
+		var halfby:Float = 1 / by;
+		var halfWidth:Int = Math.ceil(source.width / by);
+		var halfHeight:Int = Math.ceil(source.height / by);
+		var reducedBitmapData:BitmapData = new BitmapData(halfWidth, halfHeight, true, 0);
+		var matrix:Matrix = new Matrix();
+		matrix.scale(halfby, halfby);
+		reducedBitmapData.draw(source, matrix, null, null, null, true);
+		matrix.identity();
+		matrix.scale(by, by);
+		if (applyblur)
+			reducedBitmapData.applyFilter(reducedBitmapData, reducedBitmapData.rect, new Point(), new BlurFilter(by / 2, by / 2, Std.int(by / 2)));
+		var resultBitmapData:BitmapData = new BitmapData(source.width, source.height, true, 0);
+		var resultMatrix:Matrix = new Matrix();
+		resultMatrix.scale(by, by);
+		resultBitmapData.draw(reducedBitmapData, resultMatrix, null, null, null, true);
+		return resultBitmapData;
 	}
 
 	public static var currentTrackedSounds:Map<String, Sound> = [];

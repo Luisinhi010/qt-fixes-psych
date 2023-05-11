@@ -1,6 +1,6 @@
 package;
 
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 import flixel.util.FlxTimer;
 import flixel.addons.display.FlxBackdrop;
 #if desktop
@@ -294,7 +294,6 @@ class MainMenuState extends MusicBeatState
 			menuScript.callFunc('postOptionSetup', [i]);
 		}
 
-		FlxG.mouse.visible = FlxG.mouse.useSystemCursor = true;
 		FlxG.camera.follow(camFollowPos, null, 1);
 
 		versionShit = new FlxText(12, FlxG.height - 44, 0, "Psych Engine v" + psychEngineVersion, 12);

@@ -1,8 +1,8 @@
 package;
 
 import flixel.FlxG;
+import flixel.util.FlxColor;
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
 
 using StringTools;
 
@@ -11,6 +11,7 @@ class StrumNote extends FlxSprite
 	private var dirArray:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
 
 	private var colorSwap:ColorSwap;
+	private var colorMask:ColorMask;
 
 	public var resetAnim:Float = 0;
 
@@ -39,9 +40,7 @@ class StrumNote extends FlxSprite
 	public function new(x:Float, y:Float, leData:Int, player:Int, ?skinnote:String = 'NOTE_assets')
 	{
 		colorSwap = new ColorSwap();
-		if (player > 0)
-			shader = colorSwap.shader;
-		noteData = leData;
+		colorMask = new ColorMask();
 		this.player = player;
 		this.noteData = leData;
 		super(x, y);
@@ -63,6 +62,14 @@ class StrumNote extends FlxSprite
 			name = texture;
 		if (!Paths.fileExists('images/' + name + '.png', IMAGE, false, 'shared'))
 			name = 'Notes/NOTE_assets';
+		if (player > 0)
+			if (ClientPrefs.useRGB && texture == 'NOTE_assets')
+			{
+				name = 'Notes/NOTE_assets_RGB';
+				shader = colorMask.shader;
+			}
+			else
+				shader = colorSwap.shader;
 
 		frames = Paths.getSparrowAtlas(name, null, ClientPrefs.gpurendering);
 		animation.addByPrefix('green', 'arrowUP');
@@ -118,21 +125,36 @@ class StrumNote extends FlxSprite
 		animation.play(anim, force);
 		centerOffsets();
 		centerOrigin();
-		if (animation.curAnim == null || animation.curAnim.name == 'static' || animation.curAnim.name == 'kbconfirm')
+		if (player > 0 && animation.curAnim == null || animation.curAnim.name == 'static' || animation.curAnim.name == 'kbconfirm')
 		{
 			colorSwap.hue = 0;
 			colorSwap.saturation = 0;
 			colorSwap.brightness = 0;
+			colorMask.rCol = 0xFF87A3AD;
+			colorMask.gCol = FlxColor.BLACK;
 		}
 		else
 		{
-			if (player > 0 && (noteData > -1 && noteData < ClientPrefs.arrowHSV.length))
+			if (noteData > -1 && player > 0)
 			{
-				colorSwap.hue = ClientPrefs.arrowHSV[noteData][0] / 360;
-				colorSwap.saturation = ClientPrefs.arrowHSV[noteData][1] / 100;
-				colorSwap.brightness = ClientPrefs.arrowHSV[noteData][2] / 100;
+				if (ClientPrefs.useRGB && noteData < ClientPrefs.arrowRGB.length)
+				{
+					colorMask.rCol = FlxColor.fromRGB(ClientPrefs.arrowRGB[noteData][0], ClientPrefs.arrowRGB[noteData][1], ClientPrefs.arrowRGB[noteData][2]);
+					colorMask.gCol = colorMask.rCol.getDarkened(0.6);
+					if (animation.curAnim.name == 'pressed')
+					{
+						var color:FlxColor = colorMask.rCol;
+						colorMask.rCol = FlxColor.fromHSL(color.hue, color.saturation * 0.5, color.lightness * 1.2);
+						colorMask.gCol = 0xFF201E31;
+					}
+				}
+				else if (noteData < ClientPrefs.arrowHSV.length)
+				{
+					colorSwap.hue = ClientPrefs.arrowHSV[noteData][0] / 360;
+					colorSwap.saturation = ClientPrefs.arrowHSV[noteData][1] / 100;
+					colorSwap.brightness = ClientPrefs.arrowHSV[noteData][2] / 100;
+				}
 			}
-
 			if (animation.curAnim.name == 'confirm' || animation.curAnim.name == 'kbconfirm')
 				centerOrigin();
 		}

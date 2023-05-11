@@ -28,9 +28,6 @@ class FlxTimer implements IFlxDestroyable
 	 */
 	public var time:Float = 0;
 
-	public var timestarted:Float = 0;
-	public var multiplyed:Float = 0;
-
 	/**
 	 * How many loops the timer was set for. 0 means "looping forever".
 	 */
@@ -89,6 +86,10 @@ class FlxTimer implements IFlxDestroyable
 
 	var _inManager:Bool = false;
 
+	public static var globalSpeed:Float = 1; // taken from FlxAnimationController :kbge:
+
+	public var followGlobalSpeed:Bool = true;
+
 	/**
 	 * Creates a new timer.
 	 */
@@ -115,10 +116,8 @@ class FlxTimer implements IFlxDestroyable
 	 * @param	Loops		How many times the timer should go off. 0 means "looping forever".
 	 * @return	A reference to itself (handy for chaining or whatever).
 	 */
-	public function start(Time:Float = 1, ?OnComplete:FlxTimer->Void, Loops:Int = 1, ?applyPlayback:Bool = true):FlxTimer
+	public function start(Time:Float = 1, ?OnComplete:FlxTimer->Void, Loops:Int = 1):FlxTimer
 	{
-		var Realtime:Float = MusicBeatState.multAnims && applyPlayback ? Time / PlayState.instance.playbackRate : Time;
-		multiplyed = MusicBeatState.multAnims ? PlayState.instance.playbackRate : 1;
 		if (manager != null && !_inManager)
 		{
 			manager.add(this);
@@ -127,8 +126,7 @@ class FlxTimer implements IFlxDestroyable
 
 		active = true;
 		finished = false;
-		time = Math.abs(Realtime);
-		timestarted = time;
+		time = Math.abs(Time);
 
 		if (Loops < 0)
 			Loops *= -1;
@@ -147,11 +145,10 @@ class FlxTimer implements IFlxDestroyable
 	 */
 	public function reset(NewTime:Float = -1):FlxTimer
 	{
-		var Realtime:Float = MusicBeatState.multAnims ? NewTime / PlayState.instance.playbackRate : NewTime;
-		if (Realtime < 0)
-			Realtime = time;
+		if (NewTime < 0)
+			NewTime = time;
 
-		start(Realtime, onComplete, loops);
+		start(NewTime, onComplete, loops);
 		return this;
 	}
 
@@ -178,7 +175,10 @@ class FlxTimer implements IFlxDestroyable
 	 */
 	public function update(elapsed:Float):Void
 	{
-		_timeCounter += elapsed;
+		var e:Float = elapsed;
+		if (followGlobalSpeed)
+			e *= globalSpeed;
+		_timeCounter += e;
 
 		while ((_timeCounter >= time) && active && !finished)
 		{
@@ -267,13 +267,16 @@ class FlxTimerManager extends FlxBasic
 	override public function update(elapsed:Float):Void
 	{
 		var loopedTimers:Array<FlxTimer> = null;
+		var e:Float = elapsed;
+		/*if (followGlobalSpeed)
+			e *= globalSpeed; */
 
 		for (timer in _timers)
 		{
 			if (timer.active && !timer.finished && timer.time >= 0)
 			{
 				var timerLoops:Int = timer.elapsedLoops;
-				timer.update(elapsed);
+				timer.update(e);
 
 				if (timerLoops != timer.elapsedLoops)
 				{

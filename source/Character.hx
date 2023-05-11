@@ -92,7 +92,7 @@ class Character extends FlxSprite
 
 	public var multiplier:Float = 1;
 
-	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false)
+	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false, ?library:String)
 	{
 		super(x, y);
 
@@ -106,7 +106,6 @@ class Character extends FlxSprite
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 		antialiasing = ClientPrefs.globalAntialiasing;
-		var library:String = null;
 		switch (curCharacter)
 		{
 			// case 'your character name in case you want to hardcode them instead':
@@ -142,14 +141,14 @@ class Character extends FlxSprite
 				// texture
 				#if MODS_ALLOWED
 				var modTxtToFind:String = Paths.modsTxt(json.image);
-				var txtToFind:String = Paths.getPath('images/' + json.image + '.txt', TEXT);
+				var txtToFind:String = Paths.getPath('images/' + json.image + '.txt', TEXT, library);
 
 				// var modTextureToFind:String = Paths.modFolders("images/"+json.image);
 				// var textureToFind:String = Paths.getPath('images/' + json.image, new AssetType();
 
 				if (FileSystem.exists(modTxtToFind) || FileSystem.exists(txtToFind) || Assets.exists(txtToFind))
 				#else
-				if (Assets.exists(Paths.getPath('images/' + json.image + '.txt', TEXT)))
+				if (Assets.exists(Paths.getPath('images/' + json.image + '.txt', TEXT, library)))
 				#end
 				{
 					spriteType = "packer";
@@ -157,11 +156,11 @@ class Character extends FlxSprite
 
 				#if MODS_ALLOWED
 				var modAnimToFind:String = Paths.modFolders('images/' + json.image + '/Animation.json');
-				var animToFind:String = Paths.getPath('images/' + json.image + '/Animation.json', TEXT);
+				var animToFind:String = Paths.getPath('images/' + json.image + '/Animation.json', TEXT, library);
 
 				if (FileSystem.exists(modAnimToFind) || FileSystem.exists(animToFind) || Assets.exists(animToFind))
 				#else
-				if (Assets.exists(Paths.getPath('images/' + json.image + '/Animation.json', TEXT)))
+				if (Assets.exists(Paths.getPath('images/' + json.image + '/Animation.json', TEXT, library)))
 				#end
 				{
 					spriteType = "texture";
@@ -261,7 +260,8 @@ class Character extends FlxSprite
 		recalculateDanceIdle();
 		dance();
 
-		shader = blueshader.shader;
+		if (ClientPrefs.charactershaders)
+			shader = blueshader.shader;
 
 		if (isPlayer)
 			flipX = !flipX;

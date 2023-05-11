@@ -20,6 +20,7 @@ import openfl.display.GraphicsShader;
 import openfl.filters.ShaderFilter;
 import Discord.DiscordClient as Discord;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
+import codename.FlxFixedShader;
 import sys.io.File;
 
 using StringTools;
@@ -110,6 +111,8 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyabl
 		set('InputFormatter', InputFormatter);
 		set('Cache', Cache);
 		set('FogThing', FogThing);
+		set('ColorMask', ColorMask);
+		set('AttachedFlxText', AttachedFlxText);
 
 		// CLASSES (Lore engine):
 		set('Locale', Locale);
@@ -118,7 +121,9 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyabl
 		// CLASSES (BASE);
 		set('BGSprite', BGSprite);
 		set('HealthIcon', HealthIcon);
-		set('AttachedSprite', AttachedSprite);
+		set('MusicBeatState', MusicBeatState);
+		set('MusicBeatSubstate', MusicBeatSubstate);
+		set('AttachedFlxSprite', AttachedFlxSprite);
 		set('AttachedText', AttachedText);
 		set('Discord', Discord);
 		set('Alphabet', Alphabet);
@@ -136,6 +141,7 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyabl
 		set('FunkinLua', FunkinLua);
 		set('Achievements', Achievements);
 		set('ClientPrefs', ClientPrefs);
+		set('ColorSwap', ColorSwap);
 		set("trace", traace);
 
 		set('getVarFromClass', function(instance:String, variable:String)

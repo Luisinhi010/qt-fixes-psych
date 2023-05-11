@@ -13,7 +13,7 @@ import flixel.text.FlxText.FlxTextAlign;
 import flixel.tweens.FlxTween.FlxTweenType;
 #if sys
 import sys.io.File;
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 #else
 import openfl.utils.Assets;
 #end
@@ -24,27 +24,29 @@ class CoolUtil
 {
 	public static final defaultDifficulties:Array<String> = ['Easy', 'Normal', 'Hard', 'Harder'];
 	public static final defaultDifficulty:String = 'Normal'; // The chart that has no suffix and starting difficulty on Freeplay/Story Mode
-
 	public static var difficulties:Array<String> = [];
+	public static var lowerDifficulties(get, null):Array<String>;
 
-	inline public static function quantize(f:Float, snap:Float)
+	static function get_lowerDifficulties():Array<String>
 	{
-		// changed so this actually works lol
-		var m:Float = Math.fround(f * snap);
-		return (m / snap);
+		var copy:Array<String> = [];
+		for (v in difficulties)
+			copy.push(v.toLowerCase());
+		return copy;
 	}
 
-	public static function getDifficultyFilePath(num:Null<Int> = null)
+	inline public static function quantize(f:Float, snap:Float):Float
+		return Math.fround(f * snap) / snap; // changed so this actually works lol
+
+	public static function getDifficultyFilePath(num:Null<Int> = null):String
 	{
 		if (num == null)
 			num = PlayState.storyDifficulty;
-
 		var fileSuffix:String = difficulties[num];
 		if (fileSuffix != defaultDifficulty)
 			fileSuffix = '-' + fileSuffix;
 		else
 			fileSuffix = '';
-
 		return Paths.formatToSongPath(fileSuffix);
 	}
 
@@ -58,17 +60,15 @@ class CoolUtil
 		// ported to psych 0.6.3 cuz yes
 		if (PlayState.SONG != null && PlayState.THISISFUCKINGDISGUSTINGPLEASESAVEME)
 		{
-			if (PlayState.SONG.song.toLowerCase() == "termination")
+			switch (PlayState.SONG.song.toLowerCase())
 			{
-				if (PlayState.storyDifficulty == 2)
-					dumbShit = "CLASSIC";
-				else
-					dumbShit = "VERY HARD";
+				case "termination":
+					dumbShit = (PlayState.storyDifficulty == 2 ? "CLASSIC" : "VERY HARD");
+				case "cessation":
+					dumbShit = "FUTURE";
+				case "interlope":
+					dumbShit = "???";
 			}
-			else if (PlayState.SONG.song.toLowerCase() == "cessation")
-				dumbShit = "FUTURE";
-			else if (PlayState.SONG.song.toLowerCase() == "interlope")
-				dumbShit = "???";
 		}
 		return dumbShit;
 	}
@@ -178,9 +178,6 @@ class CoolUtil
 			+ FlxSave.validate(FlxG.stage.application.meta.get('file')) #end;
 	}
 
-	public static inline function exactSetGraphicSize(obj:Dynamic, width:Float, height:Float)
-		obj.scale.set(Math.abs(((obj.width - width) / obj.width) - 1), Math.abs(((obj.height - height) / obj.height) - 1));
-
 	public static function returnTweenType(?type:String = ''):FlxTweenType
 	{
 		switch (type.toLowerCase())
@@ -201,7 +198,7 @@ class CoolUtil
 
 	public static function returnBlendMode(str:String):BlendMode
 	{
-		return switch (str)
+		return switch (str.toLowerCase())
 		{
 			case "normal": BlendMode.NORMAL;
 			case "darken": BlendMode.DARKEN;
@@ -220,7 +217,7 @@ class CoolUtil
 
 	public static function setTextAlign(str:String):FlxTextAlign
 	{
-		return switch (str)
+		return switch (str.toLowerCase())
 		{
 			case "center": FlxTextAlign.CENTER;
 			case "justify": FlxTextAlign.JUSTIFY;
@@ -321,33 +318,95 @@ class CoolUtil
 		return false;
 	}
 
-	/*public static function getGitCommitHash() // BeastlyGhost said to me to put this here. -Luis
-		{
-			#if sys
-			var process:sys.io.Process = new sys.io.Process('git', ['rev-parse', 'HEAD']);
-
-			var commitHash:String;
-
-			try // read the output of the process
-			{
-				commitHash = process.stdout.readLine();
-			}
-			catch (e) // leave it as blank in the event of an error
-			{
-				commitHash = '';
-			}
-			var trimmedCommitHash:String = commitHash.substr(0, 7);
-
-			// Generates a string expression
-			return trimmedCommitHash;
-			#end
-			return '';
-	}*/
 	public static function getFramerate(Int:Int, multiply:Bool = false)
 	{
 		var frame:Int = Int;
 		if (MusicBeatState.multAnims)
 			frame = multiply ? Std.int(Int * PlayState.instance.playbackRate) : Std.int(Int / PlayState.instance.playbackRate);
 		return frame;
+	}
+
+	public static function mashIntoOneLine(a:Array<String>):String
+		return a.join('');
+
+	public static function windowsToast(title:String = null,
+			text:String = null) // from https://github.com/tposejank/FNF-PsychEngine/blob/jankengine-dev/source/CoolUtil.hx
+	{
+		#if windows
+		if (title == null)
+			title = openfl.Lib.application.meta["name"];
+		if (text == null)
+			text = "Notification";
+
+		var prohibitSymbols:Array<String> = ["'"];
+
+		var commands:Array<String> = [
+			"powershell -Command \"",
+			"$ErrorActionPreference = 'Stop';",
+			"$notificationTitle = '",
+			deleteSpecialSymbols(text, prohibitSymbols),
+			"';",
+			"[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] > $null;",
+			"$template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText01);",
+			"$toastXml = [xml]",
+			"$template.GetXml();",
+			"$toastXml.GetElementsByTagName('text').AppendChild($toastXml.CreateTextNode($notificationTitle)) > $null;",
+			"$xml = New-Object Windows.Data.Xml.Dom.XmlDocument;",
+			"$xml.LoadXml($toastXml.OuterXml);",
+			"$toast = [Windows.UI.Notifications.ToastNotification]::new($xml);",
+			"$toast.Tag = 'Test1';",
+			"$toast.Group = 'Test2';",
+			"$toast.ExpirationTime = [DateTimeOffset]::Now.AddSeconds(5);",
+			"$notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('",
+			deleteSpecialSymbols(title, prohibitSymbols),
+			"');",
+			"$notifier.Show($toast);\""
+		];
+
+		var toRun:String = mashIntoOneLine(commands);
+		Sys.command(toRun);
+		#end
+	}
+
+	public static function deleteSpecialSymbols(string:String, ?symbols:Array<String> = null)
+	{
+		var newString:String = "";
+		for (i in 0...string.length)
+		{
+			var char:String = string.charAt(i);
+
+			var dontCheck:Bool = false;
+			if (char == ' ')
+				dontCheck = true;
+
+			if (symbols != null && !dontCheck)
+				if (symbols.contains(char))
+					continue;
+
+			if (!isTypeAlphabet(char) && !dontCheck)
+				continue;
+
+			newString += char;
+		}
+
+		return newString;
+	}
+
+	public static function isTypeAlphabet(c:String) // thanks kade
+	{
+		var ascii = StringTools.fastCodeAt(c, 0);
+		return (ascii >= 65 && ascii <= 90) || (ascii >= 97 && ascii <= 122) || // A-Z, a-z
+			specialCharCheck(c);
+	}
+
+	public static function specialCharCheck(c:String):Bool
+	{
+		switch (c.toLowerCase())
+		{
+			case 'á' | 'é' | 'í' | 'ó' | 'ú' | 'ñ' | 'ï' | 'õ' | 'ü' | 'ê' | 'ç' | 'ã' | 'â' | 'ô':
+				return true;
+		}
+
+		return false;
 	}
 }

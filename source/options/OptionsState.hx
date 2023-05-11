@@ -3,9 +3,6 @@ package options;
 #if desktop
 import Discord.DiscordClient;
 #end
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
@@ -73,6 +70,16 @@ class OptionsState extends MusicBeatState
 	var selectorLeft:Alphabet;
 	var selectorRight:Alphabet;
 
+	public static var autoResetNotes:Bool = false;
+
+	function gotoNotesSubState()
+	{
+		if (ClientPrefs.useRGB)
+			openSubState(new options.NotesRGBSubState());
+		else
+			openSubState(new options.NotesSubState());
+	}
+
 	override function create()
 	{
 		options = [
@@ -85,7 +92,7 @@ class OptionsState extends MusicBeatState
 			Locale.get("gameHUDOption")
 		];
 		things = [
-			options[0] => function() openSubState(new options.NotesSubState()),
+			options[0] => gotoNotesSubState,
 			options[1] => function() openSubState(new options.ControlsSubState()),
 			options[2] => function() LoadingState.loadAndSwitchState(new options.NoteOffsetState()),
 			options[3] => function() openSubState(new options.GraphicsSettingsSubState()),
@@ -101,7 +108,6 @@ class OptionsState extends MusicBeatState
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFea71fd;
 		bg.updateHitbox();
-
 		bg.screenCenter();
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
@@ -143,6 +149,11 @@ class OptionsState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		if (autoResetNotes)
+		{
+			gotoNotesSubState();
+			autoResetNotes = false;
+		}
 
 		if (controls.UI_UP_P)
 			changeSelection(-1);

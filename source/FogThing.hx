@@ -17,7 +17,7 @@ class FogThing extends FlxSprite
 
 	public function regenerate():Void
 	{
-		loadGraphic(Paths.imageRandom("hazard/inhuman-port/fogEffectTEST", 1, 3)); // they are test or what? sorry for asking.
+		loadGraphic(Paths.imageRandom("hazard/inhuman-port/fogEffectTEST", 1, 3));
 		flipX = FlxG.random.bool(50);
 
 		setGraphicSize(Std.int(width * 2));

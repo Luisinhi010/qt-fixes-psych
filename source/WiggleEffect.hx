@@ -1,6 +1,7 @@
 package;
 
 // STOLEN FROM HAXEFLIXEL DEMO LOL
+import codename.FlxFixedShader;
 
 enum WiggleEffectType
 {

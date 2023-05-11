@@ -6,7 +6,7 @@ import haxe.format.JsonParser;
 import lime.utils.Assets;
 #if sys
 import sys.io.File;
-#if cpp import sys.FileSystem; #end
+import sys.FileSystem;
 #end
 using StringTools;
 

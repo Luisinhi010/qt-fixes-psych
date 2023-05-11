@@ -3,9 +3,6 @@ package options;
 #if desktop
 import Discord.DiscordClient;
 #end
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
@@ -29,8 +26,8 @@ using StringTools;
 
 class NotesSubState extends MusicBeatSubstate
 {
-	private static var curSelected:Int = 0;
-	private static var typeSelected:Int = 0;
+	public static var curSelected:Int = 0;
+	public static var typeSelected:Int = 0;
 
 	private var grpNumbers:FlxTypedGroup<Alphabet>;
 	private var grpNotes:FlxTypedGroup<FlxSprite>;
@@ -73,6 +70,9 @@ class NotesSubState extends MusicBeatSubstate
 				optionText.x = posX + (225 * j) + 250;
 				optionText.ID = i;
 				grpNumbers.add(optionText);
+				var add = (40 * (optionText.letters.length - 1)) / 2;
+				for (letter in optionText.letters)
+					letter.offset.x += add;
 			}
 
 			var note:FlxSprite = new FlxSprite(posX, yPos);
@@ -96,6 +96,17 @@ class NotesSubState extends MusicBeatSubstate
 		hsbText.scaleX = 0.6;
 		hsbText.scaleY = 0.6;
 		add(hsbText);
+
+		var descBox:FlxSprite = new FlxSprite(40, 589).makeGraphic(613, 87, FlxColor.BLACK);
+		descBox.alpha = 0.6;
+		add(descBox);
+		var descText:FlxText = new FlxText(50, 600, 0, "Press Ctrl to alternate RGB/HSV\nPress R to reset the colors", 32);
+		descText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		descText.scrollFactor.set();
+		descText.borderSize = 2.4;
+		descText.screenCenter(Y);
+		descText.y += 270;
+		add(descText);
 
 		changeSelection();
 	}
@@ -128,6 +139,12 @@ class NotesSubState extends MusicBeatSubstate
 				blackBG.y = item.y - 20;
 				blackBG.x = item.x - 20;
 			}
+		}
+		if (FlxG.keys.justPressed.CONTROL)
+		{
+			ClientPrefs.useRGB = true;
+			OptionsState.autoResetNotes = true;
+			close();
 		}
 		if (changingNote)
 		{
@@ -284,6 +301,7 @@ class NotesSubState extends MusicBeatSubstate
 			curSelected = ClientPrefs.arrowHSV.length - 1;
 		if (curSelected >= ClientPrefs.arrowHSV.length)
 			curSelected = 0;
+		NotesRGBSubState.curSelected = curSelected;
 
 		curValue = ClientPrefs.arrowHSV[curSelected][typeSelected];
 		updateValue();
@@ -333,6 +351,7 @@ class NotesSubState extends MusicBeatSubstate
 			typeSelected = 2;
 		if (typeSelected > 2)
 			typeSelected = 0;
+		NotesRGBSubState.typeSelected = typeSelected;
 
 		curValue = ClientPrefs.arrowHSV[curSelected][typeSelected];
 		updateValue();

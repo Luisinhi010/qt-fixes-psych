@@ -10,7 +10,6 @@ haxelib install flixel 4.11.0
 haxelib install flixel-tools
 haxelib install flixel-ui
 haxelib install flixel-addons 2.11.0
-haxelib install tjson
 haxelib install hxjsonast
 haxelib install hscript
 haxelib install hxcpp-debug-server
