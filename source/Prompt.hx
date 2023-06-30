@@ -20,7 +20,6 @@ class Prompt extends MusicBeatSubstate
 	public var okc:Void->Void;
 	public var cancelc:Void->Void;
 
-	var buttons:FlxSprite = new FlxSprite(473.3, 450);
 	var theText:String = '';
 	var goAnyway:Bool = false;
 	var UI_box:FlxUIPopup;

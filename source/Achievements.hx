@@ -206,7 +206,7 @@ class AchievementObject extends FlxSpriteGroup
 		add(achievementIcon);
 
 		@:privateAccess
-		var cam:Array<FlxCamera> = FlxG.cameras.defaults;
+		var cam:Array<FlxCamera> = FlxCamera._defaultCameras;
 		if (camera != null)
 			cam = [camera];
 

@@ -74,7 +74,7 @@ class GameHUD extends FlxGroup
 		return value;
 	}
 
-	public var updateTime:Bool = true;
+	public var updateTime:Bool = false;
 	public var songPercent:Float = 0;
 
 	// score bla bla bla
@@ -109,48 +109,49 @@ class GameHUD extends FlxGroup
 			songName = PlayState.SONG.song.replace("-", " ").replace("_", " ");
 			coloredHealthBar = PlayState.instance.coloredHealthBar;
 			timeBarUi = PlayState.instance.timeBarUi;
-
-			var showTime:Bool = ClientPrefs.timeBar;
-
-			timeTxt = new FlxText(0, ClientPrefs.downScroll ? FlxG.height - 40 : 10, 0, songName, 32);
-			timeTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
-				PlayState.instance.inhumancolor2);
-			timeTxt.scrollFactor.set();
-			timeTxt.alpha = 0;
-			timeTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
-			timeTxt.visible = showTime;
-			timeTxt.screenCenter(X);
-			if (timeBarUi == 'Kade Engine')
+			sys.thread.Thread.create(() ->
 			{
-				timeTxt.y += ClientPrefs.downScroll ? 5 : -5;
-				timeTxt.size = 18;
-			}
+				var showTime:Bool = ClientPrefs.timeBar;
+				timeTxt = new FlxText(0, ClientPrefs.downScroll ? FlxG.height - 40 : 10, 0, songName, 32);
+				timeTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
+					PlayState.instance.inhumancolor2);
+				timeTxt.scrollFactor.set();
+				timeTxt.alpha = 0;
+				timeTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
+				timeTxt.visible = showTime;
+				if (timeBarUi == 'Kade Engine')
+				{
+					timeTxt.y += ClientPrefs.downScroll ? 5 : -5;
+					timeTxt.size = 18;
+				}
+				timeTxt.screenCenter(X);
 
-			timeBarBG = new AttachedFlxSprite((timeBarUi == 'Kade Engine') ? 'healthBar' : 'timeBar');
-			timeBarBG.y = timeTxt.y + (timeTxt.height / 4);
-			timeBarBG.scrollFactor.set();
-			timeBarBG.alpha = 0;
-			timeBarBG.visible = showTime;
-			timeBarBG.color = FlxColor.BLACK;
-			timeBarBG.xAdd = -4;
-			timeBarBG.yAdd = -4;
-			timeBarBG.screenCenter(X);
+				timeBarBG = new AttachedFlxSprite((timeBarUi == 'Kade Engine') ? 'healthBar' : 'timeBar');
+				timeBarBG.y = timeTxt.y + (timeTxt.height / 4);
+				timeBarBG.scrollFactor.set();
+				timeBarBG.alpha = 0;
+				timeBarBG.visible = showTime;
+				timeBarBG.color = FlxColor.BLACK;
+				timeBarBG.xAdd = -4;
+				timeBarBG.yAdd = -4;
+				timeBarBG.screenCenter(X);
 
-			timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4 - ((timeBarUi == 'Kade Engine') ? 5 : 0), LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8),
-				Std.int(timeBarBG.height - 8), this, 'songPercent', 0, 1);
-			timeBar.screenCenter(X);
-			timeBar.scrollFactor.set();
-			if (!ClientPrefs.lowQuality || !ClientPrefs.optimize)
-				timeBar.numDivisions = 1000;
-			timeBar.alpha = 0;
-			timeBar.visible = showTime;
-			timeBarBG.sprTracker = timeBar;
+				timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4 - ((timeBarUi == 'Kade Engine') ? 5 : 0), LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8),
+					Std.int(timeBarBG.height - 8), this, 'songPercent', 0, 1);
+				timeBar.screenCenter(X);
+				timeBar.scrollFactor.set();
+				if (!ClientPrefs.lowQuality || !ClientPrefs.optimize)
+					timeBar.numDivisions = 1000;
+				timeBar.alpha = 0;
+				timeBar.visible = showTime;
+				timeBarBG.sprTracker = timeBar;
 
-			add(timeBarBG);
-			add(timeBar);
-			add(timeTxt);
+				add(timeBarBG);
+				add(timeBar);
+				add(timeTxt);
 
-			updateTime = showTime;
+				updateTime = showTime;
+			});
 
 			// set up the Health Bar
 
@@ -161,7 +162,6 @@ class GameHUD extends FlxGroup
 			healthBarBG.visible = !PlayState.instance.cpuControlled;
 			healthBarBG.xAdd = -4;
 			healthBarBG.yAdd = -4;
-			add(healthBarBG);
 			if (ClientPrefs.downScroll)
 				healthBarBG.y = 0.11 * FlxG.height;
 
@@ -175,7 +175,6 @@ class GameHUD extends FlxGroup
 			healthBar.scrollFactor.set();
 			healthBar.visible = !PlayState.instance.cpuControlled;
 			healthBar.alpha = ClientPrefs.healthBarAlpha;
-			add(healthBar);
 			healthBarBG.sprTracker = healthBar;
 			healthBarBG.copyVisible = true;
 
@@ -188,9 +187,12 @@ class GameHUD extends FlxGroup
 			healthBarFG.visible = healthBarBG.visible;
 			healthBarFG.xAdd = -4;
 			healthBarFG.yAdd = -4;
-			add(healthBarFG);
 			healthBarFG.sprTracker = healthBar;
 			healthBarFG.copyVisible = true;
+
+			add(healthBarBG);
+			add(healthBar);
+			add(healthBarFG);
 
 			if (!ClientPrefs.optimize)
 			{

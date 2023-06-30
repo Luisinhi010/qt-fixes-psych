@@ -224,10 +224,6 @@ class MainMenuState extends MusicBeatState
 
 		menuScript.callFunc('create', []);
 
-		var createOver:Dynamic = menuScript.callFunc('overrideCreate', []);
-		if (createOver != null)
-			return;
-
 		if (optionShit.length < 1)
 			optionShit = defaultoptions;
 
@@ -360,10 +356,6 @@ class MainMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		menuScript.callFunc('update', [elapsed]);
-
-		var setupOver:Dynamic = menuScript.callFunc('overrideUpdate', [elapsed]);
-		if (setupOver != null)
-			return;
 
 		if (FlxG.sound.music.volume < 0.8)
 		{

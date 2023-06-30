@@ -112,21 +112,6 @@ class EditorPlayState extends MusicBeatState
 			vocals = new FlxSound();
 
 		generateSong(PlayState.SONG.song);
-		#if (LUA_ALLOWED && MODS_ALLOWED)
-		for (notetype in noteTypeMap.keys())
-		{
-			var luaToLoad:String = Paths.modFolders('custom_notetypes/' + notetype + '.lua');
-			if (sys.FileSystem.exists(luaToLoad))
-			{
-				var lua:editors.EditorLua = new editors.EditorLua(luaToLoad);
-				new FlxTimer().start(0.1, function(tmr:FlxTimer)
-				{
-					lua.stop();
-					lua = null;
-				});
-			}
-		}
-		#end
 		noteTypeMap.clear();
 		noteTypeMap = null;
 
@@ -196,8 +181,6 @@ class EditorPlayState extends MusicBeatState
 		// NEW SHIT
 		noteData = songData.notes;
 
-		var playerCounter:Int = 0;
-
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
 
 		for (section in noteData)
@@ -224,9 +207,11 @@ class EditorPlayState extends MusicBeatState
 						else
 							oldNote = null;
 
+						var susLength:Float = Math.round(songNotes[2] / Conductor.stepCrochet);
+
 						var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, false, gottaHitNote);
 						swagNote.mustPress = gottaHitNote;
-						swagNote.sustainLength = songNotes[2];
+						swagNote.sustainLength = susLength * Conductor.stepCrochet;
 						swagNote.noteType = songNotes[3];
 						if (!Std.isOfType(songNotes[3], String))
 							swagNote.noteType = editors.ChartingState.noteTypeList[songNotes[3]]; // Backward compatibility + compatibility with Week 7 charts
@@ -254,32 +239,6 @@ class EditorPlayState extends MusicBeatState
 								sustainNote.noteType = swagNote.noteType;
 								sustainNote.scrollFactor.set();
 								unspawnNotes.push(sustainNote);
-
-								if (sustainNote.mustPress)
-								{
-									sustainNote.x += FlxG.width / 2; // general offset
-								}
-								else if (ClientPrefs.middleScroll)
-								{
-									sustainNote.x += 310;
-									if (daNoteData > 1)
-									{ // Up and Right
-										sustainNote.x += FlxG.width / 2 + 25;
-									}
-								}
-							}
-						}
-
-						if (swagNote.mustPress)
-						{
-							swagNote.x += FlxG.width / 2; // general offset
-						}
-						else if (ClientPrefs.middleScroll)
-						{
-							swagNote.x += 310;
-							if (daNoteData > 1) // Up and Right
-							{
-								swagNote.x += FlxG.width / 2 + 25;
 							}
 						}
 

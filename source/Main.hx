@@ -21,10 +21,11 @@ import flixel.FlxG;
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
 import haxe.io.Path;
-#if sys import sys.FileSystem; #end
+#if sys
+import sys.FileSystem;
 import sys.io.Process;
 #end
-
+#end
 using StringTools;
 
 class Main extends Sprite
@@ -151,8 +152,9 @@ class Main extends Sprite
 			});
 		}
 		#end
-	} // Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
+	}
 
+	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
 	// very cool person for real they don't get enough credit for their work
 	#if CRASH_HANDLER
 	function onCrash(e:UncaughtErrorEvent):Void

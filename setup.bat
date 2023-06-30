@@ -1,13 +1,13 @@
 @echo off
 title Friday Night Funkin': Psych Engine Setup - Start
-echo Make sure to have Haxe 4.3.0 and HaxeFlixel 4.11.0 is installed!
+echo Make sure to have Haxe 4.2.5 and HaxeFlixel 4.11.0 is installed!
 echo Press any key to install required libraries.
 pause >nul
 title Installing libraries
 echo Installing haxelib libraries...
 haxelib install hxcpp > nul
-haxelib install lime 
-haxelib install openfl 
+haxelib install lime 8.0.0
+haxelib install openfl 9.2.0
 haxelib install flixel 4.11.0
 haxelib run lime setup flixel
 haxelib run lime setup
@@ -28,7 +28,7 @@ title Installing libraries
 haxelib git polymod https://github.com/larsiusprime/polymod.git
 haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
 haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
-haxelib git SScript https://github.com/TheWorldMachinima/SScript
+haxelib install SScript 3.0.0
 haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
 haxelib install hxCodec 2.5.1
 cls

@@ -134,67 +134,70 @@ class KbAttackAlert extends FlxGroup
 	public function create():Void
 	{
 		// Alert!
-		if (!alertAdded)
+		colorMask = new ColorMask();
+		sys.thread.Thread.create(() ->
 		{
-			colorMask = new ColorMask();
-			alert = new FlxSprite();
-			alert.frames = Paths.getSparrowAtlas('hazard/qt-port/attack_alert_NEW', 'shared', ClientPrefs.gpurendering);
-			alert.antialiasing = ClientPrefs.globalAntialiasing;
-			alert.setGraphicSize(Std.int(alert.width * 1.5));
-
-			var animFrames:Array<FlxFrame> = [];
-			@:privateAccess {
-				alert.animation.findByPrefix(animFrames, "Alert-Single");
-				alert.animation.findByPrefix(animFrames, "Alert-Double");
-				alert.animation.findByPrefix(animFrames, "Alert-Triple");
-				alert.animation.findByPrefix(animFrames, "Alert-Quad");
-			}
-
-			if (animFrames.length > 0)
+			if (!alertAdded)
 			{
-				newalert = true;
+				alert = new FlxSprite();
+				alert.frames = Paths.getSparrowAtlas('hazard/qt-port/attack_alert_NEW', 'shared', ClientPrefs.gpurendering);
+				alert.antialiasing = ClientPrefs.globalAntialiasing;
+				alert.setGraphicSize(Std.int(alert.width * 1.5));
 
-				alert.animation.addByPrefix('alert', 'Alert-Single', 0);
-				alert.animation.addByPrefix('alertDOUBLE', 'Alert-Double', 0);
-				alert.animation.addByPrefix('alertTRIPLE', 'Alert-Triple', 0);
-				alert.animation.addByPrefix('alertQUAD', 'Alert-Quad', 0);
+				var animFrames:Array<FlxFrame> = [];
+				@:privateAccess {
+					alert.animation.findByPrefix(animFrames, "Alert-Single");
+					alert.animation.findByPrefix(animFrames, "Alert-Double");
+					alert.animation.findByPrefix(animFrames, "Alert-Triple");
+					alert.animation.findByPrefix(animFrames, "Alert-Quad");
+				}
+
+				if (animFrames.length > 0)
+				{
+					newalert = true;
+
+					alert.animation.addByPrefix('alert', 'Alert-Single', 0);
+					alert.animation.addByPrefix('alertDOUBLE', 'Alert-Double', 0);
+					alert.animation.addByPrefix('alertTRIPLE', 'Alert-Triple', 0);
+					alert.animation.addByPrefix('alertQUAD', 'Alert-Quad', 0);
+				}
+				else
+				{
+					newalert = false;
+
+					alert.animation.addByPrefix('alert', 'kb_attack_animation_alert-single', 24, false);
+					alert.animation.addByPrefix('alertDOUBLE', 'kb_attack_animation_alert-double', 24, false);
+					alert.animation.addByPrefix('alertTRIPLE', 'kb_attack_animation_alert-triple', 24, false);
+					alert.animation.addByPrefix('alertQUAD', 'kb_attack_animation_alert-quad', 24, false);
+				}
+
+				alert.screenCenter(X);
+				alert.x += alert.width / 4; // wtf? haz?
+				if (PlayState.instance.forceMiddleScroll || !ClientPrefs.opponentStrums)
+					alert.x -= alert.width / (PlayState.instance.forceMiddleScroll ? 2 : 3);
+				alert.y = 205 + (ClientPrefs.downScroll ? 20 : 0);
+				alert.moves = false;
+				add(alert);
+				alert.shader = colorMask.shader;
+
+				tipTxt = new FlxText(0, ClientPrefs.downScroll ? alert.y - 66 : alert.y + alert.height + 36, 0, dodgeWarning, 26);
+				tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
+				tipTxt.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				tipTxt.antialiasing = ClientPrefs.globalAntialiasing;
+				tipTxt.borderSize = 1.1;
+				tipTxt.centerOnSprite(alert, X);
+				tipTxt.x -= tipTxt.width / 4;
+				tipTxt.moves = false;
+				add(tipTxt);
+				// tipTxt.shader = colorMask.shader;
+
+				for (i in [alert.x, alert.y, tipTxt.x, tipTxt.y])
+					pos.push(i);
+
+				alertAdded = true;
+				multiplier = MusicBeatState.multAnims ? PlayState.instance.playbackRate : 1;
 			}
-			else
-			{
-				newalert = false;
-
-				alert.animation.addByPrefix('alert', 'kb_attack_animation_alert-single', 24, false);
-				alert.animation.addByPrefix('alertDOUBLE', 'kb_attack_animation_alert-double', 24, false);
-				alert.animation.addByPrefix('alertTRIPLE', 'kb_attack_animation_alert-triple', 24, false);
-				alert.animation.addByPrefix('alertQUAD', 'kb_attack_animation_alert-quad', 24, false);
-			}
-
-			alert.screenCenter(X);
-			alert.x += alert.width / 4; // wtf? haz?
-			if (PlayState.instance.forceMiddleScroll || !ClientPrefs.opponentStrums)
-				alert.x -= alert.width / (PlayState.instance.forceMiddleScroll ? 2 : 3);
-			alert.y = 205 + (ClientPrefs.downScroll ? 20 : 0);
-			alert.moves = false;
-			add(alert);
-			alert.shader = colorMask.shader;
-
-			tipTxt = new FlxText(0, ClientPrefs.downScroll ? alert.y - 66 : alert.y + alert.height + 36, 0, dodgeWarning, 26);
-			tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
-			tipTxt.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			tipTxt.antialiasing = ClientPrefs.globalAntialiasing;
-			tipTxt.borderSize = 1.1;
-			tipTxt.centerOnSprite(alert, X);
-			tipTxt.x -= tipTxt.width / 4;
-			tipTxt.moves = false;
-			add(tipTxt);
-			// tipTxt.shader = colorMask.shader;
-
-			for (i in [alert.x, alert.y, tipTxt.x, tipTxt.y])
-				pos.push(i);
-
-			alertAdded = true;
-			multiplier = MusicBeatState.multAnims ? PlayState.instance.playbackRate : 1;
-		}
+		});
 	}
 
 	public function playAnim(Anim:String)
@@ -211,7 +214,7 @@ class KbAttackAlert extends FlxGroup
 				case "alertTRIPLE":
 					alert.offset.set(150, 56);
 				case "alertDOUBLE":
-					alert.offset.set(70, 5);
+					alert.offset.set(75, 5);
 			}
 			alpha = 1;
 		}

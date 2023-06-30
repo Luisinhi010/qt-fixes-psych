@@ -140,10 +140,8 @@ class Cache extends MusicBeatState
 
 			if (!ClientPrefs.persistentCaching)
 				Paths.clearUnusedMemory();
-			sys.thread.Thread.create(() ->
-			{
-				cache();
-			});
+
+			sys.thread.Thread.create(cache);
 		}
 		else
 			fu(false); // update to work with the new interlope "crash"

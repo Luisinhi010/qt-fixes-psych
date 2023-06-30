@@ -2,6 +2,7 @@ package;
 
 #if HAXE_EXTENSION
 import flixel.*;
+import tea.SScript;
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.effects.FlxTrail;
 import flixel.graphics.FlxGraphic;
@@ -33,17 +34,15 @@ using StringTools;
  * and on Lore engine FuckinHX/Yoshi engine's HxScript support 
  * @see https://github.com/sayofthelor/lore-engine/blob/main/source/lore/FunkinHX.hx
  */
-class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyable #end
+class ScriptHandler #if HAXE_EXTENSION extends SScript #end
 {
-	var ignoreErrors:Bool = false;
-
-	public function new(file:String, ?preset:Bool = true)
+	public function new(?scriptPath:String, ?preset:Bool = true)
 	{
 		#if HAXE_EXTENSION
-		if (file == null)
+		if (scriptPath == null)
 			return;
-		super(file, preset);
-		trace('Running script: ' + file);
+		super(scriptPath, preset);
+		trace('Running script: ' + scriptPath);
 		traces = false;
 		#end
 	}
@@ -95,10 +94,8 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyabl
 		set('FlxBackdrop', FlxBackdrop);
 		set('StageSizeScaleMode', StageSizeScaleMode);
 		set('FlxBarFillDirection', FlxBarFillDirection);
-		#if (flixel < "5.0.0")
 		set('FlxAxes', FlxAxes);
 		set('FlxPoint', FlxPoint);
-		#end
 		set('GraphicsShader', GraphicsShader);
 		set('ShaderFilter', ShaderFilter);
 
@@ -121,8 +118,8 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyabl
 		// CLASSES (BASE);
 		set('BGSprite', BGSprite);
 		set('HealthIcon', HealthIcon);
-		set('MusicBeatState', MusicBeatState);
-		set('MusicBeatSubstate', MusicBeatSubstate);
+		// set('MusicBeatState', MusicBeatState);
+		// set('MusicBeatSubstate', MusicBeatSubstate);
 		set('AttachedFlxSprite', AttachedFlxSprite);
 		set('AttachedText', AttachedText);
 		set('Discord', Discord);
@@ -149,35 +146,6 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyabl
 			Reflect.field(Type.resolveClass(instance), variable);
 		});
 
-		FlxG.signals.focusGained.add(function()
-		{
-			call("focusGained", []);
-		});
-		FlxG.signals.focusLost.add(function()
-		{
-			call("focusLost", []);
-		});
-		FlxG.signals.gameResized.add(function(w:Int, h:Int)
-		{
-			call("gameResized", [w, h]);
-		});
-		FlxG.signals.postDraw.add(function()
-		{
-			call("postDraw", []);
-		});
-		FlxG.signals.postGameReset.add(function()
-		{
-			call("postGameReset", []);
-		});
-		FlxG.signals.postGameStart.add(function()
-		{
-			call("postGameStart", []);
-		});
-		FlxG.signals.postStateSwitch.add(function()
-		{
-			call("postStateSwitch", []);
-		});
-
 		#if windows
 		set('buildTarget', 'windows');
 		#elseif linux
@@ -196,7 +164,7 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyabl
 	}
 	#end
 
-	public function callFunc(key:String, args:Array<Dynamic>)
+	public function callFunc(key:String, args:Array<Dynamic>) // bruh
 	{
 		#if HAXE_EXTENSION
 		if (this == null || interp == null)
@@ -229,12 +197,6 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript implements IFlxDestroyabl
 	}
 
 	#if HAXE_EXTENSION
-	public function destroy():Void
-	{
-		interp = null;
-		scriptFile = null;
-	}
-
 	public function varExists(key:String):Bool
 	{
 		if (this != null && interp != null)

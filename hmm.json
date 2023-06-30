@@ -64,10 +64,8 @@
     },
     {
       "name": "SScript",
-      "type": "git",
-      "dir": null,
-      "ref": "main",
-      "url": "https://github.com/TheWorldMachinima/SScript"
+      "type": "haxelib",
+      "version": "3.0.0"
     },
     {
       "name": "hscript-ex",

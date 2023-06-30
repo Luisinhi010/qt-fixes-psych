@@ -47,23 +47,10 @@ class InitLoader extends FlxState
 
 		lore.Colorblind.updateFilter();
 		checkSpecs(Cpu, Ram);
-		ClientPrefs.loadSettings(); // precache is disabled for testing
+		ClientPrefs.loadSettings();
 		Locale.init();
-		/*
-				 #if (!debug && desktop) 
-			if (FlxG.save.data.precache == null)
-				{
-					FlashingState.precachewarning = true;
-					FlxG.switchState(new FlashingState());
-				}
-				else
-				{
-					if (ClientPrefs.precache && !Cache.loaded)
-						FlxG.switchState(new Cache());
-					else #end */
 		#end
 		FlxG.switchState(new TitleState());
-		// #if (!debug && desktop)} #end
 	}
 
 	function checkSpecs(cpu:Bool, ram:UInt64)

@@ -106,10 +106,6 @@ class FreeplayState extends MusicBeatState
 
 		menuScript.callFunc('create', []);
 
-		var createOver:Dynamic = menuScript.callFunc('overrideCreate', []);
-		if (createOver != null)
-			return;
-
 		for (i in 0...WeekData.weeksList.length)
 		{
 			if (weekIsLocked(WeekData.weeksList[i]))
@@ -274,10 +270,6 @@ class FreeplayState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		menuScript.callFunc('update', [elapsed]);
-
-		var setupOver:Dynamic = menuScript.callFunc('overrideUpdate', [elapsed]);
-		if (setupOver != null)
-			return;
 
 		if (FlxG.sound.music.volume < 0.7 && songs[curSelected].songName != "" && songs[curSelected].songName != "Interlope")
 		{

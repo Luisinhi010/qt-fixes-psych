@@ -94,8 +94,8 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
-	public static final STRUM_X = 48;
-	public static final STRUM_X_MIDDLESCROLL = -278;
+	public static final STRUM_X = 48.5;
+	public static final STRUM_X_MIDDLESCROLL = -274;
 
 	public static var ratingStuff:Array<Dynamic> = [
 		['You Suck!', 0.2], // From 0% to 19%
@@ -409,7 +409,6 @@ class PlayState extends MusicBeatState
 
 	function set_alertColor(value:FlxColor):FlxColor
 	{
-		trace(value);
 		if (!ClientPrefs.optimize && ClientPrefs.flashing && !ClientPrefs.lowQuality)
 		{
 			hazardAlarmLeft.color = value;
@@ -1709,6 +1708,7 @@ class PlayState extends MusicBeatState
 			&& !ClientPrefs.optimize
 			&& openfl.utils.Assets.exists('assets/art/Discord/' + iconp2strinc + '.png', IMAGE))
 			lime.app.Application.current.window.setIcon(lime.utils.Assets.getImage('assets/art/Discord/' + iconp2strinc + '.png'));
+
 		if (!ClientPrefs.controllerMode)
 		{
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
@@ -3011,7 +3011,7 @@ class PlayState extends MusicBeatState
 	{
 		var targetAlpha:Float = 1;
 		var downScroll:Bool = ClientPrefs.downScroll;
-		var xpos:Int = STRUM_X;
+		var xpos:Int = Std.int(STRUM_X);
 
 		if (classicTermination)
 			xpos -= 40;
@@ -4036,26 +4036,28 @@ class PlayState extends MusicBeatState
 				if (!Achievements.isAchievementUnlocked('freeplay_depths')
 					&& Achievements.isAchievementUnlocked('cessation_beat')) // If you can access Interlope, allows for the Interlope hint to be shown.
 					wack = 100;
-
-				if (wack == 100) // Interlope secret screen
-					horror = new FlxSprite(-80).loadGraphic(Paths.image('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecretInterlope'));
-				else
-					horror = new FlxSprite(-80).loadGraphic(Paths.imageRandom('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecret0', 1, 9));
-				horror.scrollFactor.x = 0;
-				horror.scrollFactor.y = 0.15;
-				horror.setGraphicSize(Std.int(horror.width * 1.1));
-				horror.updateHitbox();
-				horror.screenCenter();
-				horror.antialiasing = ClientPrefs.globalAntialiasing;
-				horror.cameras = [camOther];
-				var visiblityShit:Bool = camHUD.visible; // In case the HUD starts invisible or visible, I do this shit instead.
-				camHUD.visible = false; // nah looks good, i would update to use the Paths.imagerandom but idk anymore xd -Luis // updated -Future luis
-				add(horror);
-
-				new FlxTimer().start(0.7, function(tmr:FlxTimer)
+				sys.thread.Thread.create(() ->
 				{
-					camHUD.visible = visiblityShit;
-					remove(horror, true);
+					if (wack == 100) // Interlope secret screen
+						horror = new FlxSprite(-80).loadGraphic(Paths.image('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecretInterlope'));
+					else
+						horror = new FlxSprite(-80).loadGraphic(Paths.imageRandom('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecret0', 1, 9));
+					horror.scrollFactor.x = 0;
+					horror.scrollFactor.y = 0.15;
+					horror.setGraphicSize(Std.int(horror.width * 1.1));
+					horror.updateHitbox();
+					horror.screenCenter();
+					horror.antialiasing = ClientPrefs.globalAntialiasing;
+					horror.cameras = [camOther];
+					var visiblityShit:Bool = camHUD.visible; // In case the HUD starts invisible or visible, I do this shit instead.
+					camHUD.visible = false; // nah looks good, i would update to use the Paths.imagerandom but idk anymore xd -Luis // updated -Future luis
+					add(horror);
+
+					new FlxTimer().start(0.7, function(tmr:FlxTimer)
+					{
+						camHUD.visible = visiblityShit;
+						remove(horror, true);
+					});
 				});
 			}
 		}
@@ -6102,26 +6104,74 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		var ratingGroup:FlxSpriteGroup = new FlxSpriteGroup(); // pr: https://github.com/ShadowMario/FNF-PsychEngine/pull/12468
+		var ratingX:Float = coolText.x - 40;
+		var ratingY:Float = 60;
+
+		if (ratingGroup.countDead() > 0)
+		{
+			rating = ratingGroup.getFirstDead();
+			rating.reset(ratingY, ratingY);
+		}
+		else
+		{
+			rating = new FlxSprite();
+			ratingGroup.add(rating);
+		}
+
+		var ratingGroup:FlxSpriteGroup = new FlxSpriteGroup();
+		var ratingX:Float = coolText.x - 40;
+		var ratingY:Float = 60;
+
+		if (ratingGroup.countDead() > 0)
+		{
+			rating = ratingGroup.getFirstDead();
+			rating.reset(ratingY, ratingY);
+		}
+		else
+		{
+			rating = new FlxSprite();
+			ratingGroup.add(rating);
+		}
+
 		rating.loadGraphic(Paths.image(daRating.image));
 		rating.cameras = [camHUD];
 		rating.screenCenter();
-		rating.x = coolText.x - 40;
-		rating.y -= 60;
+		rating.x = ratingX;
+		rating.y -= ratingY;
 		rating.acceleration.y = 550 * playbackRate * playbackRate;
 		rating.velocity.y -= FlxG.random.int(140, 175) * playbackRate;
 		rating.velocity.x -= FlxG.random.int(0, 10) * playbackRate;
+		rating.visible = showRating;
 		rating.x += ClientPrefs.comboOffset[0];
 		rating.y -= ClientPrefs.comboOffset[1];
 
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image('combo'));
+		var comboSprGroup:FlxSpriteGroup = new FlxSpriteGroup();
+		var comboSpr:FlxSprite;
+		var comboSprX:Float = coolText.x;
+		var comboSprY:Float = 60;
+
+		if (comboSprGroup.countDead() > 0)
+		{
+			comboSpr = comboSprGroup.getFirstDead();
+			comboSpr.reset(comboSprX, comboSprY);
+		}
+		else
+		{
+			comboSpr = new FlxSprite();
+			comboSprGroup.add(comboSpr);
+		}
+
+		comboSpr.loadGraphic(Paths.image('combo'));
 		comboSpr.cameras = [camHUD];
 		comboSpr.screenCenter();
-		comboSpr.x = coolText.x;
+		comboSpr.x = comboSprX;
 		comboSpr.acceleration.y = FlxG.random.int(200, 300) * playbackRate * playbackRate;
 		comboSpr.velocity.y -= FlxG.random.int(140, 160) * playbackRate;
+		comboSpr.visible = showCombo;
 		comboSpr.x += ClientPrefs.comboOffset[0];
 		comboSpr.y -= ClientPrefs.comboOffset[1];
-		comboSpr.y += 60;
+		comboSpr.y += comboSprY;
 		comboSpr.velocity.x += FlxG.random.int(1, 10) * playbackRate;
 
 		insert(members.indexOf(strumLineNotes), rating);
@@ -6171,14 +6221,26 @@ class PlayState extends MusicBeatState
 		}
 		for (i in seperatedScore)
 		{
-			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image('num' + Std.int(i)));
+			var numScoreGroup:FlxSpriteGroup = new FlxSpriteGroup();
+			var numScore:FlxSprite;
+			var numScoreX:Float = coolText.x + (43 * daLoop) - 90;
+			var numScoreY:Float = 80;
+
+			if (numScoreGroup.countDead() > 0)
+			{
+				numScore = numScoreGroup.getFirstDead();
+				numScore.reset(numScoreX, numScoreY);
+			}
+			else
+			{
+				numScore = new FlxSprite();
+				numScoreGroup.add(numScore);
+			}
+			numScore.loadGraphic(Paths.image('num' + Std.int(i)));
 			numScore.cameras = [camHUD];
 			numScore.screenCenter();
-			numScore.x = coolText.x + (43 * daLoop) - 90;
-			numScore.y += 80;
-
-			numScore.x += ClientPrefs.comboOffset[2];
-			numScore.y -= ClientPrefs.comboOffset[3];
+			numScore.x = numScoreX + ClientPrefs.comboOffset[2];
+			numScore.y += numScoreY - ClientPrefs.comboOffset[3];
 
 			if (!ClientPrefs.comboStacking)
 				lastScore.push(numScore);
@@ -6199,7 +6261,8 @@ class PlayState extends MusicBeatState
 			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 				onComplete: function(tween:FlxTween)
 				{
-					numScore.destroy();
+					numScore.kill();
+					numScore.alpha = 1;
 				},
 				startDelay: Conductor.crochet * 0.002
 			});
@@ -6217,7 +6280,12 @@ class PlayState extends MusicBeatState
 		coolText.text = Std.string(seperatedScore);
 		// add(coolText);
 
-		FlxTween.tween(rating, {alpha: 0}, 0.2, {
+		FlxTween.tween(rating, {alpha: 0}, 0.2 / playbackRate, {
+			onComplete: function(tween:FlxTween)
+			{
+				rating.kill();
+				rating.alpha = 1;
+			},
 			startDelay: Conductor.crochet * 0.001
 		});
 
@@ -6225,8 +6293,8 @@ class PlayState extends MusicBeatState
 			onComplete: function(tween:FlxTween)
 			{
 				coolText.destroy();
-				comboSpr.destroy();
-				rating.destroy();
+				comboSpr.kill();
+				comboSpr.alpha = 1;
 			},
 			startDelay: Conductor.crochet * 0.002
 		});

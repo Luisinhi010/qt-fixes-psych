@@ -51,4 +51,7 @@ class OverlaySprite extends FlxSprite
 		x = (res[0] - width) / 2;
 		y = (res[1] - height) / 2;
 	}
+
+	public override function destroy()
+		FlxG.signals.gameResized.remove(repos);
 }

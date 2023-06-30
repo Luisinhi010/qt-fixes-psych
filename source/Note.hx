@@ -94,9 +94,6 @@ class Note extends FlxSprite
 	public var copyAlpha:Bool = true;
 	public var copyHurtNoteAlpha:Bool = false;
 
-	// public var hitHealth:Float = 0.023;
-	// public var missHealth:Float = 0.0475;
-	// Changing the values to make this mod more unforgiving (less health gain then usual and way more health loss on miss)
 	public var hitHealth:Float = 0.02;
 	public var missHealth:Float = 0.125;
 	public var rating:String = 'unknown';
