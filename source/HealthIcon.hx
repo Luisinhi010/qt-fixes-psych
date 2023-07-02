@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxSprite;
+import flixel.graphics.FlxGraphic;
 import openfl.utils.Assets as OpenFlAssets;
 
 using StringTools;
@@ -19,6 +20,7 @@ class HealthIcon extends FlxSprite
 	{
 		super();
 		this.isPlayer = isPlayer;
+		makeGraphic(300, 150, flixel.util.FlxColor.TRANSPARENT);
 		changeIcon(char);
 		scrollFactor.set();
 	}
@@ -38,46 +40,45 @@ class HealthIcon extends FlxSprite
 		}
 	}
 
-	private var iconOffsets:Array<Float> = [0, 0];
+	private var iconOffset:Float = 0; // pr: https://github.com/ShadowMario/FNF-PsychEngine/pull/12648
 
 	public function changeIcon(char:String)
 	{
-		if (this.char != char)
+		sys.thread.Thread.create(() ->
 		{
-			var name:String = 'icons/' + char;
-			if (!Paths.fileExists('images/' + name + '.png', IMAGE))
-				name = 'icons/icon-' + char; // Older versions of psych engine's support
-			if (!Paths.fileExists('images/' + name + '.png', IMAGE))
-				name = 'icons/icon-face'; // Prevents crash from missing icon
-			var file:Dynamic = Paths.image(name);
+			if (this.char != char)
+			{
+				var name:String = 'icons/' + char;
 
-			loadGraphic(file); // Load stupidly first for getting the file size
-			index = Std.int(width / height);
-			if (index >= 3)
-				hasWinning = true;
-			loadGraphic(file, true, Math.floor(width / index), Math.floor(height)); // Then load it fr
-			for (i in 0...index - 1)
-				iconOffsets[i] = (width - 150) / index;
-			updateHitbox();
-			animation.add(char, CoolUtil.numberArray(index), 0, false, isPlayer);
-			/*trace(index);
-				trace(CoolUtil.numberArray(index));
-				for (i in 0...index - 1)
-					trace(i); */
-			animation.play(char);
-			this.char = char;
+				if (!Paths.fileExists('images/' + name + '.png', IMAGE))
+					name = 'icons/icon-' + char; // Older versions of psych engine's support
+				if (!Paths.fileExists('images/' + name + '.png', IMAGE))
+					name = 'icons/icon-face'; // Prevents crash from missing icon
 
-			antialiasing = ClientPrefs.globalAntialiasing;
-			if (char.endsWith('-pixel'))
-				antialiasing = false;
-		}
+				var file:FlxGraphic = Paths.image(name);
+				index = Std.int(file.width / file.height);
+				if (index >= 3)
+					hasWinning = true;
+				loadGraphic(file, true, Math.floor(file.width / index), Math.floor(file.height));
+				iconOffset = (width - 150) / index;
+				offset.set(iconOffset, iconOffset);
+				updateHitbox();
+				animation.add(char, CoolUtil.numberArray(index), 0, false, isPlayer);
+				animation.play(char);
+				this.char = char;
+
+				antialiasing = ClientPrefs.globalAntialiasing;
+				if (char.endsWith('-pixel'))
+					antialiasing = false;
+			}
+		});
 	}
 
 	override function updateHitbox()
 	{
-		super.updateHitbox();
-		offset.x = iconOffsets[0];
-		offset.y = iconOffsets[1];
+		width = Math.abs(scale.x) * frameWidth;
+		height = Math.abs(scale.y) * frameHeight;
+		centerOrigin();
 	}
 
 	public function bounce()

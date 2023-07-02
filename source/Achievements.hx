@@ -184,12 +184,18 @@ class AchievementObject extends FlxSpriteGroup
 		var id:Int = Achievements.getAchievementIndex(name);
 		var achievementBG:FlxSprite = new FlxSprite(60, 50).makeGraphic(420, 120, FlxColor.BLACK);
 		achievementBG.scrollFactor.set();
+		add(achievementBG);
 
-		var achievementIcon:FlxSprite = new FlxSprite(achievementBG.x + 10, achievementBG.y + 10).loadGraphic(Paths.image('achievements/' + name));
-		achievementIcon.scrollFactor.set();
-		achievementIcon.setGraphicSize(Std.int(achievementIcon.width * (2 / 3)));
-		achievementIcon.updateHitbox();
-		achievementIcon.antialiasing = ClientPrefs.globalAntialiasing;
+		var achievementIcon:FlxSprite = new FlxSprite(achievementBG.x + 10, achievementBG.y + 10);
+		var achievementIconAnimated:FlxSprite = new FlxSprite(achievementIcon.x, achievementIcon.y);
+		for (icon in [achievementIcon, achievementIconAnimated])
+		{
+			icon.loadGraphic(Paths.image('achievements/' + name));
+			icon.scrollFactor.set();
+			icon.setGraphicSize(Std.int(icon.width * (2 / 3)));
+			icon.updateHitbox();
+			icon.antialiasing = ClientPrefs.globalAntialiasing;
+		}
 
 		var achievementName:FlxText = new FlxText(achievementIcon.x + achievementIcon.width + 20, achievementIcon.y + 16, 280,
 			Achievements.achievementsStuff[id][0], 16);
@@ -200,9 +206,9 @@ class AchievementObject extends FlxSpriteGroup
 		achievementText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT);
 		achievementText.scrollFactor.set();
 
-		add(achievementBG);
 		add(achievementName);
 		add(achievementText);
+		add(achievementIconAnimated);
 		add(achievementIcon);
 
 		@:privateAccess
@@ -214,11 +220,19 @@ class AchievementObject extends FlxSpriteGroup
 		achievementBG.cameras = cam;
 		achievementName.cameras = cam;
 		achievementText.cameras = cam;
+		achievementIconAnimated.cameras = cam;
 		achievementIcon.cameras = cam;
-		alphaTween = FlxTween.tween(this, {alpha: 1}, 0.5, {
+		var alphaTween = FlxTween.tween(this, {alpha: 1}, 0.4, {
 			onComplete: function(twn:FlxTween)
 			{
-				alphaTween = FlxTween.tween(this, {alpha: 0}, 0.5, {
+				var scale:Array<Float> = [achievementIconAnimated.scale.x, achievementIconAnimated.scale.x + 0.4]; // original scale, animated scale
+				FlxTween.tween(achievementIconAnimated, {alpha: 0, "scale.x": scale[1], "scale.y": scale[1]}, 2, {
+					onComplete: function(twn:FlxTween)
+					{
+						achievementIconAnimated.scale.set(scale[0], scale[0]);
+					}
+				});
+				alphaTween = FlxTween.tween(this, {alpha: 0}, 0.4, {
 					startDelay: 2.5,
 					onComplete: function(twn:FlxTween)
 					{

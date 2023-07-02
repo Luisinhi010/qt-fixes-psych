@@ -317,7 +317,6 @@ class MainMenuState extends MusicBeatState
 		var leDate = Date.now();
 		if (leDate.getDay() == 5 && leDate.getHours() >= 18)
 		{
-			var achieveID:Int = Achievements.getAchievementIndex('friday_night_play');
 			if (!Achievements.isAchievementUnlocked('friday_night_play'))
 			{ // It's a friday night. WEEEEEEEEEEEEEEEEEE
 				Achievements.achievementsMap.set('friday_night_play', true);
@@ -396,7 +395,7 @@ class MainMenuState extends MusicBeatState
 				MusicBeatState.switchState(new TitleState());
 			}
 
-			if (controls.ACCEPT /*|| FlxG.mouse.justPressed*/)
+			if (controls.ACCEPT)
 				accept();
 			#if desktop
 			else if (FlxG.keys.anyJustPressed(debugKeys))
@@ -411,6 +410,8 @@ class MainMenuState extends MusicBeatState
 
 		menuItems.forEach(function(menuItem:MainMenuItem)
 		{
+			if (menuItem.autoAlpha)
+				menuItem.alpha = (menuItem.ID == curSelected) ? 1 : 0.8;
 			if (menuItem.autoPos)
 			{
 				switch (alignment)
@@ -496,4 +497,5 @@ class MainMenuItem extends FlxSprite
 	public var z:Int = 0;
 	public var autoPos:Bool = true;
 	public var autoScale:Bool = true;
+	public var autoAlpha:Bool = true;
 }

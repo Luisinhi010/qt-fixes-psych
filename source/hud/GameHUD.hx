@@ -109,49 +109,46 @@ class GameHUD extends FlxGroup
 			songName = PlayState.SONG.song.replace("-", " ").replace("_", " ");
 			coloredHealthBar = PlayState.instance.coloredHealthBar;
 			timeBarUi = PlayState.instance.timeBarUi;
-			sys.thread.Thread.create(() ->
+			var showTime:Bool = ClientPrefs.timeBar;
+			timeTxt = new FlxText(0, ClientPrefs.downScroll ? FlxG.height - 40 : 10, 0, songName, 32);
+			timeTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
+				PlayState.instance.inhumancolor2);
+			timeTxt.scrollFactor.set();
+			timeTxt.alpha = 0;
+			timeTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
+			timeTxt.visible = showTime;
+			if (timeBarUi == 'Kade Engine')
 			{
-				var showTime:Bool = ClientPrefs.timeBar;
-				timeTxt = new FlxText(0, ClientPrefs.downScroll ? FlxG.height - 40 : 10, 0, songName, 32);
-				timeTxt.setFormat(Paths.font("vcr.ttf"), 32, PlayState.instance.inhumancolor1, CENTER, FlxTextBorderStyle.OUTLINE,
-					PlayState.instance.inhumancolor2);
-				timeTxt.scrollFactor.set();
-				timeTxt.alpha = 0;
-				timeTxt.borderSize = PlayState.instance.inhumanSong ? 2 : 1.5;
-				timeTxt.visible = showTime;
-				if (timeBarUi == 'Kade Engine')
-				{
-					timeTxt.y += ClientPrefs.downScroll ? 5 : -5;
-					timeTxt.size = 18;
-				}
-				timeTxt.screenCenter(X);
+				timeTxt.y += ClientPrefs.downScroll ? 5 : -5;
+				timeTxt.size = 18;
+			}
+			timeTxt.screenCenter(X);
 
-				timeBarBG = new AttachedFlxSprite((timeBarUi == 'Kade Engine') ? 'healthBar' : 'timeBar');
-				timeBarBG.y = timeTxt.y + (timeTxt.height / 4);
-				timeBarBG.scrollFactor.set();
-				timeBarBG.alpha = 0;
-				timeBarBG.visible = showTime;
-				timeBarBG.color = FlxColor.BLACK;
-				timeBarBG.xAdd = -4;
-				timeBarBG.yAdd = -4;
-				timeBarBG.screenCenter(X);
+			timeBarBG = new AttachedFlxSprite((timeBarUi == 'Kade Engine') ? 'healthBar' : 'timeBar');
+			timeBarBG.y = timeTxt.y + (timeTxt.height / 4);
+			timeBarBG.scrollFactor.set();
+			timeBarBG.alpha = 0;
+			timeBarBG.visible = showTime;
+			timeBarBG.color = FlxColor.BLACK;
+			timeBarBG.xAdd = -4;
+			timeBarBG.yAdd = -4;
+			timeBarBG.screenCenter(X);
 
-				timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4 - ((timeBarUi == 'Kade Engine') ? 5 : 0), LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8),
-					Std.int(timeBarBG.height - 8), this, 'songPercent', 0, 1);
-				timeBar.screenCenter(X);
-				timeBar.scrollFactor.set();
-				if (!ClientPrefs.lowQuality || !ClientPrefs.optimize)
-					timeBar.numDivisions = 1000;
-				timeBar.alpha = 0;
-				timeBar.visible = showTime;
-				timeBarBG.sprTracker = timeBar;
+			timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4 - ((timeBarUi == 'Kade Engine') ? 5 : 0), LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8),
+				Std.int(timeBarBG.height - 8), this, 'songPercent', 0, 1);
+			timeBar.screenCenter(X);
+			timeBar.scrollFactor.set();
+			if (!ClientPrefs.lowQuality || !ClientPrefs.optimize)
+				timeBar.numDivisions = 1000;
+			timeBar.alpha = 0;
+			timeBar.visible = showTime;
+			timeBarBG.sprTracker = timeBar;
 
-				add(timeBarBG);
-				add(timeBar);
-				add(timeTxt);
+			add(timeBarBG);
+			add(timeBar);
+			add(timeTxt);
 
-				updateTime = showTime;
-			});
+			updateTime = showTime;
 
 			// set up the Health Bar
 
@@ -216,8 +213,6 @@ class GameHUD extends FlxGroup
 			scoreTxt.scrollFactor.set();
 			scoreTxt.borderSize = PlayState.instance.inhumanSong ? 1 : 1.5;
 			scoreTxt.screenCenter(X);
-			if (!PlayState.instance.forceMiddleScroll)
-				scoreTxt.x += 140;
 			scoreTxt.visible = !PlayState.instance.cpuControlled;
 			add(scoreTxt);
 
@@ -417,26 +412,29 @@ class GameHUD extends FlxGroup
 	{
 		if (hudadded)
 		{
-			remove(healthBar);
-			var newWidth:Int = Std.int(healthBarBG.width - 8) - Std.int(healthBar.width * (PlayState.instance.maxHealth / 2));
-			healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, newWidth, Std.int(healthBarBG.height - 8), this, 'health',
-				PlayState.instance.maxHealth, 2);
-			healthBar.scrollFactor.set();
-			healthBar.visible = !PlayState.instance.cpuControlled;
-			remove(healthBarFG);
-			if (!ClientPrefs.optimize)
+			sys.thread.Thread.create(() ->
 			{
-				remove(iconP1);
-				remove(iconP2);
-			}
-			add(healthBar);
-			add(healthBarFG);
-			if (!ClientPrefs.optimize)
-			{
-				add(iconP1);
-				add(iconP2);
-			}
-			reloadHealthBarColors(fucktimer);
+				remove(healthBar);
+				var newWidth:Int = Std.int(healthBarBG.width - 8) - Std.int(healthBar.width * (PlayState.instance.maxHealth / 2));
+				healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, newWidth, Std.int(healthBarBG.height - 8), this, 'health',
+					PlayState.instance.maxHealth, 2);
+				healthBar.scrollFactor.set();
+				healthBar.visible = !PlayState.instance.cpuControlled;
+				remove(healthBarFG);
+				if (!ClientPrefs.optimize)
+				{
+					remove(iconP1);
+					remove(iconP2);
+				}
+				add(healthBar);
+				add(healthBarFG);
+				if (!ClientPrefs.optimize)
+				{
+					add(iconP1);
+					add(iconP2);
+				}
+				reloadHealthBarColors(fucktimer);
+			});
 		}
 	}
 

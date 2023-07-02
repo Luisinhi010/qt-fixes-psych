@@ -72,6 +72,7 @@ import cpp.Int64;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
+import sys.thread.Thread;
 #end
 #if VIDEOS_ALLOWED
 #if (hxCodec >= "2.6.1")
@@ -1214,6 +1215,7 @@ class PlayState extends MusicBeatState
 		}
 
 		// Moved gas effect to be useable across all songs!
+
 		if (!ClientPrefs.lowQuality && !ClientPrefs.optimize && !inhumanSong)
 		{
 			qt_gas01 = new FlxSprite();
@@ -1276,9 +1278,7 @@ class PlayState extends MusicBeatState
 				hazardOverlayShit.blend = OVERLAY;
 				add(hazardOverlayShit);
 			}
-		} // change layering to better optimization.
-		// ok before you make questions, this will help the persons that have ClientPrefs.flashing on and ClientPrefs.lowQuality off// this is stupid -Future Luis // ok, added ClientPrefs.optimize stuff now. -Future Future Luis
-		// again, this is stupid -Future Future Future Luis
+		}
 
 		kb_attack_alert = new KbAttackAlert();
 		if (!ClientPrefs.lowQuality && !ClientPrefs.optimize && ClientPrefs.flashing)
@@ -1307,27 +1307,30 @@ class PlayState extends MusicBeatState
 
 		if (!ClientPrefs.optimize)
 		{
-			pincer1 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
-			pincer2 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
-			pincer3 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
-			pincer4 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
-
-			for (sprite in [pincer1, pincer2, pincer3, pincer4])
+			Thread.create(() ->
 			{
-				sprite.antialiasing = ClientPrefs.globalAntialiasing;
-				sprite.scrollFactor.set();
-				if (ClientPrefs.downScroll)
+				pincer1 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
+				pincer2 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
+				pincer3 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
+				pincer4 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
+
+				for (sprite in [pincer1, pincer2, pincer3, pincer4])
 				{
-					sprite.angle = 270;
-					sprite.offset.set(192, -75);
+					sprite.antialiasing = ClientPrefs.globalAntialiasing;
+					sprite.scrollFactor.set();
+					if (ClientPrefs.downScroll)
+					{
+						sprite.angle = 270;
+						sprite.offset.set(192, -75);
+					}
+					else
+					{
+						sprite.angle = 90;
+						sprite.offset.set(218, 240);
+					}
 				}
-				else
-				{
-					sprite.angle = 90;
-					sprite.offset.set(218, 240);
-				}
-			}
-			pincers = [pincer1, pincer2, pincer3, pincer4];
+				pincers = [pincer1, pincer2, pincer3, pincer4];
+			});
 
 			// For the 'alarm' effect. Only added if flashling lights is allowed and low quality is off.
 			if (ClientPrefs.flashing && !ClientPrefs.lowQuality)
@@ -1514,15 +1517,19 @@ class PlayState extends MusicBeatState
 		#end
 
 		add(grpNoteSplashes);
-		if (!ClientPrefs.optimize)
-			for (i in [boyfriend.splashSkinFile, dad.splashSkinFile, gf.splashSkinFile])
-			{
-				var splash:NoteSplash = new NoteSplash(100, 100, 0);
 
-				splash.loadAnims(i);
-				grpNoteSplashes.add(splash);
-				splash.alpha = 0.00001;
-			}
+		Thread.create(() ->
+		{
+			if (!ClientPrefs.optimize)
+				for (i in [boyfriend.splashSkinFile, dad.splashSkinFile, gf.splashSkinFile])
+				{
+					var splash:NoteSplash = new NoteSplash(100, 100, 0);
+
+					splash.loadAnims(i);
+					grpNoteSplashes.add(splash);
+					splash.alpha = 0.00001;
+				}
+		});
 		opponentStrums = new FlxTypedGroup<StrumNote>();
 		playerStrums = new FlxTypedGroup<StrumNote>();
 		generateSong(SONG.song);
@@ -1722,20 +1729,25 @@ class PlayState extends MusicBeatState
 		callOnHaxes('createPost', []);
 		dacamera = defaultCamZoom;
 		super.create();
-		cacheCountdown();
-		cachePopUpScore();
-		for (key => type in precacheList)
+
+		Thread.create(() ->
 		{
-			switch (type)
+			cacheCountdown();
+			cachePopUpScore();
+			for (key => type in precacheList)
 			{
-				case 'image':
-					Paths.image(key);
-				case 'sound':
-					Paths.sound(key);
-				case 'music':
-					Paths.music(key);
+				switch (type)
+				{
+					case 'image':
+						Paths.image(key);
+					case 'sound':
+						Paths.sound(key);
+					case 'music':
+						Paths.music(key);
+				}
 			}
-		}
+		});
+
 		if (!ClientPrefs.persistentCaching)
 			Paths.clearUnusedMemory();
 		CustomFadeTransition.nextCamera = camOther;
@@ -1967,13 +1979,6 @@ class PlayState extends MusicBeatState
 						boyfriendGroup.add(newBoyfriend);
 						startCharacterPos(newBoyfriend);
 						newBoyfriend.alpha = 0.00001;
-						if (newBoyfriend.splashSkinFile != boyfriend.splashSkinFile)
-						{
-							var splash:NoteSplash = new NoteSplash(100, 100, 0);
-							splash.loadAnims(newBoyfriend.splashSkinFile);
-							grpNoteSplashes.add(splash);
-							splash.alpha = 0.00001;
-						}
 						startCharacterLua(newBoyfriend.curCharacter);
 					}
 				case 1:
@@ -1984,13 +1989,6 @@ class PlayState extends MusicBeatState
 						dadGroup.add(newDad);
 						startCharacterPos(newDad, true);
 						newDad.alpha = 0.00001;
-						if (newDad.splashSkinFile != dad.splashSkinFile)
-						{
-							var splash:NoteSplash = new NoteSplash(100, 100, 0);
-							splash.loadAnims(newDad.splashSkinFile);
-							grpNoteSplashes.add(splash);
-							splash.alpha = 0.00001;
-						}
 						startCharacterLua(newDad.curCharacter);
 					}
 				case 2:
@@ -2002,13 +2000,6 @@ class PlayState extends MusicBeatState
 						gfGroup.add(newGf);
 						startCharacterPos(newGf);
 						newGf.alpha = 0.00001;
-						if (newGf.splashSkinFile != gf.splashSkinFile)
-						{
-							var splash:NoteSplash = new NoteSplash(100, 100, 0);
-							splash.loadAnims(newGf.splashSkinFile);
-							grpNoteSplashes.add(splash);
-							splash.alpha = 0.00001;
-						}
 						startCharacterLua(newGf.curCharacter);
 					}
 			}
@@ -2198,6 +2189,7 @@ class PlayState extends MusicBeatState
 		video.playVideo(filepath);
 		video.finishCallback = function()
 		{
+			video.dispose();
 			startAndEnd();
 			return;
 		}
@@ -3091,25 +3083,28 @@ class PlayState extends MusicBeatState
 	{
 		if (ClientPrefs.laneunderlay)
 		{
-			for (i in 0...4)
+			Thread.create(() ->
 			{
-				var spr:StrumNote = null;
-				if (!isPlayer)
-					spr = opponentStrums.members[i];
-				else
-					spr = playerStrums.members[i];
-				if (spr != null)
+				for (i in 0...4)
 				{
-					var laneunderlays:FlxSprite = new FlxSprite(spr.x, 0).makeGraphic(/*Std.int(spr.width) + 4*/ 112, FlxG.height * 2, FlxColor.BLACK);
-					laneunderlays.scrollFactor.set();
-					laneunderlays.screenCenter(Y);
-					laneunderlays.offset.x += 2;
-					if (isPlayer)
-						laneunderlay.add(laneunderlays);
+					var spr:StrumNote = null;
+					if (!isPlayer)
+						spr = opponentStrums.members[i];
 					else
-						laneunderlayOpponent.add(laneunderlays);
+						spr = playerStrums.members[i];
+					if (spr != null)
+					{
+						var laneunderlays:FlxSprite = new FlxSprite(spr.x, 0).makeGraphic(/*Std.int(spr.width) + 4*/ 112, FlxG.height * 2, FlxColor.BLACK);
+						laneunderlays.scrollFactor.set();
+						laneunderlays.screenCenter(Y);
+						laneunderlays.offset.x += 2;
+						if (isPlayer)
+							laneunderlay.add(laneunderlays);
+						else
+							laneunderlayOpponent.add(laneunderlays);
+					}
 				}
-			}
+			});
 		}
 	}
 
@@ -3505,7 +3500,7 @@ class PlayState extends MusicBeatState
 			cancelMusicFadeTween();
 			MusicBeatState.switchState(new CharacterEditorState(SONG.player2));
 		}
-		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null && !endingSong && !isCameraOnForcedPos)
+		if (generatedMusic && !endingSong && !isCameraOnForcedPos)
 			moveCameraSection();
 
 		if (startedCountdown)
@@ -4036,12 +4031,11 @@ class PlayState extends MusicBeatState
 				if (!Achievements.isAchievementUnlocked('freeplay_depths')
 					&& Achievements.isAchievementUnlocked('cessation_beat')) // If you can access Interlope, allows for the Interlope hint to be shown.
 					wack = 100;
-				sys.thread.Thread.create(() ->
+				Thread.create(() ->
 				{
-					if (wack == 100) // Interlope secret screen
-						horror = new FlxSprite(-80).loadGraphic(Paths.image('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecretInterlope'));
-					else
-						horror = new FlxSprite(-80).loadGraphic(Paths.imageRandom('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecret0', 1, 9));
+					horror = new FlxSprite(-80)
+						.loadGraphic((wack == 100) ? Paths.image('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecretInterlope') : Paths.imageRandom('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecret0',
+							1, 9));
 					horror.scrollFactor.x = 0;
 					horror.scrollFactor.y = 0.15;
 					horror.setGraphicSize(Std.int(horror.width * 1.1));
@@ -6119,21 +6113,6 @@ class PlayState extends MusicBeatState
 			ratingGroup.add(rating);
 		}
 
-		var ratingGroup:FlxSpriteGroup = new FlxSpriteGroup();
-		var ratingX:Float = coolText.x - 40;
-		var ratingY:Float = 60;
-
-		if (ratingGroup.countDead() > 0)
-		{
-			rating = ratingGroup.getFirstDead();
-			rating.reset(ratingY, ratingY);
-		}
-		else
-		{
-			rating = new FlxSprite();
-			ratingGroup.add(rating);
-		}
-
 		rating.loadGraphic(Paths.image(daRating.image));
 		rating.cameras = [camHUD];
 		rating.screenCenter();
@@ -7430,9 +7409,6 @@ class PlayState extends MusicBeatState
 
 		if (SONG.notes[curSection] != null)
 		{
-			/*if (generatedMusic && !endingSong && !isCameraOnForcedPos)
-			moveCameraSection(); */
-
 			if (SONG.autoZoom)
 				zoomcam();
 
@@ -7704,7 +7680,7 @@ class PlayState extends MusicBeatState
 							unlock = true;
 
 					case 'termination_old':
-						if (classicTermination && !usedPractice)
+						if (Paths.formatToSongPath(SONG.song) == 'termination' && !usedPractice && storyDifficulty == 2)
 							unlock = true;
 
 					case 'sawblade_death':

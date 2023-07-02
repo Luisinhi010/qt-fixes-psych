@@ -494,7 +494,7 @@ class DialogueEditorState extends MusicBeatState
 		daText.delay = speedStepper.value;
 		daText.sound = soundInputText.text;
 		if (daText.sound != null && daText.sound.trim() == '')
-			daText.sound = 'dialogue';
+			daText.sound = 'dialogue/dialogue';
 
 		curAnim = 0;
 		character.reloadCharacterJson(characterInputText.text);

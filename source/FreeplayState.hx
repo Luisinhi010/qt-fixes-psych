@@ -131,7 +131,6 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 		WeekData.loadTheFirstEnabledMod();
-		// addSong("Interlope", 0, 'invis', FlxColor.fromRGB(0, 0, 0));
 		addSong("Carefree", 0, 'qt-menu', FlxColor.fromRGB(249, 64, 148));
 		addSong("Careless", 0, 'qt_annoyed', FlxColor.fromRGB(100, 90, 90));
 		addSong("Censory-Overload", 0, 'kb', FlxColor.fromRGB(69, 69, 69));
@@ -402,40 +401,43 @@ class FreeplayState extends MusicBeatState
 				if (curInstPlaying != curSelected)
 				{
 					#if PRELOAD_ALL
-					destroyFreeplayVocals();
-					FlxG.sound.music.volume = 0;
-					Paths.currentModDirectory = songs[curSelected].folder;
-					var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
-					PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-					if (PlayState.SONG.needsVoices)
+					sys.thread.Thread.create(() ->
 					{
-						if (ClientPrefs.qtOldVocals && PlayState.SONG.haveoldvoices)
-							vocals = new FlxSound().loadEmbedded(Paths.voicesCLASSIC(PlayState.SONG.song));
+						Paths.currentModDirectory = songs[curSelected].folder;
+						var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+						PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+						destroyFreeplayVocals();
+						// FlxG.sound.music.volume = 0;
+						if (PlayState.SONG.needsVoices)
+						{
+							if (ClientPrefs.qtOldVocals && PlayState.SONG.haveoldvoices)
+								vocals = new FlxSound().loadEmbedded(Paths.voicesCLASSIC(PlayState.SONG.song));
+							else
+								vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+						}
 						else
-							vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
-					}
-					else
-						vocals = new FlxSound();
+							vocals = new FlxSound();
 
-					PlayState.THISISFUCKINGDISGUSTINGPLEASESAVEME = false; // Forces playstate to not have this to true so it stops CoolUtil from breaking difficulty selection (or something). IDFK IT JUST WORKS SHUT UP I DON'T WANT FUCKING TO TALK ABOUT THIS VARIABLE
+						PlayState.THISISFUCKINGDISGUSTINGPLEASESAVEME = false; // Forces playstate to not have this to true so it stops CoolUtil from breaking difficulty selection (or something). IDFK IT JUST WORKS SHUT UP I DON'T WANT FUCKING TO TALK ABOUT THIS VARIABLE
 
-					Conductor.songPosition = FlxG.sound.music.time;
-					Conductor.mapBPMChanges(PlayState.SONG);
-					Conductor.changeBPM(PlayState.SONG.bpm);
-					curInstPlayingtxt = instPlayingtxt = songs[curSelected].songName.toLowerCase();
-					FlxG.sound.list.add(vocals);
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.7);
-					vocals.play();
-					vocals.persist = true;
-					vocals.looped = true;
-					vocals.volume = 0.7;
-					curInstPlaying = instPlaying = curSelected;
-					for (i in 0...iconArray.length)
-						iconArray[i].animation.curAnim.curFrame = 0;
-					iconArray[curInstPlaying].bounce();
-					if (iconArray[curInstPlaying].hasWinning)
-						iconArray[curInstPlaying].animation.curAnim.curFrame = 2;
-					curPlaying = true;
+						Conductor.songPosition = FlxG.sound.music.time;
+						Conductor.mapBPMChanges(PlayState.SONG);
+						Conductor.changeBPM(PlayState.SONG.bpm);
+						curInstPlayingtxt = instPlayingtxt = songs[curSelected].songName.toLowerCase();
+						FlxG.sound.list.add(vocals);
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.7);
+						vocals.play();
+						vocals.persist = true;
+						vocals.looped = true;
+						vocals.volume = 0.7;
+						curInstPlaying = instPlaying = curSelected;
+						for (i in 0...iconArray.length)
+							iconArray[i].animation.curAnim.curFrame = 0;
+						iconArray[curInstPlaying].bounce();
+						if (iconArray[curInstPlaying].hasWinning)
+							iconArray[curInstPlaying].animation.curAnim.curFrame = 2;
+						curPlaying = true;
+					});
 					#end
 				}
 			}
@@ -727,7 +729,9 @@ class FreeplayState extends MusicBeatState
 	private function positionHighscore()
 	{
 		menuScript.callFunc('positionHighscore', []);
-		var songlength:Int = songs.length - 21;
+		var songlength:Int = songs.length;
+		if (Achievements.isAchievementUnlocked('cessation_beat'))
+			songlength -= 21;
 		if (songlength < (curSelected + 1))
 			songlength = curSelected + 1;
 		countText.text = "(" + ((curSelected + 1) + "/" + (songlength)) + ")";

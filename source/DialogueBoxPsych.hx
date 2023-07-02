@@ -306,7 +306,7 @@ class DialogueBoxPsych extends FlxSpriteGroup
 	var daText:TypedAlphabet = null;
 	var ignoreThisFrame:Bool = true; // First frame is reserved for loading dialogue images
 
-	public var closeSound:String = 'dialogueClose';
+	public var closeSound:String = 'dialogue/dialogueClose';
 	public var closeVolume:Float = 1;
 
 	override function update(elapsed:Float)
@@ -556,7 +556,7 @@ class DialogueBoxPsych extends FlxSpriteGroup
 		daText.text = curDialogue.text;
 		daText.sound = curDialogue.sound;
 		if (daText.sound == null || daText.sound.trim() == '')
-			daText.sound = 'dialogue';
+			daText.sound = 'dialogue/dialogue';
 
 		daText.y = DEFAULT_TEXT_Y;
 		if (daText.rows > 2)

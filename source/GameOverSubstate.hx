@@ -146,11 +146,14 @@ class GameOverSubstate extends MusicBeatSubstate
 			#if ACHIEVEMENTS_ALLOWED
 			if (Achievements.sawbladeDeath >= 24 && !Achievements.isAchievementUnlocked('sawblade_death'))
 			{
-				var achievementObj:Achievements.AchievementObject = new Achievements.AchievementObject('sawblade_death');
 				Achievements.achievementsMap.set('sawblade_death', true);
-				FlxG.sound.play(Paths.sound('hazard/attack', 'shared'), 0.4);
-				achievementObj.cameras = [camHUD];
-				add(achievementObj);
+				sys.thread.Thread.create(() ->
+				{
+					var achievementObj:Achievements.AchievementObject = new Achievements.AchievementObject('sawblade_death');
+					FlxG.sound.play(Paths.sound('LuisAchievement', 'preload'), 0.6);
+					achievementObj.cameras = [camHUD];
+					add(achievementObj);
+				});
 				FlxG.save.flush();
 				ClientPrefs.saveSettings();
 			}

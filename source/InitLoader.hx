@@ -32,25 +32,26 @@ class InitLoader extends FlxState
 		return SystemVer;
 	}
 
-	public static final Lang:String = Capabilities.language;
-	public static final Os:String = Capabilities.os;
+	// public static final Lang:String = Capabilities.language;
+	// public static final Os:String = Capabilities.os;
 
 	override public function create()
 	{
 		super.create();
 
-		#if cpp
-		WindowsData.enableVisualStyles();
-		WindowsData.setWindowColorMode(DARK);
+		sys.thread.Thread.create(() ->
+		{
+			#if cpp
+			WindowsData.enableVisualStyles();
+			WindowsData.setWindowColorMode(DARK);
 
-		trace('${Capabilities.screenResolutionX}, ${Capabilities.screenResolutionY}, ${Capabilities.screenDPI}');
-
-		lore.Colorblind.updateFilter();
-		checkSpecs(Cpu, Ram);
-		ClientPrefs.loadSettings();
-		Locale.init();
-		#end
-		FlxG.switchState(new TitleState());
+			lore.Colorblind.updateFilter();
+			checkSpecs(Cpu, Ram);
+			ClientPrefs.loadSettings();
+			Locale.init();
+			#end
+			FlxG.switchState(new TitleState());
+		});
 	}
 
 	function checkSpecs(cpu:Bool, ram:UInt64)

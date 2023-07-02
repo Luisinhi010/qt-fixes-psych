@@ -66,7 +66,6 @@ class Paths
 					var isTexture:Bool = currentTrackedTextures.exists(key);
 					if (isTexture)
 					{
-						trace(key);
 						var texture = currentTrackedTextures.get(key);
 						texture.dispose();
 						texture = null;

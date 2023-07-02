@@ -15,11 +15,12 @@ var lastalpha:Float;
 function postCreate()
 {
 	var checker:FlxBackdrop = new FlxBackdrop(Paths.image('luis/qt-fixes/Checker'), 0.2, 0.2, true, true);
-	checker.alpha = 0.5;
+	checker.alpha = 0.4;
 	MainMenuState.insert(MainMenuState.members.indexOf(MainMenuState.menuItems), checker);
 	checker.scrollFactor.set(0, 0.07);
 	checker.velocity.x -= 45;
 	checker.velocity.y -= 16;
+
 	if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 	{
 		iconBG = new FlxSprite().loadGraphic(Paths.image('luis/qt-fixes/iconbackground'));
@@ -29,6 +30,7 @@ function postCreate()
 		iconBG.antialiasing = ClientPrefs.globalAntialiasing;
 		MainMenuState.add(iconBG);
 	}
+
 	icon = new HealthIcon('bf');
 	icon.antialiasing = ClientPrefs.globalAntialiasing;
 	icon.x = 70;
@@ -130,9 +132,7 @@ function postCreate()
 function postcloseSubState()
 {
 	if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
-	{
 		vignette1.alpha = lastalpha;
-	}
 }
 /*function beatHit(curBeat)//testing other functions
 	{

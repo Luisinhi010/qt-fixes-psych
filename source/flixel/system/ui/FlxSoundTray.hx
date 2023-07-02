@@ -10,6 +10,7 @@ import flash.text.TextFormat;
 import flash.text.TextFormatAlign;
 import flixel.FlxG;
 import flixel.system.FlxAssets;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 #if flash
 import flash.text.AntiAliasType;
@@ -69,6 +70,9 @@ class FlxSoundTray extends Sprite
 	/**Whether or not changing the volume should make noise.**/
 	public var silent:Bool = false;
 
+	/**For the Bars Animation**/
+	public var barTween:FlxTween;
+
 	/**
 	 * Sets up the "sound tray", the little volume meter that pops down sometimes.
 	 */
@@ -119,6 +123,7 @@ class FlxSoundTray extends Sprite
 		}
 
 		y = -height;
+		// barTween.followGlobalSpeed = false;
 		visible = false;
 	}
 
@@ -173,6 +178,23 @@ class FlxSoundTray extends Sprite
 
 		for (i in 0..._bars.length)
 			_bars[i].alpha = (i < globalVolume) ? 1 : 0.5;
+
+		var bar = _bars[globalVolume - 1];
+
+		if (bar != null)
+		{
+			if (barTween != null)
+				barTween.cancel();
+
+			bar.scaleX = up ? 1.075 : 0.925;
+			bar.scaleY = up ? 1.075 : 0.925;
+			barTween = FlxTween.tween(bar, {"scaleX": 1, "scaleY": 1}, 0.2, {
+				onComplete: function(twn:FlxTween)
+				{
+					barTween = null;
+				}
+			});
+		}
 	}
 
 	public function screenCenter():Void

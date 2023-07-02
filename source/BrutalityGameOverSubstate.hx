@@ -117,6 +117,7 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 		retry.animation.play('empty');
 
 		killedByGAMEOVER = killedBy;
+
 		displayDeathText(false);
 
 		scoreTxt = new FlxText(0, FlxG.height, FlxG.width, PlayState.instance.gameHUD.scoreTxt.text, 24);
@@ -205,6 +206,22 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 			new FlxTimer().start(0.795, function(tmr:FlxTimer)
 			{
 				FlxTween.tween(hazardNoise, {alpha: 0}, 1.25, {ease: FlxEase.quadOut});
+				#if ACHIEVEMENTS_ALLOWED
+				if (Achievements.sawbladeDeath >= 24
+					&& !Achievements.isAchievementUnlocked('sawblade_death')
+					&& killedByGAMEOVER == "sawblade")
+				{
+					Achievements.achievementsMap.set('sawblade_death', true);
+					sys.thread.Thread.create(() ->
+					{
+						var achievementObj:Achievements.AchievementObject = new Achievements.AchievementObject('sawblade_death');
+						FlxG.sound.play(Paths.sound('LuisAchievement', 'preload'), 0.6);
+						insert(members.indexOf(scoreTxt), achievementObj);
+					});
+					FlxG.save.flush();
+					ClientPrefs.saveSettings();
+				}
+				#end
 			});
 
 			new FlxTimer().start(0.96, function(tmr:FlxTimer)
@@ -212,8 +229,11 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 				if (hazardInterlopeLaugh != null)
 					FlxTween.tween(hazardInterlopeLaugh, {alpha: 0}, 1.36, {ease: FlxEase.quadOut});
 
-				retry.animation.play('start');
-				retry.alpha = 0.8;
+				if (retry != null)
+				{
+					retry.animation.play('start');
+					retry.alpha = 0.8;
+				}
 			});
 		}
 
