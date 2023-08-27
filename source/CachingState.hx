@@ -16,7 +16,7 @@ import sys.FileSystem;
 
 using StringTools;
 
-class Cache extends MusicBeatState
+class CachingState extends MusicBeatState
 {
 	var toBeDone = 0;
 	var done = 0;

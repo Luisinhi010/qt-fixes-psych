@@ -66,9 +66,6 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 	{
 		musicplaying = false;
 
-		trace("Killed by: ", killedBy);
-		trace("Character: ", characterName);
-
 		PlayState.instance.setOnLuas('inGameOver', true);
 		super();
 
@@ -83,7 +80,7 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 			hazardInterlopeLaugh = new FlxSprite();
 			hazardInterlopeLaugh.frames = Paths.getSparrowAtlas('hazard/inhuman-port/ameliaTaunt');
 			hazardInterlopeLaugh.animation.addByPrefix('laugh1', 'Amelia_Chuckle', 24, true);
-			hazardInterlopeLaugh.antialiasing = ClientPrefs.globalAntialiasing;
+			hazardInterlopeLaugh.antialiasing = ClientPrefs.antialiasing;
 			hazardInterlopeLaugh.setGraphicSize(Std.int(hazardInterlopeLaugh.width * 0.7));
 			hazardInterlopeLaugh.screenCenter();
 			hazardInterlopeLaugh.y += 200;
@@ -98,7 +95,7 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 		connection.animation.addByPrefix('idle', "gameover-lost-loop", 24, true);
 		connection.screenCenter();
 		connection.y -= 140;
-		connection.antialiasing = ClientPrefs.globalAntialiasing;
+		connection.antialiasing = ClientPrefs.antialiasing;
 		add(connection);
 		connection.animation.play('idle');
 
@@ -111,7 +108,7 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 		retry.screenCenter();
 		retry.x -= 150;
 		retry.y += 200;
-		retry.antialiasing = ClientPrefs.globalAntialiasing;
+		retry.antialiasing = ClientPrefs.antialiasing;
 		add(retry);
 		retry.alpha = 0;
 		retry.animation.play('empty');
@@ -142,7 +139,7 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 		hazardNoise = new FlxSprite();
 		hazardNoise.frames = Paths.getSparrowAtlas('hazard/inhuman-port/noise');
 		hazardNoise.animation.addByPrefix('idle', 'noise', 48, true);
-		hazardNoise.antialiasing = ClientPrefs.globalAntialiasing;
+		hazardNoise.antialiasing = ClientPrefs.antialiasing;
 		hazardNoise.setGraphicSize(Std.int(hazardNoise.width * 3.4));
 		hazardNoise.screenCenter();
 		hazardNoise.x += 235;
@@ -187,9 +184,7 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 		super.update(elapsed);
 
 		if (musicplaying && FlxG.sound.music.volume < 0.8)
-		{
 			FlxG.sound.music.volume += 0.25 * FlxG.elapsed;
-		}
 
 		if (!ClientPrefs.lowQuality)
 		{
@@ -215,7 +210,7 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 					sys.thread.Thread.create(() ->
 					{
 						var achievementObj:Achievements.AchievementObject = new Achievements.AchievementObject('sawblade_death');
-						FlxG.sound.play(Paths.sound('LuisAchievement', 'preload'), 0.6);
+						FlxG.sound.play(Paths.sound('LuisAchievement', 'preload'));
 						insert(members.indexOf(scoreTxt), achievementObj);
 					});
 					FlxG.save.flush();

@@ -94,7 +94,7 @@ class BWShaderGLSL extends FlxShader
 	}
 }
 
-class CustomBlueShader // "stoled" (used with permission, i need to make this clear) from yoshi engine termination port (by yoshi crafter)
+class CustomBlueShader // from yoshi engine termination port (by yoshi crafter)
 {
 	public var shader(default, null):BlueShader = new BlueShader();
 

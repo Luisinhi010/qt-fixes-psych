@@ -27,12 +27,12 @@ function postCreate()
 		iconBG.y = FlxG.height - iconBG.height;
 		iconBG.scrollFactor.set();
 		iconBG.updateHitbox();
-		iconBG.antialiasing = ClientPrefs.globalAntialiasing;
+		iconBG.antialiasing = ClientPrefs.antialiasing;
 		MainMenuState.add(iconBG);
 	}
 
 	icon = new HealthIcon('bf');
-	icon.antialiasing = ClientPrefs.globalAntialiasing;
+	icon.antialiasing = ClientPrefs.antialiasing;
 	icon.x = 70;
 	icon.y = FlxG.height - 180;
 	icon.scrollFactor.set();

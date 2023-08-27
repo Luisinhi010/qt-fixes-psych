@@ -156,7 +156,7 @@ class FlashingState extends MusicBeatState
 		MusicBeatState.switchState(new TitleState());
 		#if sys
 		else
-			MusicBeatState.switchState(new Cache());
+			MusicBeatState.switchState(new CachingState());
 		#end
 	}
 }

@@ -38,6 +38,9 @@ class CoolUtil
 	inline public static function quantize(f:Float, snap:Float):Float
 		return Math.fround(f * snap) / snap; // changed so this actually works lol
 
+	inline public static function capitalize(text:String)
+		return text.charAt(0).toUpperCase() + text.substr(1).toLowerCase();
+
 	public static function getDifficultyFilePath(num:Null<Int> = null):String
 	{
 		if (num == null)
@@ -74,9 +77,7 @@ class CoolUtil
 	}
 
 	inline public static function boundTo(value:Float, min:Float, max:Float):Float
-	{
 		return Math.max(min, Math.min(max, value));
-	}
 
 	public static function coolTextFile(path:String):Array<String>
 	{
@@ -297,14 +298,13 @@ class CoolUtil
 	public static function getUsername()
 	{
 		#if sys
-		if (ClientPrefs.usePlayerUsername)
-		{
+		/*
 			var envs = Sys.environment();
 			if (envs.exists("USERNAME"))
 				return envs["USERNAME"];
 			if (envs.exists("USER"))
 				return envs["USER"];
-		}
+		 */
 		#end
 		return null;
 	}
@@ -312,7 +312,7 @@ class CoolUtil
 	public static function getUsernameOption()
 	{
 		#if sys
-		if (getUsername() != null && ClientPrefs.usePlayerUsername && FlxG.save.data.usePlayerUsername != null)
+		if (getUsername() != null)
 			return true;
 		#end
 		return false;

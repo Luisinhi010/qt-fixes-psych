@@ -23,13 +23,7 @@ class PauseSubState extends MusicBeatSubstate
 
 	var menuItems:Array<Array<String>> = [[], []];
 	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Go to Options', 'Exit to menu'];
-	var menuItemsShown:Array<String> = [
-		Locale.get("resumePauseText"),
-		Locale.get("restartPauseText"),
-		Locale.get("changediffPauseText"),
-		Locale.get("optionsPauseText"),
-		Locale.get("exitPauseText")
-	];
+	var menuItemsShown:Array<String> = Locale.pauseItens.copy();
 	var difficultyChoices = [];
 	var curSelected:Int = 0;
 

@@ -67,14 +67,14 @@ class DialogueEditorState extends MusicBeatState
 		};
 
 		character = new DialogueCharacter();
-		character.antialiasing = ClientPrefs.globalAntialiasing;
+		character.antialiasing = ClientPrefs.antialiasing;
 		character.scrollFactor.set();
 		add(character);
 
 		box = new FlxSprite(70, 370);
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
-		box.antialiasing = ClientPrefs.globalAntialiasing;
+		box.antialiasing = ClientPrefs.antialiasing;
 		box.animation.addByPrefix('normal', 'speech bubble normal', CoolUtil.getFramerate(24));
 		box.animation.addByPrefix('angry', 'AHH speech bubble', CoolUtil.getFramerate(24));
 		box.animation.addByPrefix('center', 'speech bubble middle', CoolUtil.getFramerate(24));

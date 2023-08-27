@@ -66,9 +66,6 @@ import Shaders;
 import flixel.addons.display.FlxRuntimeShader;
 import openfl.filters.ShaderFilter;
 #end
-#if cpp
-import cpp.Int64;
-#end
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -651,8 +648,8 @@ class PlayState extends MusicBeatState
 
 		CustomFadeTransition.nextCamera = camOther;
 
-		camGAS.flashSprite.scaleY *= ClientPrefs.downScroll ? -1 : 1;
-		// this is lazy but works ;) -Luis
+		if (ClientPrefs.downScroll)
+			camGAS.flashSprite.scaleY *= -1;
 
 		// camHUD.flashSprite.scaleX *= -1;
 
@@ -887,7 +884,7 @@ class PlayState extends MusicBeatState
 					qt_tv01.setPosition(-62, 540);
 					qt_tv01.setGraphicSize(Std.int(qt_tv01.width * 1.2));
 					qt_tv01.updateHitbox();
-					qt_tv01.antialiasing = ClientPrefs.globalAntialiasing;
+					qt_tv01.antialiasing = ClientPrefs.antialiasing;
 					qt_tv01.scrollFactor.set(0.9, 0.9);
 					qt_tv01.moves = false;
 					add(qt_tv01);
@@ -908,7 +905,7 @@ class PlayState extends MusicBeatState
 					qt_tv01 = new FlxSprite(-62, 540).loadGraphic(Paths.image('hazard/qt-port/stage/TV_off'));
 					qt_tv01.setGraphicSize(Std.int(qt_tv01.width * 1.2));
 					qt_tv01.updateHitbox();
-					qt_tv01.antialiasing = ClientPrefs.globalAntialiasing;
+					qt_tv01.antialiasing = ClientPrefs.antialiasing;
 					qt_tv01.scrollFactor.set(0.9, 0.9);
 					qt_tv01.active = false;
 					qt_tv01.moves = false;
@@ -922,7 +919,7 @@ class PlayState extends MusicBeatState
 					var streetFront:FlxSprite = new FlxSprite(-820, 710).loadGraphic(Paths.image('hazard/qt-port/stage/streetFront'));
 					streetFront.setGraphicSize(Std.int(streetFront.width * 1.15));
 					streetFront.updateHitbox();
-					streetFront.antialiasing = ClientPrefs.globalAntialiasing;
+					streetFront.antialiasing = ClientPrefs.antialiasing;
 					streetFront.scrollFactor.set(0.95, 0.95);
 					streetFront.active = false;
 					streetFront.moves = false;
@@ -947,7 +944,7 @@ class PlayState extends MusicBeatState
 					qt_tv01.setPosition(-62, 540);
 					qt_tv01.setGraphicSize(Std.int(qt_tv01.width * 1.2));
 					qt_tv01.updateHitbox();
-					qt_tv01.antialiasing = ClientPrefs.globalAntialiasing;
+					qt_tv01.antialiasing = ClientPrefs.antialiasing;
 					qt_tv01.scrollFactor.set(0.9, 0.9);
 					qt_tv01.moves = false;
 					add(qt_tv01);
@@ -963,13 +960,13 @@ class PlayState extends MusicBeatState
 
 						// Back Layer - Error (glitched version of normal Back)
 						streetBGerror = new FlxSprite(-750, -145).loadGraphic(Paths.image('hazard/qt-port/stage/streetBackError'));
-						streetBGerror.antialiasing = ClientPrefs.globalAntialiasing;
+						streetBGerror.antialiasing = ClientPrefs.antialiasing;
 						streetBGerror.scrollFactor.set(0.95, 0.95);
 						streetBGerror.moves = false;
 						add(streetBGerror);
 						streetBGerror1 = new FlxSprite(streetBGerror.x + streetBGerror.width,
 							streetBGerror.y).loadGraphic(Paths.image('hazard/qt-port/stage/streetBackError'));
-						streetBGerror1.antialiasing = ClientPrefs.globalAntialiasing;
+						streetBGerror1.antialiasing = ClientPrefs.antialiasing;
 						streetBGerror1.flipX = true;
 						streetBGerror1.scrollFactor.set(0.95, 0.95);
 						streetBGerror1.moves = false;
@@ -978,13 +975,13 @@ class PlayState extends MusicBeatState
 
 					// Back Layer - Normal
 					streetBG = new FlxSprite(-750, -145).loadGraphic(Paths.image('hazard/qt-port/stage/streetBack'));
-					streetBG.antialiasing = ClientPrefs.globalAntialiasing;
+					streetBG.antialiasing = ClientPrefs.antialiasing;
 					streetBG.scrollFactor.set(0.95, 0.95);
 					streetBG.moves = false;
 					add(streetBG);
 
 					streetBG1 = new FlxSprite(streetBG.x + streetBG.width, streetBG.y).loadGraphic(Paths.image('hazard/qt-port/stage/streetBack'));
-					streetBG1.antialiasing = ClientPrefs.globalAntialiasing;
+					streetBG1.antialiasing = ClientPrefs.antialiasing;
 					streetBG1.flipX = true;
 					streetBG1.scrollFactor.set(0.95, 0.95);
 					streetBG1.moves = false;
@@ -1003,7 +1000,7 @@ class PlayState extends MusicBeatState
 						streetFrontError = new FlxSprite(-820, 710).loadGraphic(Paths.image('hazard/qt-port/stage/streetFrontError'));
 						streetFrontError.setGraphicSize(Std.int(streetFrontError.width * 1.15));
 						streetFrontError.updateHitbox();
-						streetFrontError.antialiasing = ClientPrefs.globalAntialiasing;
+						streetFrontError.antialiasing = ClientPrefs.antialiasing;
 						streetFrontError.scrollFactor.set(0.95, 0.95);
 						streetFrontError.active = false;
 						streetFrontError.moves = false;
@@ -1030,7 +1027,7 @@ class PlayState extends MusicBeatState
 					qt_tv01.setPosition(-62, 540);
 					qt_tv01.setGraphicSize(Std.int(qt_tv01.width * 1.2));
 					qt_tv01.updateHitbox();
-					qt_tv01.antialiasing = ClientPrefs.globalAntialiasing;
+					qt_tv01.antialiasing = ClientPrefs.antialiasing;
 					qt_tv01.scrollFactor.set(0.9, 0.9);
 					qt_tv01.moves = false;
 					add(qt_tv01);
@@ -1043,7 +1040,7 @@ class PlayState extends MusicBeatState
 					{
 						// Far Back Layer - Error (blue screen)
 						var errorBG:FlxSprite = new FlxSprite(-600, -150).loadGraphic(Paths.image('hazard/qt-port/stage/streetError'));
-						errorBG.antialiasing = ClientPrefs.globalAntialiasing;
+						errorBG.antialiasing = ClientPrefs.antialiasing;
 						errorBG.scrollFactor.set(0.95, 0.95);
 						errorBG.active = false;
 						errorBG.moves = false;
@@ -1051,13 +1048,13 @@ class PlayState extends MusicBeatState
 
 						// Back Layer - Error (glitched version of normal Back)
 						streetBGerror = new FlxSprite(-750, -145).loadGraphic(Paths.image('hazard/qt-port/stage/streetBackError'));
-						streetBGerror.antialiasing = ClientPrefs.globalAntialiasing;
+						streetBGerror.antialiasing = ClientPrefs.antialiasing;
 						streetBGerror.scrollFactor.set(0.95, 0.95);
 						streetBGerror.moves = false;
 						add(streetBGerror);
 						streetBGerror1 = new FlxSprite(streetBGerror.x + streetBGerror.width,
 							streetBGerror.y).loadGraphic(Paths.image('hazard/qt-port/stage/streetBackError'));
-						streetBGerror1.antialiasing = ClientPrefs.globalAntialiasing;
+						streetBGerror1.antialiasing = ClientPrefs.antialiasing;
 						streetBGerror1.flipX = true;
 						streetBGerror1.scrollFactor.set(0.95, 0.95);
 						streetBGerror1.moves = false;
@@ -1066,13 +1063,13 @@ class PlayState extends MusicBeatState
 
 					// Back Layer - Normal
 					streetBG = new FlxSprite(-750, -145).loadGraphic(Paths.image('hazard/qt-port/stage/streetBack'));
-					streetBG.antialiasing = ClientPrefs.globalAntialiasing;
+					streetBG.antialiasing = ClientPrefs.antialiasing;
 					streetBG.scrollFactor.set(0.95, 0.95);
 					streetBG.moves = false;
 					add(streetBG);
 
 					streetBG1 = new FlxSprite(streetBG.x + streetBG.width, streetBG.y).loadGraphic(Paths.image('hazard/qt-port/stage/streetBack'));
-					streetBG1.antialiasing = ClientPrefs.globalAntialiasing;
+					streetBG1.antialiasing = ClientPrefs.antialiasing;
 					streetBG1.flipX = true;
 					streetBG1.scrollFactor.set(0.95, 0.95);
 					streetBG.moves = false;
@@ -1082,7 +1079,7 @@ class PlayState extends MusicBeatState
 					var streetFront:FlxSprite = new FlxSprite(-820, 710).loadGraphic(Paths.image('hazard/qt-port/stage/streetFront'));
 					streetFront.setGraphicSize(Std.int(streetFront.width * 1.15));
 					streetFront.updateHitbox();
-					streetFront.antialiasing = ClientPrefs.globalAntialiasing;
+					streetFront.antialiasing = ClientPrefs.antialiasing;
 					streetFront.scrollFactor.set(0.95, 0.95);
 					streetFront.active = false;
 					streetFront.moves = false;
@@ -1094,7 +1091,7 @@ class PlayState extends MusicBeatState
 						streetFrontError = new FlxSprite(-820, 710).loadGraphic(Paths.image('hazard/qt-port/stage/streetFrontError'));
 						streetFrontError.setGraphicSize(Std.int(streetFrontError.width * 1.15));
 						streetFrontError.updateHitbox();
-						streetFrontError.antialiasing = ClientPrefs.globalAntialiasing;
+						streetFrontError.antialiasing = ClientPrefs.antialiasing;
 						streetFrontError.scrollFactor.set(0.95, 0.95);
 						streetFrontError.active = false;
 						streetFrontError.moves = false;
@@ -1121,7 +1118,7 @@ class PlayState extends MusicBeatState
 					qt_tv01.setPosition(-62, 540);
 					qt_tv01.setGraphicSize(Std.int(qt_tv01.width * 1.2));
 					qt_tv01.updateHitbox();
-					qt_tv01.antialiasing = ClientPrefs.globalAntialiasing;
+					qt_tv01.antialiasing = ClientPrefs.antialiasing;
 					qt_tv01.scrollFactor.set(0.9, 0.9);
 					qt_tv01.moves = false;
 					add(qt_tv01);
@@ -1139,7 +1136,7 @@ class PlayState extends MusicBeatState
 					hazardBGkb.animation.addByPrefix('pulse', 'kbBACK-pulse', 24, false);
 					hazardBGkb.x = -590;
 					hazardBGkb.y = -250;
-					hazardBGkb.antialiasing = ClientPrefs.globalAntialiasing;
+					hazardBGkb.antialiasing = ClientPrefs.antialiasing;
 					hazardBGkb.scrollFactor.set(1, 1);
 					hazardBGkb.setGraphicSize(Std.int(hazardBGkb.width * 1.1));
 					hazardBGkb.updateHitbox();
@@ -1184,7 +1181,7 @@ class PlayState extends MusicBeatState
 						hazardInterlopeLaugh.frames = Paths.getSparrowAtlas('hazard/inhuman-port/ameliaTaunt', 'shared', ClientPrefs.gpurendering);
 						hazardInterlopeLaugh.animation.addByPrefix('laugh1', 'Amelia_Chuckle', 24, true);
 						hazardInterlopeLaugh.animation.addByPrefix('laugh2', 'Amelia_Laugh', 30, true);
-						hazardInterlopeLaugh.antialiasing = ClientPrefs.globalAntialiasing;
+						hazardInterlopeLaugh.antialiasing = ClientPrefs.antialiasing;
 						hazardInterlopeLaugh.setGraphicSize(Std.int(hazardInterlopeLaugh.width * 1.3));
 						hazardInterlopeLaugh.screenCenter();
 						hazardInterlopeLaugh.x += 272;
@@ -1228,7 +1225,7 @@ class PlayState extends MusicBeatState
 				gas.animation.addByPrefix('burstALT', 'Gas_Release', 49, false);
 				gas.animation.addByPrefix('burstFAST', 'Gas_Release', 76, false);
 				gas.animation.addByIndices('burstLoop', 'Gas_Release', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], "", 38, true);
-				gas.antialiasing = ClientPrefs.globalAntialiasing;
+				gas.antialiasing = ClientPrefs.antialiasing;
 				gas.alpha = 0.62;
 			}
 			qt_gaskb.setGraphicSize(Std.int(qt_gaskb.width * 1.6));
@@ -1292,7 +1289,7 @@ class PlayState extends MusicBeatState
 			kb_attack_saw.animation.addByPrefix('fire', 'kb_attack_animation_fire', 24, false);
 			kb_attack_saw.animation.addByPrefix('prepare', 'kb_attack_animation_prepare', 24, false);
 			kb_attack_saw.setGraphicSize(Std.int(kb_attack_saw.width * 1.15));
-			kb_attack_saw.antialiasing = ClientPrefs.globalAntialiasing;
+			kb_attack_saw.antialiasing = ClientPrefs.antialiasing;
 			kb_attack_saw.setPosition(-960, BF_Y + 450); // now sawblades have the (almost) the same y than the bf y
 			kb_attack_saw.offset.set(-340, -20); // update the offset before
 			if (ClientPrefs.shaders)
@@ -1316,7 +1313,7 @@ class PlayState extends MusicBeatState
 
 				for (sprite in [pincer1, pincer2, pincer3, pincer4])
 				{
-					sprite.antialiasing = ClientPrefs.globalAntialiasing;
+					sprite.antialiasing = ClientPrefs.antialiasing;
 					sprite.scrollFactor.set();
 					if (ClientPrefs.downScroll)
 					{
@@ -1686,8 +1683,8 @@ class PlayState extends MusicBeatState
 		if (ClientPrefs.hitsoundVolume > 0)
 			precacheList.set('ChartingTick', 'sound');
 		#if sys
-		for (i in 0...Cache.coolsounds.length)
-			precacheList.set(Cache.coolsounds[i], 'sound');
+		for (i in 0...CachingState.coolsounds.length)
+			precacheList.set(CachingState.coolsounds[i], 'sound');
 		#end
 		if (PauseSubState.songName != null)
 			precacheList.set(PauseSubState.songName, 'music');
@@ -1775,7 +1772,7 @@ class PlayState extends MusicBeatState
 			// BG
 			horrorStage.frames = Paths.getSparrowAtlas('hazard/qt-port/stage/horrorbg', 'shared', ClientPrefs.gpurendering);
 			horrorStage.animation.addByPrefix('idle', 'Symbol 10 instance ', CoolUtil.getFramerate(24), false);
-			horrorStage.antialiasing = ClientPrefs.globalAntialiasing;
+			horrorStage.antialiasing = ClientPrefs.antialiasing;
 			horrorStage.scrollFactor.set();
 			horrorStage.screenCenter();
 			// QT sprite
@@ -2223,8 +2220,8 @@ class PlayState extends MusicBeatState
 		{
 			inCutscene = true;
 			#if sys
-			for (i in 0...Cache.dialoguesounds.length)
-				precacheList.set(Cache.dialoguesounds[i], 'sound');
+			for (i in 0...CachingState.dialoguesounds.length)
+				precacheList.set(CachingState.dialoguesounds[i], 'sound');
 			#end
 			psychDialogue = new DialogueBoxPsych(dialogueFile, song);
 			psychDialogue.scrollFactor.set();
@@ -2376,7 +2373,7 @@ class PlayState extends MusicBeatState
 				introAssets.set('default', ['prepare', 'ready', 'set', 'go']);
 
 				var introAlts:Array<String> = introAssets.get('default');
-				var antialias:Bool = ClientPrefs.globalAntialiasing;
+				var antialias:Bool = ClientPrefs.antialiasing;
 
 				switch (swagCounter)
 				{
@@ -3738,7 +3735,7 @@ class PlayState extends MusicBeatState
 					notes.members.indexOf(dunceNote),
 					dunceNote.noteData,
 					dunceNote.noteType,
-					(dunceNote.isSustainNote || dunceNote.isFakeSustainNote)
+					dunceNote.isSustainNote
 				]);
 				callOnHaxes('spawnNote', [dunceNote]);
 
@@ -3804,7 +3801,7 @@ class PlayState extends MusicBeatState
 								daNote.y = strumY + Math.sin(angleDir) * daNote.distance;
 
 								// Jesus fuck this took me so much mother fucking time AAAAAAAAAA
-								if (downScroll && (daNote.isSustainNote || daNote.isFakeSustainNote))
+								if (downScroll && daNote.isSustainNote)
 								{
 									if (daNote.animation.curAnim.name.endsWith('end'))
 									{
@@ -3840,17 +3837,17 @@ class PlayState extends MusicBeatState
 
 							if (!daNote.blockHit && daNote.mustPress && cpuControlled && daNote.canBeHit)
 							{
-								if (daNote.isSustainNote || daNote.isFakeSustainNote)
+								if (daNote.isSustainNote)
 								{
 									if (daNote.canBeHit)
 										goodNoteHit(daNote);
 								}
-								else if (daNote.strumTime <= Conductor.songPosition || (daNote.isSustainNote || daNote.isFakeSustainNote))
+								else if (daNote.strumTime <= Conductor.songPosition || daNote.isSustainNote)
 									goodNoteHit(daNote);
 							}
 
 							var center:Float = strumY + Note.swagWidth / 2;
-							if (strumGroup.members[daNote.noteData].sustainReduce
+							if (daNote.sustainReduce
 								&& daNote.isSustainNote
 								&& (daNote.mustPress || !daNote.ignoreNote)
 								&& (!daNote.mustPress
@@ -4041,7 +4038,7 @@ class PlayState extends MusicBeatState
 					horror.setGraphicSize(Std.int(horror.width * 1.1));
 					horror.updateHitbox();
 					horror.screenCenter();
-					horror.antialiasing = ClientPrefs.globalAntialiasing;
+					horror.antialiasing = ClientPrefs.antialiasing;
 					horror.cameras = [camOther];
 					var visiblityShit:Bool = camHUD.visible; // In case the HUD starts invisible or visible, I do this shit instead.
 					camHUD.visible = false; // nah looks good, i would update to use the Paths.imagerandom but idk anymore xd -Luis // updated -Future luis
@@ -4645,7 +4642,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-			case 'InterlopeEffect' | '??????':
+			case 'InterlopeEffect':
 				var modChartEffectShit:Int = Std.parseInt(value1);
 				if (Math.isNaN(modChartEffectShit))
 					modChartEffectShit = 0;
@@ -5812,7 +5809,7 @@ class PlayState extends MusicBeatState
 
 		var screen:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('hazard/qt-port/FinalScreen'));
 		screen.setGraphicSize(Std.int(screen.width * 0.625));
-		screen.antialiasing = ClientPrefs.globalAntialiasing;
+		screen.antialiasing = ClientPrefs.antialiasing;
 		screen.scrollFactor.set();
 		screen.screenCenter();
 
@@ -5917,15 +5914,13 @@ class PlayState extends MusicBeatState
 		var ret:Dynamic = callOnLuas('onEndSong', [], false);
 		if (ret != FunkinLua.Function_Stop && !transitioning)
 		{
-			if (SONG.validScore)
-			{
-				#if !switch
-				var percent:Float = ratingPercent;
-				if (Math.isNaN(percent))
-					percent = 0;
-				Highscore.saveScore(SONG.song, songScore, storyDifficulty, percent);
-				#end
-			}
+			#if !switch
+			var percent:Float = ratingPercent;
+			if (Math.isNaN(percent))
+				percent = 0;
+			Highscore.saveScore(SONG.song, songScore, storyDifficulty, percent);
+			#end
+
 			playbackRate = 1;
 
 			if (chartingMode)
@@ -5956,8 +5951,7 @@ class PlayState extends MusicBeatState
 					{
 						StoryMenuState.weekCompleted.set(WeekData.weeksList[storyWeek], true);
 
-						if (SONG.validScore)
-							Highscore.saveWeekScore(WeekData.getWeekFileName(), campaignScore, storyDifficulty);
+						Highscore.saveWeekScore(WeekData.getWeekFileName(), campaignScore, storyDifficulty);
 
 						FlxG.save.data.weekCompleted = StoryMenuState.weekCompleted;
 						FlxG.save.flush();
@@ -6163,9 +6157,9 @@ class PlayState extends MusicBeatState
 		}
 
 		rating.setGraphicSize(Std.int(rating.width * 0.7));
-		rating.antialiasing = ClientPrefs.globalAntialiasing;
+		rating.antialiasing = ClientPrefs.antialiasing;
 		comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-		comboSpr.antialiasing = ClientPrefs.globalAntialiasing;
+		comboSpr.antialiasing = ClientPrefs.antialiasing;
 
 		comboSpr.updateHitbox();
 		rating.updateHitbox();
@@ -6224,7 +6218,7 @@ class PlayState extends MusicBeatState
 			if (!ClientPrefs.comboStacking)
 				lastScore.push(numScore);
 
-			numScore.antialiasing = ClientPrefs.globalAntialiasing;
+			numScore.antialiasing = ClientPrefs.antialiasing;
 			numScore.setGraphicSize(Std.int(numScore.width * 0.5));
 
 			numScore.updateHitbox();
@@ -6306,12 +6300,8 @@ class PlayState extends MusicBeatState
 					var dataNotes:Array<Note> = [];
 					notes.forEachAlive(function(daNote:Note)
 					{
-						if (daNote.canBeHit
-							&& daNote.mustPress
-							&& !strumsBlocked[daNote.noteData]
-							&& !daNote.tooLate
-							&& !daNote.wasGoodHit
-							&& !(daNote.isSustainNote || daNote.isFakeSustainNote))
+						if (daNote.canBeHit && daNote.mustPress && !strumsBlocked[daNote.noteData] && !daNote.tooLate && !daNote.wasGoodHit
+							&& !daNote.isSustainNote)
 							if (daNote.noteData == key)
 								dataNotes.push(daNote);
 					});
@@ -6337,7 +6327,7 @@ class PlayState extends MusicBeatState
 
 								var note = dataNotes[i];
 
-								if (!(note.isSustainNote || note.isFakeSustainNote) && (note.strumTime - coolNote.strumTime) < 2)
+								if (!note.isSustainNote && (note.strumTime - coolNote.strumTime) < 2)
 								{
 									// just fuckin remove it since it's a stacked note and shouldn't be there
 									note.kill();
@@ -6375,7 +6365,7 @@ class PlayState extends MusicBeatState
 							&& daNote.mustPress
 							&& !daNote.tooLate
 							&& !daNote.wasGoodHit
-							&& !(daNote.isSustainNote || daNote.isFakeSustainNote)
+							&& !daNote.isSustainNote
 							&& !daNote.blockHit)
 						{
 							if (daNote.noteData == key)
@@ -6569,7 +6559,7 @@ class PlayState extends MusicBeatState
 			{
 				// hold note functions
 				if (strumsBlocked[daNote.noteData] != true
-					&& (daNote.isSustainNote || daNote.isFakeSustainNote)
+					&& daNote.isSustainNote
 					&& parsedHoldArray[daNote.noteData]
 					&& daNote.canBeHit
 					&& daNote.mustPress
@@ -6644,7 +6634,6 @@ class PlayState extends MusicBeatState
 				&& daNote.mustPress
 				&& daNote.noteData == note.noteData
 				&& daNote.isSustainNote == note.isSustainNote
-				&& daNote.isFakeSustainNote == note.isFakeSustainNote
 				&& Math.abs(daNote.strumTime - note.strumTime) < 1)
 			{
 				note.kill();
@@ -6691,7 +6680,7 @@ class PlayState extends MusicBeatState
 			notes.members.indexOf(daNote),
 			daNote.noteData,
 			daNote.noteType,
-			(daNote.isSustainNote || daNote.isFakeSustainNote)
+			daNote.isSustainNote
 		]);
 		callOnHaxes('noteMiss', [daNote]);
 	}
@@ -6814,7 +6803,7 @@ class PlayState extends MusicBeatState
 
 		if (opponentstrumanimation && !ClientPrefs.optimize)
 		{
-			if (!(note.isSustainNote || note.isFakeSustainNote))
+			if (!note.isSustainNote)
 			{
 				if (!note.noteSplashDisabled && !ClientPrefs.lowQuality && !ClientPrefs.optimize && ClientPrefs.opponentStrums)
 					spawnNoteSplashOnNote(note, false, note.noteSplashTexture == 'noteSplashes' ? dad.splashSkinFile : note.noteSplashTexture);
@@ -6876,7 +6865,7 @@ class PlayState extends MusicBeatState
 				// And here I thought that this code couldn't get any worse. What is wrong with me?
 
 				// Health drain on sustain notes. Note that this is ignored if you've been hit by 2 or more sawblades.
-				if (dadDrainHealthSustain && (note.isSustainNote || note.isFakeSustainNote) && sawbladeHits < 2)
+				if (dadDrainHealthSustain && note.isSustainNote && sawbladeHits < 2)
 				{
 					switch (sawbladeHits)
 					{
@@ -6921,7 +6910,7 @@ class PlayState extends MusicBeatState
 								health -= dadDrainHealth / 6.25; // nerfs the amount of health Opponent can recover if over halfway to give the player more room to breath health-wise.
 					}
 				}
-				else if (!note.isSustainNote && !note.isFakeSustainNote)
+				else if (!note.isSustainNote)
 				{
 					if (sawbladeHits > 3)
 						health -= dadDrainHealth / 3.15; // At this point, just constantly nerf the opponent.
@@ -7310,7 +7299,11 @@ class PlayState extends MusicBeatState
 			gameHUD.beatHit();
 
 			if (!endingSong && !isDead && curBeat % 4 == 0 && randomBackRate)
+			{
 				playbackRate = ClientPrefs.getGameplaySetting('songspeed', 1) + FlxG.random.float(-0.250, 0.250); // that's awesome hazard! -Luis
+				/*if (kb_attack_alert.alpha <= 0.2)
+				kb_attack_alert.playAnim('alert',  playbackRate); */
+			}
 
 			if (!ClientPrefs.optimize)
 			{
@@ -7716,7 +7709,7 @@ class PlayState extends MusicBeatState
 							unlock = true;
 
 					case 'toastie':
-						if (/*ClientPrefs.framerate <= 60 &&*/ !ClientPrefs.shaders && ClientPrefs.lowQuality && !ClientPrefs.globalAntialiasing)
+						if (/*ClientPrefs.framerate <= 60 &&*/ !ClientPrefs.shaders && ClientPrefs.lowQuality && !ClientPrefs.antialiasing)
 							unlock = true;
 				}
 

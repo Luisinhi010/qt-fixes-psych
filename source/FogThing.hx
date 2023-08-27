@@ -22,7 +22,7 @@ class FogThing extends FlxSprite
 
 		setGraphicSize(Std.int(width * 2));
 		scrollFactor.set(0.1, 0.1);
-		antialiasing = ClientPrefs.globalAntialiasing;
+		antialiasing = ClientPrefs.antialiasing;
 		movementSpeed = FlxG.random.int(1, 5);
 	}
 }

@@ -19,7 +19,6 @@ class StrumNote extends FlxSprite
 
 	public var direction:Float = 90; // plan on doing scroll directions soon -bb
 	public var downScroll:Bool = false; // plan on doing scroll directions soon -bb
-	public var sustainReduce:Bool = true;
 
 	public var player:Int;
 
@@ -77,7 +76,7 @@ class StrumNote extends FlxSprite
 		animation.addByPrefix('purple', 'arrowLEFT');
 		animation.addByPrefix('red', 'arrowRIGHT');
 
-		antialiasing = ClientPrefs.globalAntialiasing;
+		antialiasing = ClientPrefs.antialiasing;
 		setGraphicSize(Std.int(width * 0.7));
 
 		var lowerCaseAnim:String = dirArray[noteData % 4].toLowerCase();

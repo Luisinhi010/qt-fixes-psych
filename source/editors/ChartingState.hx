@@ -236,11 +236,10 @@ class ChartingState extends MusicBeatState
 			'censory final events',
 			"The last 4 events for censory overload. \nit also works on all songs"
 		],
-		['blue screen shader', "apply a blue shader to the characters\n:)"],
-		['??????', "Does stuff or something. \nI don't actually know lmao"],
-		['InterlopeEffect', "Same as ?????? \n:)"],
-		['Set Property', "Value 1: Variable name\nValue 2: New value"] /*,
-			['ShaderTesting', ""] */];
+		['blue screen shader', "enable the blue screen shader to the characters\n:)"],
+		['InterlopeEffect', "Applys Inhuman's Mod chart Effects\n:)"],
+		['Set Property', "Value 1: Variable name\nValue 2: New value"]
+	];
 
 	var _file:FileReference;
 
@@ -359,7 +358,6 @@ class ChartingState extends MusicBeatState
 				gfVersion: 'gf',
 				speed: 1,
 				stage: 'stage',
-				validScore: false,
 				dodgeEnabled: false,
 				haveoldvoices: false,
 				autoZoom: true // The default value would be better if stays as true, Nex decided so but if you want you can change it (not recommended tho)

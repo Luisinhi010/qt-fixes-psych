@@ -8,24 +8,43 @@ using StringTools;
 
 class ConfirmUserOption extends MusicBeatSubstate
 {
+	public var okc:Void->Void;
+	public var cancelc:Void->Void;
+
+	var theText:String = '';
+
 	var bg:FlxSprite;
 	var alphabetArray:Array<Alphabet> = [];
 	var onYes:Bool = false;
 	var yesText:Alphabet;
 	var noText:Alphabet;
-	var selectedSomethin = false;
+	var nobuttonNo:Bool = false;
+	var selectedSomethin:Bool = false;
 
-	public function new()
+	public function new(promptText:String = '', okCallback:Void->Void, cancelCallback:Void->Void, option1:String = null, option2:String = null)
 	{
 		super();
-		bg = new FlxSprite(-FlxG.width, -FlxG.height).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+
+		okc = okCallback;
+		cancelc = cancelCallback;
+		theText = promptText;
+
+		var op1 = 'Yes';
+		var op2 = 'No';
+
+		if (option1 != null)
+			op1 = option1;
+		if (option2 != null)
+			op2 = option2;
+		nobuttonNo = op2 == 'disabledbutton';
+
+		bg = new FlxSprite(-FlxG.width, -FlxG.height).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.WHITE);
+		bg.color = FlxColor.BLACK;
 		bg.alpha = 0;
 		bg.scrollFactor.set();
 		add(bg);
 
-		var textstring:String = 'would you let this mod\nuse your computer\'s\nusername?';
-
-		var tipTextArray:Array<String> = textstring.split('\n');
+		var tipTextArray:Array<String> = theText.split('\n');
 		for (i in 0...tipTextArray.length)
 		{
 			var text:Alphabet = new Alphabet(0, 160, tipTextArray[i], true);
@@ -37,16 +56,18 @@ class ConfirmUserOption extends MusicBeatSubstate
 			add(text);
 		}
 
-		yesText = new Alphabet(0, 490, 'Yes', true);
+		yesText = new Alphabet(0, 490, op1, true);
 		yesText.screenCenter(X);
-		yesText.x -= 150;
+		if (!nobuttonNo)
+			yesText.x -= 150;
 		yesText.scrollFactor.set();
 		add(yesText);
-		noText = new Alphabet(0, 490, 'No', true);
+		noText = new Alphabet(0, 490, op2, true);
 		noText.screenCenter(X);
 		noText.x += 150;
 		noText.scrollFactor.set();
-		add(noText);
+		if (!nobuttonNo)
+			add(noText);
 		updateOptions();
 	}
 
@@ -100,10 +121,19 @@ class ConfirmUserOption extends MusicBeatSubstate
 	function accepted()
 	{
 		selectedSomethin = true;
-		ClientPrefs.usePlayerUsername = FlxG.save.data.usePlayerUsername = onYes;
 		FlxG.sound.play(Paths.sound(onYes ? 'confirmMenu' : 'cancelMenu'), 1);
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
+			if (onYes)
+			{
+				if (okc != null)
+					okc();
+			}
+			else
+			{
+				if (cancelc != null)
+					cancelc();
+			}
 			close();
 		});
 	}

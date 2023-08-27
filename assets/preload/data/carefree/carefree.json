@@ -1330,7 +1330,7 @@
     "song": "Carefree",
     "needsVoices": true,
     "stage": "street-cute",
-    "validScore": true,
+    
     "sections": 0,
     "speed": 1.4,
     "bpm": 128

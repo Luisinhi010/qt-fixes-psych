@@ -1897,7 +1897,7 @@
     "song": "Careless",
     "stage": "street-real",
     "needsVoices": true,
-    "validScore": true,
+    
     "sections": 0,
     "bpm": 110,
     "speed": 2.3

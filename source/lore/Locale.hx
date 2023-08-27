@@ -14,6 +14,8 @@ class Locale
 	public static var selectedLocale:String;
 	private static var localeObject:Dynamic;
 
+	public static var pauseItens:Array<String> = [];
+
 	public static function init():Void
 	{
 		selectedLocale = DEFAULT_LANGUAGE;
@@ -33,6 +35,14 @@ class Locale
 			trace('Created locale for ${ClientPrefs.locale}');
 		}
 		#end
+
+		pauseItens = [
+			get("resumePauseText"),
+			get("restartPauseText"),
+			get("changediffPauseText"),
+			get("optionsPauseText"),
+			get("exitPauseText")
+		];
 	}
 
 	public static function get(key:String):String

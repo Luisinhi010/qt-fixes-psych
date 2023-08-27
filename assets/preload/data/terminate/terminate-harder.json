@@ -2612,7 +2612,7 @@
 		"song": "Terminate",
 		"needsVoices": false,
 		"sections": 0,
-		"validScore": true,
+		
 		"stage": "street-kb",
 		"bpm": 222,
 		"speed": 3.8

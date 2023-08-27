@@ -149,7 +149,7 @@ class FreeplayState extends MusicBeatState
 		}
 
 		bg = new FlxSprite().loadGraphic(Paths.image(bgPath));
-		bg.antialiasing = ClientPrefs.globalAntialiasing;
+		bg.antialiasing = ClientPrefs.antialiasing;
 		add(bg);
 		bg.screenCenter();
 

@@ -2450,7 +2450,7 @@
 		"player3": null,
 		"song": "Terminate",
 		"stage": "street-kb",
-		"validScore": true,
+		
 		"sections": 0,
 		"needsVoices": false,
 		"speed": 2.8,

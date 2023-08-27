@@ -54,12 +54,10 @@ typedef TitleData =
 class TitleState extends MusicBeatState
 {
 	public static var initialized:Bool = false;
-
-	#if sys
-	public static var getplayernameoption:Bool = false;
-	#end
+	public static var firstTime:Bool = true;
 
 	var blackScreen:FlxSprite;
+	var whiteScreen:FlxSprite;
 	var credGroup:FlxGroup;
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
@@ -82,10 +80,6 @@ class TitleState extends MusicBeatState
 			Paths.clearUnusedMemory();
 		}
 
-		#if sys
-		getplayernameoption = false;
-		#end
-
 		#if LUA_ALLOWED
 		Paths.pushGlobalMods();
 		#end
@@ -103,7 +97,7 @@ class TitleState extends MusicBeatState
 		if (!initialized)
 		{
 			#if desktop
-			if (!initialized && FlxG.save.data != null && ClientPrefs.fullscreen)
+			if (!initialized && FlxG.save != null && ClientPrefs.fullscreen)
 				FlxG.fullscreen = ClientPrefs.fullscreen;
 			#end
 
@@ -129,12 +123,6 @@ class TitleState extends MusicBeatState
 		}
 		else
 		{
-			#if sys
-			// FlxG.save.data.usePlayerUsername = null;
-			if (FlxG.save.data.usePlayerUsername == null)
-				getplayernameoption = true;
-			#end
-
 			if (initialized)
 				startIntro();
 			else
@@ -159,27 +147,6 @@ class TitleState extends MusicBeatState
 	{
 		if (!initialized)
 		{
-			/*var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-				diamond.persist = true;
-				diamond.destroyOnNoUse = false;
-
-				FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-					new FlxRect(-300, -300, FlxG.width * 1.8, FlxG.height * 1.8));
-				FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
-					{asset: diamond, width: 32, height: 32}, new FlxRect(-300, -300, FlxG.width * 1.8, FlxG.height * 1.8));
-
-				transIn = FlxTransitionableState.defaultTransIn;
-				transOut = FlxTransitionableState.defaultTransOut; */
-
-			// HAD TO MODIFY SOME BACKEND SHIT
-			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
-			// https://github.com/HaxeFlixel/flixel-addons/pull/348
-
-			// var music:FlxSound = new FlxSound();
-			// music.loadStream(Paths.music('freakyMenu'));
-			// FlxG.sound.list.add(music);
-			// music.play();
-
 			if (FlxG.sound.music == null)
 			{
 				FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
@@ -197,7 +164,7 @@ class TitleState extends MusicBeatState
 		else
 			bg.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 
-		// bg.antialiasing = ClientPrefs.globalAntialiasing;
+		// bg.antialiasing = ClientPrefs.antialiasing;
 		// bg.setGraphicSize(Std.int(bg.width * 0.6));
 		// bg.updateHitbox();
 		add(bg);
@@ -205,7 +172,7 @@ class TitleState extends MusicBeatState
 		logoBl = new FlxSprite(titleJSON.titlex, titleJSON.titley);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 
-		logoBl.antialiasing = ClientPrefs.globalAntialiasing;
+		logoBl.antialiasing = ClientPrefs.antialiasing;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24, false);
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
@@ -221,7 +188,7 @@ class TitleState extends MusicBeatState
 		if (titleJSON.gfscalex != null && titleJSON.gfscaley != null)
 			gfDance.scale.set(titleJSON.gfscalex, titleJSON.gfscaley);
 
-		gfDance.antialiasing = ClientPrefs.globalAntialiasing;
+		gfDance.antialiasing = ClientPrefs.antialiasing;
 		if (titleJSON.gfantialiasing == false)
 			gfDance.antialiasing = false;
 
@@ -235,7 +202,7 @@ class TitleState extends MusicBeatState
 		qt.frames = Paths.getSparrowAtlas('qt_titlescreen');
 		qt.animation.addByPrefix('idle', 'titleanimation', 24, false);
 		qt.setGraphicSize(Std.int(qt.width * 0.25));
-		qt.antialiasing = ClientPrefs.globalAntialiasing;
+		qt.antialiasing = ClientPrefs.antialiasing;
 		qt.y -= 200;
 		add(qt);
 		qt.shader = swagShader.shader;
@@ -272,7 +239,7 @@ class TitleState extends MusicBeatState
 			titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
 		}
 
-		titleText.antialiasing = ClientPrefs.globalAntialiasing;
+		titleText.antialiasing = ClientPrefs.antialiasing;
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
 		// titleText.screenCenter(X);
@@ -281,7 +248,7 @@ class TitleState extends MusicBeatState
 
 		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
 		logo.screenCenter();
-		logo.antialiasing = ClientPrefs.globalAntialiasing;
+		logo.antialiasing = ClientPrefs.antialiasing;
 		// add(logo);
 
 		// FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
@@ -307,7 +274,7 @@ class TitleState extends MusicBeatState
 		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
 		ngSpr.updateHitbox();
 		ngSpr.screenCenter(X);
-		ngSpr.antialiasing = ClientPrefs.globalAntialiasing;
+		ngSpr.antialiasing = ClientPrefs.antialiasing;
 
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
@@ -315,8 +282,6 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		else
 			initialized = true;
-
-		// credGroup.add(credTextShit);
 	}
 
 	function getIntroTextShit():Array<Array<String>>
@@ -327,9 +292,7 @@ class TitleState extends MusicBeatState
 		var swagGoodArray:Array<Array<String>> = [];
 
 		for (i in firstArray)
-		{
 			swagGoodArray.push(i.split('--'));
-		}
 
 		return swagGoodArray;
 	}
@@ -407,6 +370,7 @@ class TitleState extends MusicBeatState
 					MusicBeatState.switchState(new MainMenuState());
 					closedState = true;
 				});
+				firstTime = false;
 			}
 		}
 
@@ -528,7 +492,7 @@ class TitleState extends MusicBeatState
 					addMoreText('Mod');
 				case 17:
 					if (!skippedIntro)
-						FlxG.camera.fade(FlxColor.WHITE, 0.435, false);
+						FlxG.camera.fade(ClientPrefs.flashing ? FlxColor.WHITE : FlxColor.GRAY, 0.435, false);
 				case 18:
 					skipIntro();
 			}
@@ -543,9 +507,12 @@ class TitleState extends MusicBeatState
 		{
 			remove(ngSpr);
 			remove(credGroup);
-			FlxG.camera.stopFX();
-			FlxG.camera.fade(FlxColor.WHITE, 0.01, true);
-			FlxG.camera.flash(FlxColor.WHITE, 4);
+			if (firstTime)
+			{
+				FlxG.camera.stopFX();
+				FlxG.camera.fade(ClientPrefs.flashing ? FlxColor.WHITE : FlxColor.GRAY, 0.01, true);
+				FlxG.camera.flash(ClientPrefs.flashing ? FlxColor.WHITE : FlxColor.GRAY, 4);
+			}
 			skippedIntro = true;
 		}
 	}

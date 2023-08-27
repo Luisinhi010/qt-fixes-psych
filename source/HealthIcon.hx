@@ -44,34 +44,31 @@ class HealthIcon extends FlxSprite
 
 	public function changeIcon(char:String)
 	{
-		sys.thread.Thread.create(() ->
+		if (this.char != char)
 		{
-			if (this.char != char)
-			{
-				var name:String = 'icons/' + char;
+			var name:String = 'icons/' + char;
 
-				if (!Paths.fileExists('images/' + name + '.png', IMAGE))
-					name = 'icons/icon-' + char; // Older versions of psych engine's support
-				if (!Paths.fileExists('images/' + name + '.png', IMAGE))
-					name = 'icons/icon-face'; // Prevents crash from missing icon
+			if (!Paths.fileExists('images/' + name + '.png', IMAGE))
+				name = 'icons/icon-' + char; // Older versions of psych engine's support
+			if (!Paths.fileExists('images/' + name + '.png', IMAGE))
+				name = 'icons/icon-face'; // Prevents crash from missing icon
 
-				var file:FlxGraphic = Paths.image(name);
-				index = Std.int(file.width / file.height);
-				if (index >= 3)
-					hasWinning = true;
-				loadGraphic(file, true, Math.floor(file.width / index), Math.floor(file.height));
-				iconOffset = (width - 150) / index;
-				offset.set(iconOffset, iconOffset);
-				updateHitbox();
-				animation.add(char, CoolUtil.numberArray(index), 0, false, isPlayer);
-				animation.play(char);
-				this.char = char;
+			var file:FlxGraphic = Paths.image(name);
+			index = Std.int(file.width / file.height);
+			if (index >= 3)
+				hasWinning = true;
+			loadGraphic(file, true, Math.floor(file.width / index), Math.floor(file.height));
+			iconOffset = (width - 150) / index;
+			offset.set(iconOffset, iconOffset);
+			updateHitbox();
+			animation.add(char, CoolUtil.numberArray(index), 0, false, isPlayer);
+			animation.play(char);
+			this.char = char;
 
-				antialiasing = ClientPrefs.globalAntialiasing;
-				if (char.endsWith('-pixel'))
-					antialiasing = false;
-			}
-		});
+			antialiasing = ClientPrefs.antialiasing;
+			if (char.endsWith('-pixel'))
+				antialiasing = false;
+		}
 	}
 
 	override function updateHitbox()

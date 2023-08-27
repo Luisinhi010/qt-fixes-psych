@@ -423,7 +423,7 @@ class EditorPlayState extends MusicBeatState
 						time += 0.15;
 					}
 					StrumPlayAnim(true, Std.int(Math.abs(daNote.noteData)) % 4, time, daNote.noteType.startsWith('Kb Note'));
-					if (!daNote.noteSplashDisabled && !daNote.isSustainNote && !daNote.isFakeSustainNote)
+					if (!daNote.noteSplashDisabled && !daNote.isSustainNote)
 						spawnNoteSplashOnNote(daNote, false, daNote.noteSplashTexture);
 					daNote.hitByOpponent = true;
 
@@ -843,9 +843,9 @@ class EditorPlayState extends MusicBeatState
 		comboGroup.add(rating);
 
 		rating.setGraphicSize(Std.int(rating.width * 0.7));
-		rating.antialiasing = ClientPrefs.globalAntialiasing;
+		rating.antialiasing = ClientPrefs.antialiasing;
 		comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-		comboSpr.antialiasing = ClientPrefs.globalAntialiasing;
+		comboSpr.antialiasing = ClientPrefs.antialiasing;
 
 		comboSpr.updateHitbox();
 		rating.updateHitbox();
@@ -870,7 +870,7 @@ class EditorPlayState extends MusicBeatState
 
 			numScore.x += ClientPrefs.comboOffset[2];
 			numScore.y -= ClientPrefs.comboOffset[3];
-			numScore.antialiasing = ClientPrefs.globalAntialiasing;
+			numScore.antialiasing = ClientPrefs.antialiasing;
 			numScore.setGraphicSize(Std.int(numScore.width * 0.5));
 			numScore.updateHitbox();
 

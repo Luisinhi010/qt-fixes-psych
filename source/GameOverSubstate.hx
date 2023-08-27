@@ -139,7 +139,7 @@ class GameOverSubstate extends MusicBeatSubstate
 				sawBladeDeath.animation.addByPrefix('animate', 'kb_attack_animation_kill_moving', 24, true);
 				sawBladeDeath.x = x - 1175; // negative = left
 				sawBladeDeath.y = y + 500; // positive = down
-				sawBladeDeath.antialiasing = ClientPrefs.globalAntialiasing;
+				sawBladeDeath.antialiasing = ClientPrefs.antialiasing;
 				sawBladeDeath.animation.play("normal");
 				groupSprite.add(sawBladeDeath);
 			}
@@ -150,7 +150,7 @@ class GameOverSubstate extends MusicBeatSubstate
 				sys.thread.Thread.create(() ->
 				{
 					var achievementObj:Achievements.AchievementObject = new Achievements.AchievementObject('sawblade_death');
-					FlxG.sound.play(Paths.sound('LuisAchievement', 'preload'), 0.6);
+					FlxG.sound.play(Paths.sound('LuisAchievement', 'preload'));
 					achievementObj.cameras = [camHUD];
 					add(achievementObj);
 				});
@@ -235,7 +235,10 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 
 		if (FlxG.sound.music.playing)
+		{
+			FlxG.sound.music.pitch = songSpeed;
 			Conductor.songPosition = FlxG.sound.music.time;
+		}
 
 		PlayState.instance.callOnLuas('onUpdatePost', [elapsed]);
 		PlayState.instance.callOnHaxes('updatePost', [elapsed]);
@@ -268,8 +271,6 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		if (!textGenerated)
 		{
-			var xy:Array<Float> = [ClientPrefs.optimize ? 0 : boyfriend.x, ClientPrefs.optimize ? 0 : boyfriend.y];
-
 			var deathMessage:String = deathTexts.get(deathTexts.exists(killedByGAMEOVER) ? killedByGAMEOVER : 'default');
 			killedByTextDisplay = new FlxText(0, 0, 0, deathMessage, 32);
 			killedByTextDisplay.applyMarkup(deathMessage, [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
@@ -282,7 +283,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 			else
 			{
-				killedByTextDisplay.setPosition(xy[0], xy[1] - killedByTextDisplay.height - 10);
+				killedByTextDisplay.setPosition(0, boyfriend.y - killedByTextDisplay.height - 10);
 				killedByTextDisplay.centerOnSprite(boyfriend, X);
 			}
 			groupSprite.add(killedByTextDisplay);

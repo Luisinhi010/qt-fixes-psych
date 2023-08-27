@@ -72,12 +72,6 @@ class VisualsUISubState extends BaseOptionsMenu
 		var option:Option = new Option(Locale.get("comboStackingvisualsUIText"), Locale.get("comboStackingvisualsUIDesc"), 'comboStacking', 'bool', true);
 		addOption(option);
 
-		#if sys
-		var option:Option = new Option(Locale.get("usePlayerUsernamevisualsUIText"), Locale.get("usePlayerUsernamevisualsUIDesc"), 'usePlayerUsername',
-			'bool', false);
-		addOption(option);
-		#end
-
 		#if !mobile
 		var option:Option = new Option(Locale.get("showFPSvisualsUIText"), Locale.get("showFPSvisualsUIDesc"), 'showFPS', 'bool', true);
 		addOption(option);

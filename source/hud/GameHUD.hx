@@ -387,10 +387,8 @@ class GameHUD extends FlxGroup
 	{
 		if (hudadded)
 		{
-			var dadHealthColorArray:Array<Int> = coloredHealthBar
-				&& !ClientPrefs.optimize ? PlayState.instance.dad.healthColorArray : [255, 0, 0];
-			var bfHealthColorArray:Array<Int> = coloredHealthBar
-				&& !ClientPrefs.optimize ? PlayState.instance.boyfriend.healthColorArray : [102, 255, 51];
+			var dadHealthColorArray:Array<Int> = !ClientPrefs.optimize ? PlayState.instance.dad.healthColorArray : [255, 0, 0];
+			var bfHealthColorArray:Array<Int> = !ClientPrefs.optimize ? PlayState.instance.boyfriend.healthColorArray : [102, 255, 51];
 
 			var dadcolor:FlxColor = FlxColor.fromRGB(dadHealthColorArray[0], dadHealthColorArray[1], dadHealthColorArray[2]);
 			var bfcolor:FlxColor = FlxColor.fromRGB(bfHealthColorArray[0], bfHealthColorArray[1], bfHealthColorArray[2]);

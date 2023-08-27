@@ -32,7 +32,7 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 			if (ClientPrefs.optimize)
 			{
 				ClientPrefs.lowQuality = true;
-				ClientPrefs.globalAntialiasing = false;
+				ClientPrefs.antialiasing = false;
 				onChangeAntiAliasing();
 				ClientPrefs.persistentCaching = false;
 			}
@@ -52,8 +52,7 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 		option.onChange = function() boyfriend.blueshader.shader.enabled.value = [ClientPrefs.charactershaders];
 		addOption(option);
 
-		var option:Option = new Option(Locale.get("globalAntialiasingGraphicsText"), Locale.get("globalAntialiasingGraphicsDesc"), 'globalAntialiasing',
-			'bool', true);
+		var option:Option = new Option(Locale.get("antialiasingGraphicsText"), Locale.get("antialiasingGraphicsDesc"), 'antialiasing', 'bool', true);
 		option.showBoyfriend = true;
 		option.onChange = onChangeAntiAliasing;
 		addOption(option);
@@ -110,17 +109,17 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 			var sprite:Dynamic = sprite; // Make it check for FlxSprite instead of FlxBasic
 			var sprite:FlxSprite = sprite; // Don't judge me ok
 			if (sprite != null && (sprite is FlxSprite) && !((sprite is FlxText) || (sprite is FlxText)))
-				sprite.antialiasing = ClientPrefs.globalAntialiasing;
+				sprite.antialiasing = ClientPrefs.antialiasing;
 		}
 
 	#if PRELOAD_ALL
 	function onChangeCache()
-		if (!Cache.loaded)
+		if (!CachingState.loaded)
 		{
 			if (!ClientPrefs.persistentCaching)
 				Paths.clearUnusedMemory();
-			Cache.tosettings = true;
-			MusicBeatState.switchState(new Cache());
+			CachingState.tosettings = true;
+			MusicBeatState.switchState(new CachingState());
 		}
 	#end
 

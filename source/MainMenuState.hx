@@ -34,10 +34,6 @@ class MainMenuState extends MusicBeatState
 	public static var qtfixesVersion:String = '1.0';
 	public static var curSelected:Int = 0;
 
-	#if sys
-	var helloText:FlxText;
-	#end
-
 	public var alignment:MainMenuItemAlignment = CENTER;
 
 	public var menuItems:FlxTypedGroup<MainMenuItem>;
@@ -181,10 +177,6 @@ class MainMenuState extends MusicBeatState
 		usecontrols = true;
 		selectedSomethin = false;
 		super.closeSubState();
-		#if sys
-		helloText.visible = CoolUtil.getUsernameOption();
-		helloText.text = "Hello " + CoolUtil.getUsername();
-		#end
 		menuScript.callFunc('postCloseSubState', []);
 	}
 
@@ -238,7 +230,7 @@ class MainMenuState extends MusicBeatState
 		bg.setGraphicSize(Std.int(bg.width * 1.175));
 		bg.updateHitbox();
 		bg.screenCenter();
-		bg.antialiasing = ClientPrefs.globalAntialiasing;
+		bg.antialiasing = ClientPrefs.antialiasing;
 		bg.color = 0xFFFBE565;
 		add(bg);
 
@@ -253,7 +245,7 @@ class MainMenuState extends MusicBeatState
 		magenta.updateHitbox();
 		magenta.screenCenter();
 		magenta.visible = false;
-		magenta.antialiasing = ClientPrefs.globalAntialiasing;
+		magenta.antialiasing = ClientPrefs.antialiasing;
 		magenta.color = 0xFFfd719b;
 		add(magenta);
 
@@ -281,7 +273,7 @@ class MainMenuState extends MusicBeatState
 			if (optionShit.length < 6)
 				scr = 0;
 			menuItem.scrollFactor.set(0, scr);
-			menuItem.antialiasing = ClientPrefs.globalAntialiasing;
+			menuItem.antialiasing = ClientPrefs.antialiasing;
 			menuItem.updateHitbox();
 			menuItem.x = (FlxG.width - 150) - (menuItem.width);
 
@@ -302,14 +294,6 @@ class MainMenuState extends MusicBeatState
 		versionShitfnf.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShitfnf);
 
-		#if sys
-		helloText = new FlxText(30, 100, 0, 'Hello ' + CoolUtil.getUsername(), 32);
-		helloText.scrollFactor.set();
-		helloText.setFormat(Paths.font("FridayNightFunkin.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		helloText.visible = CoolUtil.getUsernameOption();
-		add(helloText);
-		#end
-
 		changeItem();
 
 		#if ACHIEVEMENTS_ALLOWED
@@ -327,16 +311,6 @@ class MainMenuState extends MusicBeatState
 		#end
 
 		super.create();
-		/*#if sys
-			if (TitleState.getplayernameoption)
-			{
-				openSubState(new ConfirmUserOption());
-				FlxG.sound.play(Paths.sound('scrollMenu'));
-				usecontrols = false;
-				selectedSomethin = true;
-				TitleState.getplayernameoption = false;
-			}
-			#end */
 		menuScript.callFunc('postCreate', []);
 	}
 
@@ -345,7 +319,7 @@ class MainMenuState extends MusicBeatState
 	function giveAchievement(achievement:String)
 	{
 		add(new AchievementObject(achievement, camAchievement));
-		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+		FlxG.sound.play(Paths.sound('LuisAchievement', 'preload'));
 		trace('Giving achievement "$achievement"');
 	}
 	#end
@@ -410,7 +384,7 @@ class MainMenuState extends MusicBeatState
 
 		menuItems.forEach(function(menuItem:MainMenuItem)
 		{
-			if (menuItem.autoAlpha)
+			if (menuItem.autoAlpha && !selectedSomethin)
 				menuItem.alpha = (menuItem.ID == curSelected) ? 1 : 0.8;
 			if (menuItem.autoPos)
 			{

@@ -106,7 +106,7 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript #end
 		set('GPUTools', GPUTools);
 		set('OverlaySprite', OverlaySprite);
 		set('InputFormatter', InputFormatter);
-		set('Cache', Cache);
+		set('CachingState', CachingState);
 		set('FogThing', FogThing);
 		set('ColorMask', ColorMask);
 		set('AttachedFlxText', AttachedFlxText);
@@ -118,11 +118,11 @@ class ScriptHandler #if HAXE_EXTENSION extends SScript #end
 		// CLASSES (BASE);
 		set('BGSprite', BGSprite);
 		set('HealthIcon', HealthIcon);
-		// set('MusicBeatState', MusicBeatState);
-		// set('MusicBeatSubstate', MusicBeatSubstate);
+		set('MusicBeatState', MusicBeatState);
+		set('MusicBeatSubstate', MusicBeatSubstate);
 		set('AttachedFlxSprite', AttachedFlxSprite);
 		set('AttachedText', AttachedText);
-		set('Discord', Discord);
+		set('Discord', Discord.DiscordClient);
 		set('Alphabet', Alphabet);
 		set('Character', Character);
 		set('Controls', Controls);

@@ -35,7 +35,7 @@ class LoadingSprite extends FlxSprite
 		else
 			defaultsprite();
 
-		antialiasing = ClientPrefs.globalAntialiasing;
+		antialiasing = ClientPrefs.antialiasing;
 		if (this != null)
 			coolColor = FlxColor.fromInt(CoolUtil.dominantColor(this));
 		if (updateSize)

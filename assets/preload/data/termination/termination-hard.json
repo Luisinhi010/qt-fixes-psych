@@ -20390,7 +20390,7 @@
 		"player3": null,
 		"song": "Termination",
 		"stage": "street-termination",
-		"validScore": true,
+		
 		"sections": 0,
 		"needsVoices": true,
 		"bpm": 222,

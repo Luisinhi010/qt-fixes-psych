@@ -55,7 +55,8 @@ class Paths
 		var counter:Int = 0;
 		for (key in currentTrackedAssets.keys())
 		{
-			if (!localTrackedAssets.contains(key) && !dumpExclusions.contains(key) #if sys && !Cache.cachedAssets.contains(key) #end)
+			if (!localTrackedAssets.contains(key) && !dumpExclusions.contains(key) #if sys
+				&& !CachingState.cachedAssets.contains(key) #end)
 			{
 				var obj = currentTrackedAssets.get(key);
 				@:privateAccess
@@ -96,7 +97,7 @@ class Paths
 		for (key in FlxG.bitmap._cache.keys())
 		{
 			var obj = FlxG.bitmap._cache.get(key);
-			if (obj != null && !currentTrackedAssets.exists(key) #if sys && !Cache.cachedAssets.contains(key) #end)
+			if (obj != null && !currentTrackedAssets.exists(key) #if sys && !CachingState.cachedAssets.contains(key) #end)
 			{
 				openfl.Assets.cache.removeBitmapData(key);
 				FlxG.bitmap._cache.remove(key);
@@ -403,7 +404,7 @@ class Paths
 
 		var path:String = getPath('images/$key.png', IMAGE, library);
 		if (#if desktop (ClientPrefs.gpurendering && currentTrackedTextures.exists(path))
-			|| #end currentTrackedAssets.exists(path) #if sys && Cache.cachedAssets.contains(path) #end)
+			|| #end currentTrackedAssets.exists(path) #if sys && CachingState.cachedAssets.contains(path) #end)
 		{
 			#if desktop
 			if (currentTrackedTextures.exists(path))

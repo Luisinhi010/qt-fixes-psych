@@ -1900,7 +1900,7 @@
     "song": "Cessation",
     "needsVoices": true,
     "sections": 0,
-    "validScore": true,
+    
     "stage": "street-cessation",
     "bpm": 128,
     "speed": 2.5

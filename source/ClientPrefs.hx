@@ -18,9 +18,6 @@ class ClientPrefs
 	public static var persistentCaching:Bool = false;
 
 	public static var camMove:Bool = true; // Camera Movement
-	#if sys
-	public static var usePlayerUsername:Bool = false;
-	#end
 	public static var laneunderlay:Bool = false;
 	public static var laneunderlayAlpha:Float = 0.5;
 
@@ -42,7 +39,7 @@ class ClientPrefs
 	public static var autoPause:Bool = true; // Pr: https://github.com/ShadowMario/FNF-PsychEngine/pull/4622/
 	#end
 	public static var flashing:Bool = true;
-	public static var globalAntialiasing:Bool = true;
+	public static var antialiasing:Bool = true;
 	public static var noteSplashes:Bool = true;
 	public static var lowQuality:Bool = false;
 	public static var shaders:Bool = true;
@@ -145,9 +142,6 @@ class ClientPrefs
 		FlxG.save.data.persistentCaching = persistentCaching;
 
 		FlxG.save.data.camMove = camMove;
-		#if sys
-		FlxG.save.data.usePlayerUsername = usePlayerUsername;
-		#end
 		FlxG.save.data.laneunderlay = laneunderlay;
 		FlxG.save.data.laneunderlayAlpha = laneunderlayAlpha;
 
@@ -168,7 +162,7 @@ class ClientPrefs
 		FlxG.save.data.autoPause = autoPause;
 		#end
 		FlxG.save.data.flashing = flashing;
-		FlxG.save.data.globalAntialiasing = globalAntialiasing;
+		FlxG.save.data.antialiasing = antialiasing;
 		FlxG.save.data.noteSplashes = noteSplashes;
 		FlxG.save.data.lowQuality = lowQuality;
 		FlxG.save.data.shaders = shaders;
@@ -248,11 +242,6 @@ class ClientPrefs
 		if (FlxG.save.data.camMove != null)
 			camMove = FlxG.save.data.camMove;
 
-		#if sys
-		if (FlxG.save.data.usePlayerUsername != null)
-			usePlayerUsername = FlxG.save.data.usePlayerUsername;
-		#end
-
 		if (FlxG.save.data.laneunderlay != null)
 			laneunderlay = FlxG.save.data.laneunderlay;
 
@@ -304,8 +293,8 @@ class ClientPrefs
 		if (FlxG.save.data.flashing != null)
 			flashing = FlxG.save.data.flashing;
 
-		if (FlxG.save.data.globalAntialiasing != null)
-			globalAntialiasing = FlxG.save.data.globalAntialiasing;
+		if (FlxG.save.data.antialiasing != null)
+			antialiasing = FlxG.save.data.antialiasing;
 
 		if (FlxG.save.data.noteSplashes != null)
 			noteSplashes = FlxG.save.data.noteSplashes;
@@ -498,6 +487,13 @@ class ClientPrefs
 			Highscore.load();
 			if (FlxG.save.data.weekCompleted != null)
 				StoryMenuState.weekCompleted = FlxG.save.data.weekCompleted;
+			#if !mobile
+			if (Main.fpsVar != null)
+				Main.fpsVar.visible = ClientPrefs.showFPS || ClientPrefs.showMEM || ClientPrefs.showState;
+			#end
+			#if desktop
+			FlxG.autoPause = ClientPrefs.autoPause;
+			#end
 			loadedSettings = true;
 		}
 	}

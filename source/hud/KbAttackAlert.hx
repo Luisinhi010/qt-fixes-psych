@@ -27,7 +27,7 @@ class KbAttackAlert extends FlxGroup
 
 	function set_color(value:FlxColor):FlxColor
 	{
-		tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(value), "$")]);
+		// tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(value), "$")]);
 		return colorMask.rCol = color = value;
 	}
 
@@ -141,7 +141,7 @@ class KbAttackAlert extends FlxGroup
 			{
 				alert = new FlxSprite();
 				alert.frames = Paths.getSparrowAtlas('hazard/qt-port/attack_alert_NEW', 'shared', ClientPrefs.gpurendering);
-				alert.antialiasing = ClientPrefs.globalAntialiasing;
+				alert.antialiasing = ClientPrefs.antialiasing;
 				alert.setGraphicSize(Std.int(alert.width * 1.5));
 
 				var animFrames:Array<FlxFrame> = [];
@@ -183,13 +183,13 @@ class KbAttackAlert extends FlxGroup
 				tipTxt = new FlxText(0, ClientPrefs.downScroll ? alert.y - 66 : alert.y + alert.height + 36, 0, dodgeWarning, 26);
 				tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
 				tipTxt.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-				tipTxt.antialiasing = ClientPrefs.globalAntialiasing;
+				tipTxt.antialiasing = ClientPrefs.antialiasing;
 				tipTxt.borderSize = 1.1;
 				tipTxt.centerOnSprite(alert, X);
 				tipTxt.x -= tipTxt.width / 4;
 				tipTxt.moves = false;
 				add(tipTxt);
-				// tipTxt.shader = colorMask.shader;
+				tipTxt.shader = colorMask.shader;
 
 				for (i in [alert.x, alert.y, tipTxt.x, tipTxt.y])
 					pos.push(i);
@@ -200,10 +200,24 @@ class KbAttackAlert extends FlxGroup
 		});
 	}
 
-	public function playAnim(Anim:String)
+	function setupTip()
+	{
+		if (alertAdded && tipTxt.text != dodgeWarning)
+		{
+			tipTxt.text = dodgeWarning;
+			tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
+		}
+	}
+
+	public function playAnim(Anim:String, text:String = null)
 	{
 		if (alertAdded)
 		{
+			if (text != null)
+				tipTxt.text = text;
+			else
+				setupTip();
+
 			alert.animation.play(Anim, true);
 			switch (Anim)
 			{

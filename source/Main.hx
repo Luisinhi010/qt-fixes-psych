@@ -85,12 +85,6 @@ class Main extends Sprite
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
 
-		#if desktop
-		var res:Array<String> = ClientPrefs.screenRes.split('x');
-		game.width = Std.parseInt(res[0]);
-		game.height = Std.parseInt(res[1]);
-		#end
-
 		#if (flixel < "5.0.0")
 		if (game.zoom == -1.0)
 		{
@@ -128,12 +122,10 @@ class Main extends Sprite
 		Lib.current.stage.align = "tl";
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
 		if (fpsVar != null)
-			fpsVar.visible = ClientPrefs.showFPS || ClientPrefs.showMEM || ClientPrefs.showState;
+			fpsVar.visible = false;
 		#end
 
-		#if desktop
-		FlxG.autoPause = ClientPrefs.autoPause;
-		#elseif html5
+		#if html5
 		FlxG.autoPause = false;
 		FlxG.mouse.visible = false;
 		#end
@@ -184,6 +176,10 @@ class Main extends Sprite
 
 		errMsg += "\nUncaught Error: "
 			+ e.error
+			+ "\n Version: "
+			+ MainMenuState.qtfixesVersion
+			+ "\n Build: "
+			+ __curBuild
 			+ "\nPlease report this error to the GitHub page: https://github.com/Luisinhi010/qt-fixes-psych\n\n> Crash Handler written by: sqirra-rng";
 
 		if (!FileSystem.exists("./crash/"))

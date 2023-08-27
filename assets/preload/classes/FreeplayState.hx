@@ -23,7 +23,7 @@ function postCreate()
 		qt_gas.animation.addByPrefix('burstFAST', 'Gas_Release', 76, false);
 		qt_gas.animation.addByIndices('burstLoop', 'Gas_Release', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], "", 38, true);
 		qt_gas.setGraphicSize(Std.int(qt_gas.width * 1.8));
-		qt_gas.antialiasing = ClientPrefs.globalAntialiasing;
+		qt_gas.antialiasing = ClientPrefs.antialiasing;
 		qt_gas.scrollFactor.set();
 		qt_gas.alpha = 0.63;
 		qt_gas.setPosition(450, 0);

@@ -75,12 +75,12 @@ class DiscordClient
 
 	public static function changePresence(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float)
 	{
-		var startTimestamp:Float = if (hasStartTimestamp) Date.now().getTime() else 0;
+		var startTimestamp:Float = 0;
+		if (hasStartTimestamp)
+			startTimestamp = Date.now().getTime();
 
 		if (endTimestamp > 0)
-		{
 			endTimestamp = startTimestamp + endTimestamp;
-		}
 
 		DiscordRpc.presence({
 			details: details,

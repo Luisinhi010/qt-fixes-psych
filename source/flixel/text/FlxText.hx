@@ -504,6 +504,12 @@ class FlxText extends FlxSprite
 	 */
 	public inline function setBorderStyle(Style:FlxTextBorderStyle, Color:FlxColor = 0, Size:Float = 1, Quality:Float = 1):FlxText
 	{
+		if (ClientPrefs.optimize) // i dont like questions.
+		{
+			Quality /= 2;
+			if (Style == OUTLINE)
+				Style = OUTLINE_FAST;
+		}
 		borderStyle = Style;
 		borderColor = Color;
 		borderSize = Size;

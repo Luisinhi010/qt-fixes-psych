@@ -1818,7 +1818,7 @@
 		"dodgeEnabled": true,
 		"player3": null,
 		"song": "Tutorial",
-		"validScore": true,
+		
 		"sections": 0,
 		"needsVoices": false,
 		"speed": 1.2,

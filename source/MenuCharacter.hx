@@ -42,7 +42,7 @@ class MenuCharacter extends FlxSprite
 			return;
 
 		this.character = character;
-		antialiasing = ClientPrefs.globalAntialiasing;
+		antialiasing = ClientPrefs.antialiasing;
 		visible = true;
 
 		var dontPlayAnim:Bool = false;

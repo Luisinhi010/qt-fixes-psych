@@ -38,7 +38,7 @@ class OverlaySprite extends FlxSprite
 
 		scrollFactor.set(0, 0);
 		updateHitbox();
-		antialiasing = ClientPrefs.globalAntialiasing;
+		antialiasing = ClientPrefs.antialiasing;
 
 		FlxG.signals.gameResized.add(repos);
 	}

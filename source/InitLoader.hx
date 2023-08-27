@@ -45,9 +45,9 @@ class InitLoader extends FlxState
 			WindowsData.enableVisualStyles();
 			WindowsData.setWindowColorMode(DARK);
 
-			lore.Colorblind.updateFilter();
 			checkSpecs(Cpu, Ram);
 			ClientPrefs.loadSettings();
+			lore.Colorblind.updateFilter();
 			Locale.init();
 			#end
 			FlxG.switchState(new TitleState());

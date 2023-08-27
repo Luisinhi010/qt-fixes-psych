@@ -49,7 +49,6 @@ class Note extends FlxSprite
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
-	public var isFakeSustainNote:Bool = false;
 	public var noteType(default, set):String = null;
 
 	public var eventName:String = '';
@@ -108,6 +107,7 @@ class Note extends FlxSprite
 	public var noMissAnimation:Bool = false;
 	public var hitCausesMiss:Bool = false;
 	public var distance:Float = 2000; // plan on doing scroll directions soon -bb
+	public var sustainReduce:Bool = true;
 
 	public var hitsoundDisabled:Bool = false;
 	public var isPlayer:Bool = false;
@@ -121,7 +121,7 @@ class Note extends FlxSprite
 
 	public function resizeByRatio(ratio:Float) // haha funny twitter shit
 	{
-		if ((isSustainNote || isFakeSustainNote) && animation.curAnim.name.endsWith('end'))
+		if (isSustainNote && animation.curAnim.name.endsWith('end'))
 		{
 			scale.y *= ratio;
 			updateHitbox();
@@ -217,14 +217,9 @@ class Note extends FlxSprite
 
 			noteSplashColor = colorMask.rCol;
 		}
-		else
-		{
-			if (hitCausesMiss && isSustainNote)
-			{
-				isFakeSustainNote = true;
-				isSustainNote = false;
-			}
-		}
+		else if (hitCausesMiss)
+			sustainReduce = false;
+
 		return value;
 	}
 
@@ -241,6 +236,7 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 		this.inEditor = inEditor;
+		this.moves = false;
 
 		x += (ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X) + 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
@@ -261,7 +257,7 @@ class Note extends FlxSprite
 				shader = ClientPrefs.useRGB ? colorMask.shader : colorSwap.shader;
 
 			x += swagWidth * (noteData);
-			if ((!isSustainNote && !isFakeSustainNote) && noteData > -1 && noteData < 4)
+			if (!isSustainNote && noteData > -1 && noteData < 4)
 			{ // Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
 				animToPlay = colArray[noteData % 4];
@@ -274,7 +270,7 @@ class Note extends FlxSprite
 		if (prevNote != null)
 			prevNote.nextNote = this;
 
-		if ((isSustainNote || isFakeSustainNote) && prevNote != null)
+		if (isSustainNote && prevNote != null)
 		{
 			alpha = 0.6;
 			multAlpha = 0.6;
@@ -291,7 +287,7 @@ class Note extends FlxSprite
 
 			offsetX -= width / 2;
 
-			if (prevNote.isSustainNote || prevNote.isFakeSustainNote)
+			if (prevNote.isSustainNote)
 			{
 				prevNote.animation.play(colArray[prevNote.noteData % 4] + 'hold');
 
@@ -307,7 +303,6 @@ class Note extends FlxSprite
 
 			x += offsetX;
 		}
-		moves = false;
 	}
 
 	var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;
@@ -353,9 +348,9 @@ class Note extends FlxSprite
 
 		frames = Paths.getSparrowAtlas(name, null, ClientPrefs.gpurendering);
 		loadNoteAnims();
-		antialiasing = ClientPrefs.globalAntialiasing;
+		antialiasing = ClientPrefs.antialiasing;
 
-		if (isSustainNote || isFakeSustainNote)
+		if (isSustainNote)
 			scale.y = lastScaleY;
 
 		// updateHitbox();
@@ -373,7 +368,7 @@ class Note extends FlxSprite
 	{
 		animation.addByPrefix(colArray[noteData] + 'Scroll', colArray[noteData] + '0', 24);
 
-		if (isSustainNote || isFakeSustainNote)
+		if (isSustainNote)
 		{
 			animation.addByPrefix('purpleholdend', 'pruple end hold', 24); // ?????
 			animation.addByPrefix(colArray[noteData] + 'holdend', colArray[noteData] + ' hold end', 24);
