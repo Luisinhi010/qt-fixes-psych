@@ -8,11 +8,12 @@ import flixel.util.FlxColor;
 import flixel.FlxG;
 
 using StringTools;
+using lore.FlxSpriteTools;
 
 class Achievements
 {
 	public static var achievementsStuff:Array<Dynamic> = [
-		// Name, Description, Achievement save tag, Unlocks after, Hidden achievement
+		// ||Name, Description,|| Achievement save tag, Unlocks after, Hidden achievement
 		// Set unlock after to "null" if it doesnt unlock after a week!!
 		[
 			"Freaky on a Friday Night",
@@ -93,25 +94,25 @@ class Achievements
 
 	public static var sawbladeDeath:Int = 0;
 
-	public static function unlockAchievement(name:String):Void
+	public static function unlockAchievement(tag:String):Void
 	{
-		FlxG.log.add('Completed achievement "' + name + '"');
-		achievementsMap.set(name, true);
-		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+		FlxG.log.add('Completed achievement "' + tag + '"');
+		achievementsMap.set(tag, true);
+		FlxG.sound.play(Paths.sound('LuisAchievement', 'preload'));
 	}
 
-	public static function isAchievementUnlocked(name:String)
+	public static function isAchievementUnlocked(tag:String)
 	{
-		if (achievementsMap.exists(name) && achievementsMap.get(name))
+		if (achievementsMap.exists(tag) && achievementsMap.get(tag))
 			return true;
 
 		return false;
 	}
 
-	public static function getAchievementIndex(name:String)
+	public static function getAchievementIndex(tag:String)
 	{
 		for (i in 0...achievementsStuff.length)
-			if (achievementsStuff[i][2] == name)
+			if (achievementsStuff[i][2] == tag)
 				return i;
 
 		return -1;
@@ -141,7 +142,7 @@ class AttachedAchievement extends FlxSprite
 		super(x, y);
 
 		changeAchievement(name);
-		antialiasing = ClientPrefs.globalAntialiasing;
+		antialiasing = ClientPrefs.antialiasing;
 	}
 
 	public function changeAchievement(tag:String)
@@ -176,34 +177,51 @@ class AchievementObject extends FlxSpriteGroup
 
 	var alphaTween:FlxTween;
 
+	var sidesoffset:Int = 40;
+	var textsize:Int = 20;
+
 	public function new(name:String, ?camera:FlxCamera = null)
 	{
 		super(x, y);
 		ClientPrefs.saveSettings();
 
 		var id:Int = Achievements.getAchievementIndex(name);
-		var achievementBG:FlxSprite = new FlxSprite(60, 50).makeGraphic(420, 120, FlxColor.BLACK);
+		var achievementBG:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image('AchievementBG' /*, 'preload'*/));
+		achievementBG.setGraphicSize(Std.int(achievementBG.width * 0.9));
+		achievementBG.updateHitbox();
+		achievementBG.antialiasing = ClientPrefs.antialiasing;
+		achievementBG.x = sidesoffset;
+		achievementBG.y = (ClientPrefs.downScroll && FunkinLua.hscript != null) ? FlxG.height - achievementBG.height - sidesoffset : sidesoffset;
+		achievementBG.color = FlxColor.BLACK;
+		FlxTween.color(achievementBG, 0.6, FlxColor.RED, achievementBG.color, {
+			ease: FlxEase.quadInOut,
+		});
+
 		achievementBG.scrollFactor.set();
 		add(achievementBG);
 
-		var achievementIcon:FlxSprite = new FlxSprite(achievementBG.x + 10, achievementBG.y + 10);
-		var achievementIconAnimated:FlxSprite = new FlxSprite(achievementIcon.x, achievementIcon.y);
+		var achievementIcon:FlxSprite = new FlxSprite(0, achievementBG.y + 70);
+		var achievementIconAnimated:FlxSprite = new FlxSprite(0, achievementIcon.y);
 		for (icon in [achievementIcon, achievementIconAnimated])
 		{
 			icon.loadGraphic(Paths.image('achievements/' + name));
 			icon.scrollFactor.set();
-			icon.setGraphicSize(Std.int(icon.width * (2 / 3)));
+			icon.setGraphicSize(Std.int(icon.width * 0.6));
 			icon.updateHitbox();
-			icon.antialiasing = ClientPrefs.globalAntialiasing;
+			icon.centerOnSprite(achievementBG, X);
+			icon.antialiasing = ClientPrefs.antialiasing;
 		}
+		achievementIconAnimated.visible = false;
 
-		var achievementName:FlxText = new FlxText(achievementIcon.x + achievementIcon.width + 20, achievementIcon.y + 16, 280,
-			Achievements.achievementsStuff[id][0], 16);
-		achievementName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT);
+		var achievementName:FlxText = new FlxText(0, achievementIcon.y + 100, 250, Achievements.achievementsStuff[id][0], textsize);
+		achievementName.centerOnSprite(achievementBG, X);
+		achievementName.setFormat(Paths.font("vcr.ttf"), textsize, FlxColor.WHITE, CENTER);
 		achievementName.scrollFactor.set();
 
-		var achievementText:FlxText = new FlxText(achievementName.x, achievementName.y + 32, 280, Achievements.achievementsStuff[id][1], 16);
-		achievementText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT);
+		var achievementText:FlxText = new FlxText(0, 0, 290, Achievements.achievementsStuff[id][1], textsize);
+		achievementText.centerOnSprite(achievementBG, X);
+		achievementText.setFormat(Paths.font("vcr.ttf"), textsize, FlxColor.WHITE, CENTER);
+		achievementText.y = (achievementBG.y + achievementBG.height) - achievementText.height - 20;
 		achievementText.scrollFactor.set();
 
 		add(achievementName);
@@ -225,11 +243,13 @@ class AchievementObject extends FlxSpriteGroup
 		var alphaTween = FlxTween.tween(this, {alpha: 1}, 0.4, {
 			onComplete: function(twn:FlxTween)
 			{
+				achievementIconAnimated.visible = true;
 				var scale:Array<Float> = [achievementIconAnimated.scale.x, achievementIconAnimated.scale.x + 0.4]; // original scale, animated scale
 				FlxTween.tween(achievementIconAnimated, {alpha: 0, "scale.x": scale[1], "scale.y": scale[1]}, 2, {
 					onComplete: function(twn:FlxTween)
 					{
 						achievementIconAnimated.scale.set(scale[0], scale[0]);
+						achievementIconAnimated.visible = false;
 					}
 				});
 				alphaTween = FlxTween.tween(this, {alpha: 0}, 0.4, {
