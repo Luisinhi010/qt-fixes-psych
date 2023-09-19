@@ -27,7 +27,7 @@ class KbAttackAlert extends FlxGroup
 
 	function set_color(value:FlxColor):FlxColor
 	{
-		// tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(value), "$")]);
+		tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(value), "$")]);
 		return colorMask.rCol = color = value;
 	}
 
@@ -45,34 +45,6 @@ class KbAttackAlert extends FlxGroup
 		}
 
 		return alpha;
-	}
-
-	public var x(default, set):Float = 0;
-
-	@:noCompletion function set_x(value:Float):Float
-	{
-		x = value;
-		if (alertAdded)
-		{
-			alert.y = value + pos[0];
-			tipTxt.y = value + pos[2];
-		}
-
-		return x;
-	}
-
-	public var y(default, set):Float = 0;
-
-	@:noCompletion function set_y(value:Float):Float
-	{
-		y = value;
-		if (alertAdded)
-		{
-			alert.y = value + pos[1];
-			tipTxt.y = value + pos[3];
-		}
-
-		return y;
 	}
 
 	@:noCompletion override function set_visible(value:Bool):Bool
@@ -123,8 +95,6 @@ class KbAttackAlert extends FlxGroup
 		return alive;
 	}
 
-	private var pos:Array<Float> = [];
-
 	public function new()
 	{
 		super();
@@ -135,78 +105,68 @@ class KbAttackAlert extends FlxGroup
 	{
 		// Alert!
 		colorMask = new ColorMask();
-		sys.thread.Thread.create(() ->
+		if (!alertAdded)
 		{
-			if (!alertAdded)
-			{
-				alert = new FlxSprite();
-				alert.frames = Paths.getSparrowAtlas('hazard/qt-port/attack_alert_NEW', 'shared', ClientPrefs.gpurendering);
-				alert.antialiasing = ClientPrefs.antialiasing;
-				alert.setGraphicSize(Std.int(alert.width * 1.5));
+			alert = new FlxSprite();
+			alert.frames = Paths.getSparrowAtlas('hazard/qt-port/attack_alert_NEW', 'shared', ClientPrefs.gpurendering);
+			alert.antialiasing = ClientPrefs.antialiasing;
+			alert.setGraphicSize(Std.int(alert.width * 1.5));
 
-				var animFrames:Array<FlxFrame> = [];
-				@:privateAccess {
-					alert.animation.findByPrefix(animFrames, "Alert-Single");
-					alert.animation.findByPrefix(animFrames, "Alert-Double");
-					alert.animation.findByPrefix(animFrames, "Alert-Triple");
-					alert.animation.findByPrefix(animFrames, "Alert-Quad");
-				}
-
-				if (animFrames.length > 0)
-				{
-					newalert = true;
-
-					alert.animation.addByPrefix('alert', 'Alert-Single', 0);
-					alert.animation.addByPrefix('alertDOUBLE', 'Alert-Double', 0);
-					alert.animation.addByPrefix('alertTRIPLE', 'Alert-Triple', 0);
-					alert.animation.addByPrefix('alertQUAD', 'Alert-Quad', 0);
-				}
-				else
-				{
-					newalert = false;
-
-					alert.animation.addByPrefix('alert', 'kb_attack_animation_alert-single', 24, false);
-					alert.animation.addByPrefix('alertDOUBLE', 'kb_attack_animation_alert-double', 24, false);
-					alert.animation.addByPrefix('alertTRIPLE', 'kb_attack_animation_alert-triple', 24, false);
-					alert.animation.addByPrefix('alertQUAD', 'kb_attack_animation_alert-quad', 24, false);
-				}
-
-				alert.screenCenter(X);
-				alert.x += alert.width / 4; // wtf? haz?
-				if (PlayState.instance.forceMiddleScroll || !ClientPrefs.opponentStrums)
-					alert.x -= alert.width / (PlayState.instance.forceMiddleScroll ? 2 : 3);
-				alert.y = 205 + (ClientPrefs.downScroll ? 20 : 0);
-				alert.moves = false;
-				add(alert);
-				alert.shader = colorMask.shader;
-
-				tipTxt = new FlxText(0, ClientPrefs.downScroll ? alert.y - 66 : alert.y + alert.height + 36, 0, dodgeWarning, 26);
-				tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
-				tipTxt.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-				tipTxt.antialiasing = ClientPrefs.antialiasing;
-				tipTxt.borderSize = 1.1;
-				tipTxt.centerOnSprite(alert, X);
-				tipTxt.x -= tipTxt.width / 4;
-				tipTxt.moves = false;
-				add(tipTxt);
-				tipTxt.shader = colorMask.shader;
-
-				for (i in [alert.x, alert.y, tipTxt.x, tipTxt.y])
-					pos.push(i);
-
-				alertAdded = true;
-				multiplier = MusicBeatState.multAnims ? PlayState.instance.playbackRate : 1;
+			var animFrames:Array<FlxFrame> = [];
+			@:privateAccess {
+				alert.animation.findByPrefix(animFrames, "Alert-Single");
+				alert.animation.findByPrefix(animFrames, "Alert-Double");
+				alert.animation.findByPrefix(animFrames, "Alert-Triple");
+				alert.animation.findByPrefix(animFrames, "Alert-Quad");
 			}
-		});
+
+			if (animFrames.length > 0)
+			{
+				newalert = true;
+
+				alert.animation.addByPrefix('alert', 'Alert-Single', 0);
+				alert.animation.addByPrefix('alertDOUBLE', 'Alert-Double', 0);
+				alert.animation.addByPrefix('alertTRIPLE', 'Alert-Triple', 0);
+				alert.animation.addByPrefix('alertQUAD', 'Alert-Quad', 0);
+			}
+			else
+			{
+				newalert = false;
+
+				alert.animation.addByPrefix('alert', 'kb_attack_animation_alert-single', 24, false);
+				alert.animation.addByPrefix('alertDOUBLE', 'kb_attack_animation_alert-double', 24, false);
+				alert.animation.addByPrefix('alertTRIPLE', 'kb_attack_animation_alert-triple', 24, false);
+				alert.animation.addByPrefix('alertQUAD', 'kb_attack_animation_alert-quad', 24, false);
+			}
+
+			alert.screenCenter(X);
+			alert.x += alert.width / 4; // wtf? haz?
+			if (PlayState.instance.forceMiddleScroll || !ClientPrefs.opponentStrums)
+				alert.x -= alert.width / (PlayState.instance.forceMiddleScroll ? 2 : 3);
+			alert.y = 205 + (ClientPrefs.downScroll ? 20 : 0);
+			alert.moves = false;
+			add(alert);
+			alert.shader = colorMask.shader;
+
+			tipTxt = new FlxText(0, ClientPrefs.downScroll ? alert.y - 66 : alert.y + alert.height + 36, 0, dodgeWarning, 26);
+			tipTxt.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(color), "$")]);
+			tipTxt.antialiasing = ClientPrefs.antialiasing;
+			tipTxt.borderSize = 1.1;
+			repostext();
+			tipTxt.moves = false;
+			add(tipTxt);
+			tipTxt.shader = colorMask.shader;
+
+			alertAdded = true;
+			multiplier = MusicBeatState.multAnims ? PlayState.instance.playbackRate : 1;
+		}
 	}
 
-	function setupTip()
+	public function repostext()
 	{
-		if (alertAdded && tipTxt.text != dodgeWarning)
-		{
-			tipTxt.text = dodgeWarning;
-			tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.RED), "$")]);
-		}
+		tipTxt.centerOnSprite(alert, X);
+		tipTxt.x -= alert.width / 4;
 	}
 
 	public function playAnim(Anim:String, text:String = null)
@@ -216,7 +176,8 @@ class KbAttackAlert extends FlxGroup
 			if (text != null)
 				tipTxt.text = text;
 			else
-				setupTip();
+				tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(color), "$")]);
+			repostext();
 
 			alert.animation.play(Anim, true);
 			switch (Anim)

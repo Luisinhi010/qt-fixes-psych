@@ -164,5 +164,42 @@
   "coloredHealthBargamehudText": "Icon Colored Health Bar",
   "coloredHealthBargamehudDesc": "If unchecked, the health bar will have set colors\nrather than colors based on the icons.",
   "healthBarAlphagamehudText": "Health Bar Transparency",
-  "healthBarAlphagamehudDesc": "How much transparent should the health bar and icons be."
+  "healthBarAlphagamehudDesc": "How much transparent should the health bar and icons be.",
+
+
+  "achievementnamefriday_night_play": "Freaky on a Friday Night",
+  "achievementdescfriday_night_play": "Play on a Friday... Night.",
+  "achievementnametutorial_hard": "Press space to dodge!",
+  "achievementdesctutorial_hard": "Beat Tutorial on Hard?",
+  "achievementnametutorial_harder": "Going to be hard.",
+  "achievementdesctutorial_harder": "Beat Tutorial on Harder.",
+  "achievementnameqtweek_hard": "Not so cute",
+  "achievementdescqtweek_hard": "Complete QT week on Hard or Harder difficulty.",
+  "achievementnametermination_beat": "System Error",
+  "achievementdesctermination_beat": "Beat Termination.",
+  "achievementnametermination_old": "It was meant to be a joke",
+  "achievementdesctermination_old": "Beat Termination-Classic.",
+  "achievementnamecessation_beat": "Goodbye!",
+  "achievementdesccessation_beat": "Beat Cessation.",
+  "achievementnamesawblade_death": "Ouch!",
+  "achievementdescsawblade_death": "Get hit by a sawblade 24 times.",
+  "achievementnamesawblade_hell": "Too close for comfort",
+  "achievementdescsawblade_hell": "Beat Termination after being hit 3 times by sawblades.",
+  "achievementnametaunter": "Playing with fire",
+  "achievementdesctaunter": "Taunt over 100 times in Termination and win.",
+  "achievementnamecessation_troll": "Just kidding lol",
+  "achievementdesccessation_troll": "Get the 1/5 chance in Cessation.",
+  "achievementnamefreeplay_depths": "Inhuman",
+  "achievementdescfreeplay_depths": "Went into the depths of Freeplay...",
+  "achievementnameur_bad": "What a Funkin' Disaster!",
+  "achievementdescur_bad": "Complete a Song with a rating lower than 20%.",
+  "achievementnameur_good": "Perfectionist",
+  "achievementdescur_good": "Complete a Song with a rating of 100%.",
+  "achievementnametoastie": "Toaster Gamer",
+  "achievementdesctoastie": "Have you tried to run the game on a toaster?"
+
+
+
+
+
 }

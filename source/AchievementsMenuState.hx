@@ -48,7 +48,7 @@ class AchievementsMenuState extends MusicBeatState
 		Achievements.loadAchievements();
 		for (i in 0...Achievements.achievementsStuff.length)
 		{
-			if (!Achievements.achievementsStuff[i][3] || Achievements.achievementsMap.exists(Achievements.achievementsStuff[i][2]))
+			if (!Achievements.achievementsStuff[i][1] || Achievements.achievementsMap.exists(Achievements.achievementsStuff[i][0]))
 			{
 				options.push(Achievements.achievementsStuff[i]);
 				achievementIndex.push(i);
@@ -57,9 +57,10 @@ class AchievementsMenuState extends MusicBeatState
 
 		for (i in 0...options.length)
 		{
-			var achieveName:String = Achievements.achievementsStuff[achievementIndex[i]][2];
+			var achieveName:String = Achievements.achievementsStuff[achievementIndex[i]][0];
 			var optionText:Alphabet = new Alphabet(280, 300,
-				Achievements.isAchievementUnlocked(achieveName) ? Achievements.achievementsStuff[achievementIndex[i]][0] : '?', false);
+				Achievements.isAchievementUnlocked(achieveName) ? Locale.get("achievementname" + Achievements.achievementsStuff[achievementIndex[i]][0]) : '?',
+				false);
 			optionText.isMenuItem = true;
 			optionText.targetY = i - curSelected;
 			optionText.snapToPosition();
@@ -129,7 +130,7 @@ class AchievementsMenuState extends MusicBeatState
 				achievementArray[i].alpha = 1;
 			}
 		}
-		descText.text = Achievements.achievementsStuff[achievementIndex[curSelected]][1];
+		descText.text = Locale.get("achievementdesc" + Achievements.achievementsStuff[achievementIndex[curSelected]][0]);
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 	}
 	#end

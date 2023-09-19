@@ -50,7 +50,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		option.decimals = 2;
 		optionsArray.push(option);
 
-		var option:GameplayOption = new GameplayOption('Random Playback Rate', 'randomspeed', 'bool', false);
+		var option:GameplayOption = new GameplayOption('Rate Chaos', 'randomspeed', 'bool', false);
 		optionsArray.push(option);
 		#end
 

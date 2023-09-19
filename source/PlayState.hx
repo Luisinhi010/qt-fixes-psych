@@ -154,6 +154,7 @@ class PlayState extends MusicBeatState
 
 	public var playbackRate(default, set):Float = 1;
 	public var randomBackRate:Bool = false;
+	public var randomRateMult:Int = 1;
 
 	public var boyfriendGroup:FlxSpriteGroup;
 	public var dadGroup:FlxSpriteGroup;
@@ -615,6 +616,7 @@ class PlayState extends MusicBeatState
 		// Gameplay settings
 		playbackRate = ClientPrefs.getGameplaySetting('songspeed', 1);
 		randomBackRate = ClientPrefs.getGameplaySetting('randomspeed', false);
+		randomRateMult = ClientPrefs.getGameplaySetting('healthgain', 1);
 		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
 		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
 		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
@@ -733,9 +735,10 @@ class PlayState extends MusicBeatState
 				{
 					timeBarUi = 'Kade Engine';
 					coloredHealthBar = false;
-					kadeInputSystem = true;
+					// kadeInputSystem = true;
 					cameramove = false;
 					classicTermination = true;
+					widescreen = angleFix = false;
 					alertsoundprefix = attacksoundprefix = 'hazard/old/';
 					opponentstrumanimation = false;
 					discordDifficultyOverride = "Classic";
@@ -1304,30 +1307,27 @@ class PlayState extends MusicBeatState
 
 		if (!ClientPrefs.optimize)
 		{
-			Thread.create(() ->
-			{
-				pincer1 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
-				pincer2 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
-				pincer3 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
-				pincer4 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
+			pincer1 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
+			pincer2 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
+			pincer3 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
+			pincer4 = new FlxSprite(0, 0).loadGraphic(Paths.image('hazard/qt-port/pincer-close'));
 
-				for (sprite in [pincer1, pincer2, pincer3, pincer4])
+			for (sprite in [pincer1, pincer2, pincer3, pincer4])
+			{
+				sprite.antialiasing = ClientPrefs.antialiasing;
+				sprite.scrollFactor.set();
+				if (ClientPrefs.downScroll)
 				{
-					sprite.antialiasing = ClientPrefs.antialiasing;
-					sprite.scrollFactor.set();
-					if (ClientPrefs.downScroll)
-					{
-						sprite.angle = 270;
-						sprite.offset.set(192, -75);
-					}
-					else
-					{
-						sprite.angle = 90;
-						sprite.offset.set(218, 240);
-					}
+					sprite.angle = 270;
+					sprite.offset.set(192, -75);
 				}
-				pincers = [pincer1, pincer2, pincer3, pincer4];
-			});
+				else
+				{
+					sprite.angle = 90;
+					sprite.offset.set(218, 240);
+				}
+			}
+			pincers = [pincer1, pincer2, pincer3, pincer4];
 
 			// For the 'alarm' effect. Only added if flashling lights is allowed and low quality is off.
 			if (ClientPrefs.flashing && !ClientPrefs.lowQuality)
@@ -1515,18 +1515,6 @@ class PlayState extends MusicBeatState
 
 		add(grpNoteSplashes);
 
-		Thread.create(() ->
-		{
-			if (!ClientPrefs.optimize)
-				for (i in [boyfriend.splashSkinFile, dad.splashSkinFile, gf.splashSkinFile])
-				{
-					var splash:NoteSplash = new NoteSplash(100, 100, 0);
-
-					splash.loadAnims(i);
-					grpNoteSplashes.add(splash);
-					splash.alpha = 0.00001;
-				}
-		});
 		opponentStrums = new FlxTypedGroup<StrumNote>();
 		playerStrums = new FlxTypedGroup<StrumNote>();
 		generateSong(SONG.song);
@@ -2089,13 +2077,13 @@ class PlayState extends MusicBeatState
 					var newCamEffects:Array<BitmapFilter> = []; // IT SHUTS HAXE UP IDK WHY BUT WHATEVER IDK WHY I CANT JUST ARRAY<SHADERFILTER>
 					for (i in camHUDShaders)
 						newCamEffects.push(new ShaderFilter(i.shader));
-					camHUD.setFilters(newCamEffects);
+					camHUD.filters = newCamEffects;
 				case 'camgame' | 'game':
 					camGameShaders.push(effect);
 					var newCamEffects:Array<BitmapFilter> = [];
 					for (i in camGameShaders)
 						newCamEffects.push(new ShaderFilter(i.shader));
-					camGame.setFilters(newCamEffects);
+					camGame.filters = newCamEffects;
 				default:
 					if (modchartSprites.exists(cam))
 						Reflect.setProperty(modchartSprites.get(cam), "shader", effect.shader);
@@ -2124,7 +2112,7 @@ class PlayState extends MusicBeatState
 					{
 						newCamEffects.push(new ShaderFilter(i.shader));
 					}
-					camHUD.setFilters(newCamEffects);
+					camHUD.filters = newCamEffects;
 				default:
 					camGameShaders.remove(effect);
 					var newCamEffects:Array<BitmapFilter> = [];
@@ -2132,7 +2120,7 @@ class PlayState extends MusicBeatState
 					{
 						newCamEffects.push(new ShaderFilter(i.shader));
 					}
-					camGame.setFilters(newCamEffects);
+					camGame.filters = newCamEffects;
 			}
 		}
 	}
@@ -2142,13 +2130,9 @@ class PlayState extends MusicBeatState
 		switch (cam.toLowerCase())
 		{
 			case 'camhud' | 'hud':
-				camHUDShaders = [];
-				var newCamEffects:Array<BitmapFilter> = [];
-				camHUD.setFilters(newCamEffects);
+				camHUD.filters = [];
 			default:
-				camGameShaders = [];
-				var newCamEffects:Array<BitmapFilter> = [];
-				camGame.setFilters(newCamEffects);
+				camGame.filters = [];
 		}
 	}
 
@@ -3080,28 +3064,25 @@ class PlayState extends MusicBeatState
 	{
 		if (ClientPrefs.laneunderlay)
 		{
-			Thread.create(() ->
+			for (i in 0...4)
 			{
-				for (i in 0...4)
+				var spr:StrumNote = null;
+				if (!isPlayer)
+					spr = opponentStrums.members[i];
+				else
+					spr = playerStrums.members[i];
+				if (spr != null)
 				{
-					var spr:StrumNote = null;
-					if (!isPlayer)
-						spr = opponentStrums.members[i];
+					var laneunderlays:FlxSprite = new FlxSprite(spr.x, 0).makeGraphic(/*Std.int(spr.width) + 4*/ 112, FlxG.height * 2, FlxColor.BLACK);
+					laneunderlays.scrollFactor.set();
+					laneunderlays.screenCenter(Y);
+					laneunderlays.offset.x += 2;
+					if (isPlayer)
+						laneunderlay.add(laneunderlays);
 					else
-						spr = playerStrums.members[i];
-					if (spr != null)
-					{
-						var laneunderlays:FlxSprite = new FlxSprite(spr.x, 0).makeGraphic(/*Std.int(spr.width) + 4*/ 112, FlxG.height * 2, FlxColor.BLACK);
-						laneunderlays.scrollFactor.set();
-						laneunderlays.screenCenter(Y);
-						laneunderlays.offset.x += 2;
-						if (isPlayer)
-							laneunderlay.add(laneunderlays);
-						else
-							laneunderlayOpponent.add(laneunderlays);
-					}
+						laneunderlayOpponent.add(laneunderlays);
 				}
-			});
+			}
 		}
 	}
 
@@ -4028,27 +4009,24 @@ class PlayState extends MusicBeatState
 				if (!Achievements.isAchievementUnlocked('freeplay_depths')
 					&& Achievements.isAchievementUnlocked('cessation_beat')) // If you can access Interlope, allows for the Interlope hint to be shown.
 					wack = 100;
-				Thread.create(() ->
-				{
-					horror = new FlxSprite(-80)
-						.loadGraphic((wack == 100) ? Paths.image('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecretInterlope') : Paths.imageRandom('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecret0',
-							1, 9));
-					horror.scrollFactor.x = 0;
-					horror.scrollFactor.y = 0.15;
-					horror.setGraphicSize(Std.int(horror.width * 1.1));
-					horror.updateHitbox();
-					horror.screenCenter();
-					horror.antialiasing = ClientPrefs.antialiasing;
-					horror.cameras = [camOther];
-					var visiblityShit:Bool = camHUD.visible; // In case the HUD starts invisible or visible, I do this shit instead.
-					camHUD.visible = false; // nah looks good, i would update to use the Paths.imagerandom but idk anymore xd -Luis // updated -Future luis
-					add(horror);
+				horror = new FlxSprite(-80)
+					.loadGraphic((wack == 100) ? Paths.image('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecretInterlope') : Paths.imageRandom('hazard/qt-port/stage/topsecretfolder/DoNotLook/horrorSecret0',
+						1, 9));
+				horror.scrollFactor.x = 0;
+				horror.scrollFactor.y = 0.15;
+				horror.setGraphicSize(Std.int(horror.width * 1.1));
+				horror.updateHitbox();
+				horror.screenCenter();
+				horror.antialiasing = ClientPrefs.antialiasing;
+				horror.cameras = [camOther];
+				var visiblityShit:Bool = camHUD.visible; // In case the HUD starts invisible or visible, I do this shit instead.
+				camHUD.visible = false; // nah looks good, i would update to use the Paths.imagerandom but idk anymore xd -Luis // updated -Future luis
+				add(horror);
 
-					new FlxTimer().start(0.7, function(tmr:FlxTimer)
-					{
-						camHUD.visible = visiblityShit;
-						remove(horror, true);
-					});
+				new FlxTimer().start(0.7, function(tmr:FlxTimer)
+				{
+					camHUD.visible = visiblityShit;
+					remove(horror, true);
 				});
 			}
 		}
@@ -4237,6 +4215,8 @@ class PlayState extends MusicBeatState
 			hazardOverlayShit.alpha = newAlpha;
 
 		kb_attack_alert.playAnim(animationToPlay);
+		if (kb_attack_alert.color != alertColor)
+			kb_attack_alert.color = alertColor; // WhYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
 	}
 
 	function kbATTACK_DELAYED(state:Bool = false, instaKill:Bool = false)
@@ -4358,12 +4338,13 @@ class PlayState extends MusicBeatState
 			var pincer:FlxSprite;
 			pincer = pincers[(laneID - 1) % 4].loadGraphic(Paths.image('hazard/qt-port/pincer-open'), false);
 			pincer.cameras = [camHUD];
+			// pincer.visible = true;
 
 			var spr:StrumNote = null;
 			if (laneID < 5)
 				spr = playerStrums.members[laneID - 1];
-			else if (ClientPrefs.opponentStrums)
-				spr = opponentStrums.members[(laneID == 5) ? 0 : 3];
+			else
+				spr = ClientPrefs.opponentStrums ? opponentStrums.members[laneID == 5 ? 0 : 3] : playerStrums.members[laneID == 5 ? 0 : 3];
 
 			var sign:Int = ClientPrefs.downScroll ? 1 : -1;
 			var yPos:Float = spr.y + sign * 500;
@@ -5193,8 +5174,6 @@ class PlayState extends MusicBeatState
 				{
 					case "clear":
 						clearShaderFromCamera(value2);
-						clearShaderFromCamera(value2);
-						clearShaderFromCamera(value2);
 
 					case "bloom":
 						addShaderToCamera(value2, new BloomEffect(1.0 / 512.0, 0.35));
@@ -5280,34 +5259,34 @@ class PlayState extends MusicBeatState
 								ease: FlxEase.quadInOut
 							});
 						defaultCamZoom += 1;
-						FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 1.5);
+					// FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 1.5);
 					case 2:
 						if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 							FlxTween.tween(luisOverlayShit, {alpha: 0.2}, 0.9, {
 								ease: FlxEase.quadInOut
 							});
 						defaultCamZoom = dacamera;
-						FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.9);
+					// FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.9);
 					case 3:
 						if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 							FlxTween.tween(luisOverlayShit, {alpha: 0.5}, 0.5, {
 								ease: FlxEase.quadInOut
 							});
 						defaultCamZoom -= 0.09;
-						FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.5);
+					// FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.5);
 					case 4:
 						defaultCamZoom = dacamera;
-						FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.2);
+					// FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.2);
 					case 5:
-						if (!ClientPrefs.lowQuality && !ClientPrefs.optimize) FlxTween.tween(luisOverlayShit, {alpha: 0}, 0.5, {
+						if (!ClientPrefs.lowQuality && !ClientPrefs.optimize) FlxTween.tween(luisOverlayShit, {alpha: 0}, 0.4, {
 							ease: FlxEase.quadInOut
 						});
 					case 6:
 						defaultCamZoom += 0.5;
-						FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 4.8);
+					// FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 4.8);
 					case 7:
 						defaultCamZoom = dacamera;
-						FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.2);
+					// FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.2);
 					case 8:
 						if (!ClientPrefs.lowQuality && !ClientPrefs.optimize) FlxTween.tween(luisOverlayShit, {alpha: 0.5}, 1, {
 							ease: FlxEase.quadInOut
@@ -5322,14 +5301,14 @@ class PlayState extends MusicBeatState
 						});
 					case 11:
 						defaultCamZoom -= 0.09;
-						FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.2);
+					// FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.2);
 					case 12:
 						if (!ClientPrefs.lowQuality && !ClientPrefs.optimize)
 							FlxTween.tween(luisOverlayShit, {alpha: 0.7}, 0.4, {
 								ease: FlxEase.quadInOut
 							});
 						defaultCamZoom = dacamera;
-						FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.4);
+					// FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.4);
 					case 13:
 						if (!ClientPrefs.lowQuality && !ClientPrefs.optimize) FlxTween.tween(luisOverlayShit, {alpha: 0.1}, 0.4, {
 							ease: FlxEase.quadInOut
@@ -5893,9 +5872,7 @@ class PlayState extends MusicBeatState
 
 		#if ACHIEVEMENTS_ALLOWED
 		if (achievementObj != null)
-		{
 			return;
-		}
 		else
 		{
 			var achieve:String = checkForAchievement([
@@ -6510,7 +6487,6 @@ class PlayState extends MusicBeatState
 		FlxG.sound.play(Paths.sound('hazard/dodge01'));
 
 		// Wait, then set bfDodging back to false. -Haz
-		// V1.2 - Timer lasts a bit longer (by 0.00225)
 		qtSawbladeTimers.set("bfDodge", new FlxTimer().start(bfDodgeTiming, function(tmr:FlxTimer)
 		{
 			bfDodging = false;
@@ -7172,6 +7148,7 @@ class PlayState extends MusicBeatState
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
 
+		widescreen = angleFix = false;
 		FlxAnimationController.globalSpeed = 1;
 		FlxTween.globalSpeed = 1;
 		FlxTimer.globalSpeed = 1;
@@ -7221,7 +7198,7 @@ class PlayState extends MusicBeatState
 			gf.playAnim('scared', true);
 
 		// v2.2 update: Opponent arrows now just copy the rotation of the players notes so they never desync.
-		// err, haz, Hire me for Inhuman/j
+		// err, haz, Hire me for InhumanOS
 		switch (noteSpeen) // changed the entire code just because this MAY help with something
 		{
 			case 1:
@@ -7301,8 +7278,15 @@ class PlayState extends MusicBeatState
 			if (!endingSong && !isDead && curBeat % 4 == 0 && randomBackRate)
 			{
 				playbackRate = ClientPrefs.getGameplaySetting('songspeed', 1) + FlxG.random.float(-0.250, 0.250); // that's awesome hazard! -Luis
-				/*if (kb_attack_alert.alpha <= 0.2)
-				kb_attack_alert.playAnim('alert',  playbackRate); */
+				var playbackRateStr:String = Std.string(playbackRate).substr(0, 4);
+				if (kb_attack_alert.alpha <= 0.2)
+				{
+					kb_attack_alert.playAnim('alert', playbackRateStr);
+					kb_attack_alert.color = FlxColor.WHITE;
+				}
+				else
+					kb_attack_alert.tipTxt.text += '\n$playbackRateStr';
+				kb_attack_alert.repostext();
 			}
 
 			if (!ClientPrefs.optimize)
@@ -7312,9 +7296,8 @@ class PlayState extends MusicBeatState
 					&& gf.animation.curAnim != null
 					&& !gf.animation.curAnim.name.startsWith("sing")
 					&& !gf.stunned)
-				{
 					gf.dance();
-				}
+
 				if (curBeat % boyfriend.danceEveryNumBeats == 0
 					&& boyfriend.animation.curAnim != null
 					&& !boyfriend.animation.curAnim.name.startsWith('sing')
@@ -7342,14 +7325,7 @@ class PlayState extends MusicBeatState
 						zoomcam();
 
 				case 'termination':
-					if (curBeat >= 192 && curBeat <= 320) // 1st drop
-
-						zoomcam();
-					else if (curBeat >= 512 && curBeat <= 640) // 1st drop
-
-						zoomcam();
-					else if (curBeat >= 832 && curBeat <= 1088) // last drop
-
+					if ((curBeat >= 192 && curBeat <= 320) || (curBeat >= 512 && curBeat <= 640) || (curBeat >= 832 && curBeat <= 1088)) // all drops
 						zoomcam();
 
 				case 'censory-overload':
@@ -7423,13 +7399,11 @@ class PlayState extends MusicBeatState
 	}
 
 	function zoomcam(gameZoom:Float = 0.0075, hudZoom:Float = 0.015)
-	{
-		if (!disableDefaultCamZooming && FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
+		if (!disableDefaultCamZooming && ClientPrefs.camZooms)
 		{
 			FlxG.camera.zoom += gameZoom;
 			camHUD.zoom += hudZoom;
 		}
-	}
 
 	#if LUA_ALLOWED
 	public function startLuasOnFolder(luaFile:String)
@@ -7634,6 +7608,9 @@ class PlayState extends MusicBeatState
 		setOnLuas('ratingFC', ratingFC);
 	}
 
+	var count:Int = 0;
+	var unlockall:Bool = true;
+
 	#if ACHIEVEMENTS_ALLOWED
 	private function checkForAchievement(achievesToCheck:Array<String> = null):String
 	{
@@ -7643,6 +7620,15 @@ class PlayState extends MusicBeatState
 		var usedPractice:Bool = (ClientPrefs.getGameplaySetting('practice', false) || ClientPrefs.getGameplaySetting('botplay', false));
 		for (i in 0...achievesToCheck.length)
 		{
+			if (unlockall)
+			{
+				var returnAchievementName:String = achievesToCheck[count];
+				count++;
+				trace(returnAchievementName, count); // used to test all the achievements lol
+				if (returnAchievementName != null)
+					Achievements.unlockAchievement(returnAchievementName);
+				return returnAchievementName;
+			}
 			var achievementName:String = achievesToCheck[i];
 			if (!Achievements.isAchievementUnlocked(achievementName) && !cpuControlled)
 			{
@@ -7726,8 +7712,7 @@ class PlayState extends MusicBeatState
 
 	// ported somethings to function down here cuz no code flood -Luis
 
-	public function cameramovement(danote:Note = null, char:Character = null,
-			isplayer = false) // well i tried //update, i removed kinda everthing on this code cuz its was very bad and also very buggy, i will update to work on others characters.
+	public function cameramovement(danote:Note = null, char:Character = null, isplayer = false)
 	{
 		var cameraposX:Array<Int> = [-20, 0, 0, 20]; // default
 		var cameraposY:Array<Int> = [0, 20, -20, 0];

@@ -13,82 +13,24 @@ using lore.FlxSpriteTools;
 class Achievements
 {
 	public static var achievementsStuff:Array<Dynamic> = [
-		// ||Name, Description,|| Achievement save tag, Unlocks after, Hidden achievement
+		// Achievement save tag, Unlocks after, Hidden achievement
 		// Set unlock after to "null" if it doesnt unlock after a week!!
-		[
-			"Freaky on a Friday Night",
-			"Play on a Friday... Night.",
-			'friday_night_play',
-			null,
-			true
-		],
-		["Press space to dodge!", "Beat Tutorial on Hard?", 'tutorial_hard', null, false],
-		["Going to be hard.", "Beat Tutorial on Harder.", 'tutorial_harder', null, true], // fuck you, qt fixes ported to 0.6.3
-		[
-			"Not so cute",
-			"Complete QT week on Hard or Harder difficulty. (Unlocks Termination)",
-			'qtweek_hard',
-			null,
-			true
-		],
-		[
-			"System Error",
-			"Beat Termination. (Unlocks Cessation)",
-			'termination_beat',
-			null,
-			false
-		],
-		[
-			"It was meant to be a joke",
-			"Beat Termination-Classic. (Unlocks Cessation)",
-			'termination_old',
-			null,
-			false
-		],
-		["Goodbye!", "Beat Cessation.", 'cessation_beat', null, false],
-		["Ouch!", "Get hit by a sawblade 24 times.", 'sawblade_death', null, false],
-		[
-			"Too close for comfort",
-			"Beat Termination after being hit 3 times by sawblades.",
-			'sawblade_hell',
-			null,
-			false
-		],
-		[
-			"Playing with fire",
-			"Taunt over 100 times in Termination and win.",
-			'taunter',
-			null,
-			false
-		],
-		[
-			"Just kidding lol",
-			"Get the 1/5 chance in Cessation.",
-			'cessation_troll',
-			null,
-			true
-		],
-		["Inhuman", "Went into the depths of Freeplay...", 'freeplay_depths', null, true],
-		[
-			"What a Funkin' Disaster!",
-			"Complete a Song with a rating lower than 20%.",
-			'ur_bad',
-			null,
-			false
-		],
-		[
-			"Perfectionist",
-			"Complete a Song with a rating of 100%.",
-			'ur_good',
-			null,
-			false
-		],
-		[
-			"Toaster Gamer",
-			"Have you tried to run the game on a toaster?",
-			'toastie',
-			false
-		]
+		// Now the name and Description are on the lang.json
+		['friday_night_play', null, true],
+		['tutorial_hard', null, false],
+		['tutorial_harder', null, true], // fuck you, qt fixes ported to 0.6.3
+		['qtweek_hard', null, true],
+		['termination_beat', null, false],
+		['termination_old', null, false],
+		['cessation_beat', null, false],
+		['sawblade_death', null, false],
+		['sawblade_hell', null, false],
+		['taunter', null, false],
+		['cessation_troll', null, true],
+		['freeplay_depths', null, true],
+		['ur_bad', null, false],
+		['ur_good', null, false],
+		['toastie', false]
 	];
 	public static var achievementsMap:Map<String, Bool> = new Map<String, Bool>();
 
@@ -112,7 +54,7 @@ class Achievements
 	public static function getAchievementIndex(tag:String)
 	{
 		for (i in 0...achievementsStuff.length)
-			if (achievementsStuff[i][2] == tag)
+			if (achievementsStuff[i][0] == tag)
 				return i;
 
 		return -1;
@@ -177,10 +119,9 @@ class AchievementObject extends FlxSpriteGroup
 
 	var alphaTween:FlxTween;
 
-	var sidesoffset:Int = 40;
 	var textsize:Int = 20;
 
-	public function new(name:String, ?camera:FlxCamera = null)
+	public function new(name:String, ?camera:FlxCamera = null, sidesoffset:Float = 40)
 	{
 		super(x, y);
 		ClientPrefs.saveSettings();
@@ -192,6 +133,8 @@ class AchievementObject extends FlxSpriteGroup
 		achievementBG.antialiasing = ClientPrefs.antialiasing;
 		achievementBG.x = sidesoffset;
 		achievementBG.y = (ClientPrefs.downScroll && FunkinLua.hscript != null) ? FlxG.height - achievementBG.height - sidesoffset : sidesoffset;
+		if (name == 'freeplay_depths' || name == 'cessation_beat')
+			achievementBG.screenCenter();
 		achievementBG.color = FlxColor.BLACK;
 		FlxTween.color(achievementBG, 0.6, FlxColor.RED, achievementBG.color, {
 			ease: FlxEase.quadInOut,
@@ -213,12 +156,13 @@ class AchievementObject extends FlxSpriteGroup
 		}
 		achievementIconAnimated.visible = false;
 
-		var achievementName:FlxText = new FlxText(0, achievementIcon.y + 100, 250, Achievements.achievementsStuff[id][0], textsize);
+		var achievementName:FlxText = new FlxText(0, achievementIcon.y + 100, 250, Locale.get("achievementname" + Achievements.achievementsStuff[id][0]),
+			textsize);
 		achievementName.centerOnSprite(achievementBG, X);
 		achievementName.setFormat(Paths.font("vcr.ttf"), textsize, FlxColor.WHITE, CENTER);
 		achievementName.scrollFactor.set();
 
-		var achievementText:FlxText = new FlxText(0, 0, 290, Achievements.achievementsStuff[id][1], textsize);
+		var achievementText:FlxText = new FlxText(0, 0, 290, Locale.get("achievementdesc" + Achievements.achievementsStuff[id][0]), textsize);
 		achievementText.centerOnSprite(achievementBG, X);
 		achievementText.setFormat(Paths.font("vcr.ttf"), textsize, FlxColor.WHITE, CENTER);
 		achievementText.y = (achievementBG.y + achievementBG.height) - achievementText.height - 20;

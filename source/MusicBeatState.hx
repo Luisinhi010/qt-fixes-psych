@@ -41,41 +41,6 @@ class MusicBeatState extends #if ZoroModchartingTools modcharting.ModchartMusicB
 	override function destroy()
 		super.destroy();
 
-	public static function updatewindowres(?width:Int, ?height:Int):Void
-	{
-		#if desktop
-		if (!FlxG.fullscreen)
-		{
-			var lastRes:Array<Int> = [Application.current.window.width, Application.current.window.height];
-			var windowsPos:Array<Int> = [Application.current.window.x, Application.current.window.y];
-			var res:Array<Int> = [
-				width != null ? width : Std.parseInt(ClientPrefs.screenRes.split('x')[0]),
-				height != null ? height : Std.parseInt(ClientPrefs.screenRes.split('x')[1])
-			];
-			FlxG.resizeWindow(res[0], res[1]);
-			Application.current.window.move(Std.int(windowsPos[0] - (res[0] - lastRes[0]) / 2), Std.int(windowsPos[1] - (res[1] - lastRes[1]) / 2));
-		}
-		#end
-	}
-
-	public static function updatescreenratio()
-	{
-		#if desktop
-		@:privateAccess {
-			FlxG.width = 1280;
-			FlxG.height = 720;
-		}
-		if (changedRes)
-		{
-			updatewindowres();
-			changedRes = false;
-		}
-		if (!(FlxG.scaleMode is RatioScaleMode)) // just to be sure yk.
-			FlxG.scaleMode = new RatioScaleMode();
-		Application.current.window.borderless = false;
-		#end
-	}
-
 	override function create()
 	{
 		camBeat = FlxG.camera;
@@ -171,6 +136,41 @@ class MusicBeatState extends #if ZoroModchartingTools modcharting.ModchartMusicB
 		curStep = lastChange.stepTime + Math.floor(shit);
 	}
 
+	public static function updatescreenratio()
+	{
+		#if desktop
+		@:privateAccess {
+			FlxG.width = 1280;
+			FlxG.height = 720;
+		}
+		if (changedRes)
+		{
+			updatewindowres();
+			changedRes = false;
+		}
+		// if (!(FlxG.scaleMode is RatioScaleMode)) // just to be sure yk.
+		//	FlxG.scaleMode = new RatioScaleMode();
+		// Application.current.window.borderless = false;
+		#end
+	}
+
+	public static function updatewindowres(?width:Int, ?height:Int):Void
+	{
+		#if desktop
+		if (!FlxG.fullscreen)
+		{
+			var lastRes:Array<Int> = [Application.current.window.width, Application.current.window.height];
+			var windowsPos:Array<Int> = [Application.current.window.x, Application.current.window.y];
+			var res:Array<Int> = [
+				width != null ? width : Std.parseInt(ClientPrefs.screenRes.split('x')[0]),
+				height != null ? height : Std.parseInt(ClientPrefs.screenRes.split('x')[1])
+			];
+			FlxG.resizeWindow(res[0], res[1]);
+			Application.current.window.move(Std.int(windowsPos[0] - (res[0] - lastRes[0]) / 2), Std.int(windowsPos[1] - (res[1] - lastRes[1]) / 2));
+		}
+		#end
+	}
+
 	public static function switchStateStuff()
 	{
 		updatescreenratio();
@@ -189,14 +189,18 @@ class MusicBeatState extends #if ZoroModchartingTools modcharting.ModchartMusicB
 
 	public static function justswitchState(nextState:FlxState)
 	{
-		switchStateStuff();
 		FlxTransitionableState.skipNextTransIn = true;
 		FlxTransitionableState.skipNextTransOut = true;
+		actuallySwitchState(nextState);
+	}
+
+	public static function actuallySwitchState(nextState:FlxState)
+	{
+		switchStateStuff();
 		if (nextState == FlxG.state)
 			FlxG.resetState();
 		else
 			FlxG.switchState(nextState);
-		return nextState;
 	}
 
 	public static function switchState(nextState:FlxState, transitionToState:Bool = true)
@@ -213,19 +217,12 @@ class MusicBeatState extends #if ZoroModchartingTools modcharting.ModchartMusicB
 				leState.openSubState(new CustomFadeTransition(0.6, false));
 				CustomFadeTransition.finishCallback = function()
 				{
-					switchStateStuff();
-					if (nextState == FlxG.state)
-						FlxG.resetState();
-					else
-						FlxG.switchState(nextState);
+					actuallySwitchState(nextState);
 				};
 				return;
 			}
 		}
-		if (nextState == FlxG.state)
-			FlxG.resetState();
-		else
-			FlxG.switchState(nextState);
+		actuallySwitchState(nextState);
 	}
 
 	public static function resetState()

@@ -299,15 +299,23 @@ class MainMenuState extends MusicBeatState
 		#if ACHIEVEMENTS_ALLOWED
 		Achievements.loadAchievements();
 		var leDate = Date.now();
-		if (leDate.getDay() == 5 && leDate.getHours() >= 18)
+		if (leDate.getDay() == 5 && leDate.getHours() >= 18 && !Achievements.isAchievementUnlocked('friday_night_play'))
 		{
-			if (!Achievements.isAchievementUnlocked('friday_night_play'))
-			{ // It's a friday night. WEEEEEEEEEEEEEEEEEE
-				Achievements.achievementsMap.set('friday_night_play', true);
-				giveAchievement('friday_night_play');
+			Achievements.achievementsMap.set('friday_night_play', true);
+			giveAchievement('friday_night_play');
+			ClientPrefs.saveSettings();
+		}
+
+		/*if (/*ClientPrefs.framerate <= 60 && !ClientPrefs.shaders
+				&& ClientPrefs.lowQuality
+				&& !ClientPrefs.antialiasing
+				&& !Achievements.isAchievementUnlocked('toastie'))
+			{
+				Achievements.achievementsMap.set('toastie', true);
+				giveAchievement('toastie');
 				ClientPrefs.saveSettings();
 			}
-		}
+		 */
 		#end
 
 		super.create();
@@ -362,7 +370,7 @@ class MainMenuState extends MusicBeatState
 				changeItem(-FlxG.mouse.wheel);
 			}
 
-			if (controls.BACK || FlxG.mouse.justPressedRight #if android || FlxG.android.justReleased.BACK #end)
+			if (controls.BACK || FlxG.mouse.justPressedRight #if android || FlxG.android.justPressed.BACK #end)
 			{
 				selectedSomethin = true;
 				FlxG.sound.play(Paths.sound('cancelMenu'));

@@ -39,8 +39,6 @@ class InitLoader extends FlxState
 	{
 		super.create();
 
-		sys.thread.Thread.create(() ->
-		{
 			#if cpp
 			WindowsData.enableVisualStyles();
 			WindowsData.setWindowColorMode(DARK);
@@ -51,7 +49,6 @@ class InitLoader extends FlxState
 			Locale.init();
 			#end
 			FlxG.switchState(new TitleState());
-		});
 	}
 
 	function checkSpecs(cpu:Bool, ram:UInt64)

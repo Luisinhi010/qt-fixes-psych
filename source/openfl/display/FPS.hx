@@ -114,7 +114,7 @@ class FPS extends TextField
 		currentFPS = 0;
 		selectable = false;
 		mouseEnabled = false;
-		defaultTextFormat = new TextFormat(Paths.font("vcr.ttf"), 14, color);
+		defaultTextFormat = new TextFormat(Paths.font("vcr.ttf"), 16, color);
 		autoSize = LEFT;
 		multiline = true;
 		text = '';
@@ -165,15 +165,19 @@ class FPS extends TextField
 				memoryTotal = memoryMegas;
 
 			if (ClientPrefs.showMEM || debug)
-				text += '\nMem: ${getInterval(memoryMegas)} / Peak: ${getInterval(memoryTotal)}' #if cpp + ' / Total: ${getInterval(totalmem)}' #end +
+				text += '\n\nMem: ${getInterval(memoryMegas)} / Peak: ${getInterval(memoryTotal)}' #if cpp + ' / Total: ${getInterval(totalmem)}' #end +
 			(debug ? ' / Vram: ${getInterval(Std.int(FlxG.stage.context3D.totalGPUMemory / 1024 / 1024))}' : '');
 			#end
 
 			if (debug)
-				text += '\nGPU: $gpuInfo $glver\nObjects: ${FlxG.state.members.length}\nCameras: ${FlxG.cameras.list.length}\nSystem: $platform';
+			{
+				text += '\n\nObjects: ${FlxG.state.members.length}\nCameras: ${FlxG.cameras.list.length}';
+				text += '\n\nGPU: $gpuInfo $glver\nSystem: $platform';
+			}
 
 			if (ClientPrefs.showState || debug)
-				text += '\nState: ${Type.getClassName(Type.getClass(FlxG.state))}' + '\nSubState: ${Type.getClassName(Type.getClass(FlxG.state.subState))}';
+				text += '\n\nState: ${Type.getClassName(Type.getClass(FlxG.state))}'
+					+ (FlxG.state.subState != null ? '\nSubState: ${Type.getClassName(Type.getClass(FlxG.state.subState))}' : '');
 
 			if (text != null || text != '')
 			{

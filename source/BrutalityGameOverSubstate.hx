@@ -207,12 +207,9 @@ class BrutalityGameOverSubstate extends MusicBeatSubstate
 					&& killedByGAMEOVER == "sawblade")
 				{
 					Achievements.achievementsMap.set('sawblade_death', true);
-					sys.thread.Thread.create(() ->
-					{
-						var achievementObj:Achievements.AchievementObject = new Achievements.AchievementObject('sawblade_death');
-						FlxG.sound.play(Paths.sound('LuisAchievement', 'preload'));
-						insert(members.indexOf(scoreTxt), achievementObj);
-					});
+					var achievementObj:Achievements.AchievementObject = new Achievements.AchievementObject('sawblade_death');
+					FlxG.sound.play(Paths.sound('LuisAchievement', 'preload'));
+					insert(members.indexOf(scoreTxt), achievementObj);
 					FlxG.save.flush();
 					ClientPrefs.saveSettings();
 				}

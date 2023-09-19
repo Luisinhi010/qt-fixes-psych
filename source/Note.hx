@@ -20,7 +20,7 @@ typedef EventNote =
 	public var ?value3:String;
 }
 
-class Note extends FlxSprite
+class Note extends #if ZoroModchartingTools flixel.addons.effects.FlxSkewedSprite #else FlxSprite #end
 {
 	#if ZoroModchartingTools
 	public var mesh:flixel.FlxStrip = null;

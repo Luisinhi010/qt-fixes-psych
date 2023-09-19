@@ -105,9 +105,7 @@ class WeekData
 			{
 				var splitName:Array<String> = stuff[i].trim().split('|');
 				if (splitName[1] == '0') // Disable mod
-				{
 					disabledMods.push(splitName[0]);
-				}
 				else // Sort mod loading order based on modsList.txt file
 				{
 					var path = haxe.io.Path.join([Paths.mods(), splitName[0]]);
@@ -116,10 +114,7 @@ class WeekData
 						&& !Paths.ignoreModFolders.contains(splitName[0])
 						&& !disabledMods.contains(splitName[0])
 						&& !directories.contains(path + '/'))
-					{
 						directories.push(path + '/');
-						// trace('pushed Directory: ' + splitName[0]);
-					}
 				}
 			}
 		}

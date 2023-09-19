@@ -64,7 +64,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		camGame = new FlxCamera();
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
-		camGame.setFilters([new ShaderFilter(censoryCustomChroma.shader)]);
+		camGame.filters = [new ShaderFilter(censoryCustomChroma.shader)];
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFea71fd;

@@ -77,6 +77,11 @@ class AtlasFrameMaker extends FlxFramesCollection
 				frameCollection.pushFrame(y);
 			}
 		}
+
+		// clear memory
+		graphic.bitmap.dispose();
+		graphic.bitmap.disposeImage();
+		graphic.destroy();
 		return frameCollection;
 	}
 

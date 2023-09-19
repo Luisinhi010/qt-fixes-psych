@@ -112,8 +112,8 @@
 	<haxelib name="SScript" if="HAXE_EXTENSION" />
 
 	<!--Set this to the engine you're using!-->
-	<define name="PSYCH" if="ZoroModchartingTools"  />
-	<haxelib name="fnf-modcharting-tools" if="ZoroModchartingTools" />
+	<define name="PSYCH" if="ZoroModchartingTools"/>
+	<!--<haxelib name="fnf-modcharting-tools" if="ZoroModchartingTools" />-->
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
@@ -132,6 +132,9 @@
 	<!-- No deprecation warnings. -->
 	<haxedef name="no-deprecation-warnings"/>
 
+	<!-- 9.2.0+ Enables a new and optimized game loop - "boosts performance and takes less memory". -->
+	<haxedef name="queue_experimental_optimization"/>
+
 	<!--Disable the Flixel core focus lost screen-->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 
@@ -142,12 +145,6 @@
 	<haxedef name="HXCPP_CHECK_POINTER" />
 	<haxedef name="HXCPP_STACK_LINE" />
 	<haxedef name="HXCPP_STACK_TRACE"/>
-
-	<section if="ios">
-		<!--Dependency-->
-		<dependency name="Metal.framework" />
-		<dependency name="WebKit.framework" />
-	</section>
 
 	<!-- Show debug traces for hxCodec -->
 	<haxedef name="HXC_DEBUG_TRACE" if="debug" />

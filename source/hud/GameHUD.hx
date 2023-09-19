@@ -410,29 +410,26 @@ class GameHUD extends FlxGroup
 	{
 		if (hudadded)
 		{
-			sys.thread.Thread.create(() ->
+			remove(healthBar);
+			var newWidth:Int = Std.int(healthBarBG.width - 8) - Std.int(healthBar.width * (PlayState.instance.maxHealth / 2));
+			healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, newWidth, Std.int(healthBarBG.height - 8), this, 'health',
+				PlayState.instance.maxHealth, 2);
+			healthBar.scrollFactor.set();
+			healthBar.visible = !PlayState.instance.cpuControlled;
+			remove(healthBarFG);
+			if (!ClientPrefs.optimize)
 			{
-				remove(healthBar);
-				var newWidth:Int = Std.int(healthBarBG.width - 8) - Std.int(healthBar.width * (PlayState.instance.maxHealth / 2));
-				healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, newWidth, Std.int(healthBarBG.height - 8), this, 'health',
-					PlayState.instance.maxHealth, 2);
-				healthBar.scrollFactor.set();
-				healthBar.visible = !PlayState.instance.cpuControlled;
-				remove(healthBarFG);
-				if (!ClientPrefs.optimize)
-				{
-					remove(iconP1);
-					remove(iconP2);
-				}
-				add(healthBar);
-				add(healthBarFG);
-				if (!ClientPrefs.optimize)
-				{
-					add(iconP1);
-					add(iconP2);
-				}
-				reloadHealthBarColors(fucktimer);
-			});
+				remove(iconP1);
+				remove(iconP2);
+			}
+			add(healthBar);
+			add(healthBarFG);
+			if (!ClientPrefs.optimize)
+			{
+				add(iconP1);
+				add(iconP2);
+			}
+			reloadHealthBarColors(fucktimer);
 		}
 	}
 
