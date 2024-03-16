@@ -417,4 +417,18 @@ class Note extends #if ZoroModchartingTools flixel.addons.effects.FlxSkewedSprit
 
 		return rect;
 	}
+
+	override function drawComplex(camera:FlxCamera)
+	{
+		var downscrollCam = (camera is HudCamera ? cast(camera, HudCamera).downscroll : false);
+		flipY = (isSustainNote && flipSustain) && (downscrollCam != (__strum != null && __strum.getScrollSpeed(this) < 0));
+		if (downscrollCam)
+		{
+			frameOffset.y += __notePosFrameOffset.y * 2;
+			super.drawComplex(camera);
+			frameOffset.y -= __notePosFrameOffset.y * 2;
+		}
+		else
+			super.drawComplex(camera);
+	}
 }

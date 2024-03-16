@@ -408,46 +408,31 @@ class Paths
 
 		#if MODS_ALLOWED
 		file = modsImages(key);
+		#end
+
+		if (file == null || !currentTrackedAssets.exists(file))
+			file = getPath('images/$key.png', IMAGE, library);
+
 		if (currentTrackedAssets.exists(file))
 		{
+			var cachedGraphic:FlxGraphic = currentTrackedAssets.get(file);
 			localTrackedAssets.push(file);
-			return currentTrackedAssets.get(file);
+			return cachedGraphic;
 		}
-		else if (FileSystem.exists(file))
-			bitmap = BitmapData.fromFile(file);
-		else
-		#end
-		{
-			file = getPath('images/$key.png', IMAGE, library);
-			if (currentTrackedAssets.exists(file))
-			{
-				localTrackedAssets.push(file);
-				return currentTrackedAssets.get(file);
-			}
-			else if (OpenFlAssets.exists(file, IMAGE))
-				bitmap = OpenFlAssets.getBitmapData(file);
-		}
+
+		bitmap = OpenFlAssets.getBitmapData(file);
 
 		if (bitmap != null)
 		{
 			localTrackedAssets.push(file);
-			/*if (text)
-				{
-					var texture:RectangleTexture = FlxG.stage.context3D.createRectangleTexture(bitmap.width, bitmap.height, BGRA, true);
-					texture.uploadFromBitmapData(bitmap);
-					bitmap.image.data = null;
-					bitmap.dispose();
-					bitmap.disposeImage();
-					bitmap = BitmapData.fromTexture(texture);
-			}*/
-			// bitmap = reduceBitmapDataQuality(bitmap);
 			var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(bitmap, false, file);
 			newGraphic.persist = true;
 			newGraphic.destroyOnNoUse = false;
 			currentTrackedAssets.set(file, newGraphic);
 			return newGraphic;
 		}
-		trace('oh no Image: "$key" is returning null NOOOO');
+
+		trace('Image "$key" is returning null.');
 		return null;
 	}
 

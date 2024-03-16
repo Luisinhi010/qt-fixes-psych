@@ -14,7 +14,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.input.mouse.FlxMouseEventManager;
+import flixel.input.mouse.FlxMouseEvent;
 import flixel.text.FlxText;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
@@ -277,7 +277,7 @@ class MainMenuState extends MusicBeatState
 			menuItem.updateHitbox();
 			menuItem.x = (FlxG.width - 150) - (menuItem.width);
 
-			FlxMouseEventManager.add(menuItem, onMouseDown, onMouseUp, onMouseOver, onMouseOut);
+			FlxMouseEvent.add(menuItem, onMouseDown, onMouseUp, onMouseOver, onMouseOut);
 			menuScript.setVar('menuItem', menuItem);
 			menuScript.callFunc('postOptionSetup', [i]);
 		}

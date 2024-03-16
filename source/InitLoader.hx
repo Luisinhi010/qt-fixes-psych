@@ -39,19 +39,19 @@ class InitLoader extends FlxState
 	{
 		super.create();
 
-			#if cpp
-			WindowsData.enableVisualStyles();
-			WindowsData.setWindowColorMode(DARK);
+		#if cpp
+		WindowsData.enableVisualStyles();
+		WindowsData.setWindowColorMode(DARK);
 
-			checkSpecs(Cpu, Ram);
-			ClientPrefs.loadSettings();
-			lore.Colorblind.updateFilter();
-			Locale.init();
-			#end
-			FlxG.switchState(new TitleState());
+		checkSpecs(Cpu, Ram);
+		ClientPrefs.loadSettings();
+		lore.Colorblind.updateFilter();
+		Locale.init();
+		#end
+		FlxG.switchState(new TitleState());
 	}
 
-	function checkSpecs(cpu:Bool, ram:UInt64)
+	function checkSpecs(cpu:Bool, ram:Int)
 		if (!cpu && ram <= 4096)
 			messageBox("QT Fixes",
 				"Your PC does not meet the requirements Qt fixes has.\nWhile you can still play the mod, you may experience frame drops and/or lag spikes.\n\nDo you want to play anyway?");

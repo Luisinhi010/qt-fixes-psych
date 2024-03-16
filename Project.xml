@@ -100,13 +100,13 @@
 	<assets path="assets/sound" />
 	<!-- _______________________________ Libraries ______________________________ -->
 
-	<!-- yoshicrafter29 flixel comes bundled in with addons and ui as well so dw -->
-	<!--<haxelib name="flixel-yc29" rename="flixel" />-->	<!--not being used yet-->
-	<haxelib name="flixel"/>
+	<!--<haxelib name="flixel"/>-->
+	<haxelib name="cne-flixel" rename="flixel"/>
 	<haxedev set='webgl' />
 
 	<!--In case you want to use the addons package-->
-	<haxelib name="flixel-addons" />
+	<!--<haxelib name="flixel-addons" />-->
+	<haxelib name="cne-flixel-addons" rename="flixel-addons" />
 	<haxelib name="hscript" />
 	<define name="hscriptPos" />
 	<haxelib name="SScript" if="HAXE_EXTENSION" />

@@ -1,20 +1,20 @@
 package flixel.system.ui;
 
 #if FLX_SOUND_SYSTEM
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display.Sprite;
-import flash.Lib;
-import flash.text.TextField;
-import flash.text.TextFormat;
-import flash.text.TextFormatAlign;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.Sprite;
+import openfl.Lib;
+import openfl.text.TextField;
+import openfl.text.TextFormat;
+import openfl.text.TextFormatAlign;
 import flixel.FlxG;
 import flixel.system.FlxAssets;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 #if flash
-import flash.text.AntiAliasType;
-import flash.text.GridFitType;
+import openfl.text.AntiAliasType;
+import openfl.text.GridFitType;
 #end
 
 /**
@@ -22,6 +22,26 @@ import flash.text.GridFitType;
  */
 class FlxSoundTray extends Sprite
 {
+	/**
+		The sound that'll play when you change volume.
+	**/
+	public static var volumeChangeSFX:String = null;
+
+	/**
+		The sound that'll play when you increase volume.
+	**/
+	public static var volumeUpChangeSFX:String = "assets/sound/volumeUpSound";
+
+	/**
+		The sound that'll play when you decrease volume.
+	**/
+	public static var volumeDownChangeSFX:String = "assets/sound/volumeDownSound";
+
+	/**
+		Whether or not changing the volume should make noise.
+	**/
+	public static var silent:Bool = false;
+
 	/**
 	 * "VOLUME" text.
 	 */
@@ -47,28 +67,7 @@ class FlxSoundTray extends Sprite
 	 */
 	var _width:Int = 80;
 
-	var _defaultScale(default, set):Float = 2.0;
-
-	public var autoScale:Bool = true;
-
-	@:keep public function set__defaultScale(v:Float)
-	{
-		if (autoScale)
-		{
-			_defaultScale = v;
-			screenCenter();
-		}
-		return _defaultScale;
-	}
-
-	/**The sound used when increasing the volume.**/
-	public var volumeUpSound:String = "assets/sound/volumeUpSound";
-
-	/**The sound used when decreasing the volume.**/
-	public var volumeDownSound:String = 'assets/sound/volumeDownSound';
-
-	/**Whether or not changing the volume should make noise.**/
-	public var silent:Bool = false;
+	var _defaultScale:Float = 2.0;
 
 	/**For the Bars Animation**/
 	public var barTween:FlxTween;
@@ -123,7 +122,6 @@ class FlxSoundTray extends Sprite
 		}
 
 		y = -height;
-		// barTween.followGlobalSpeed = false;
 		visible = false;
 	}
 
@@ -163,9 +161,10 @@ class FlxSoundTray extends Sprite
 	{
 		if (!silent)
 		{
-			var sound = FlxAssets.getSound(up ? volumeUpSound : volumeDownSound);
-			if (sound != null)
-				FlxG.sound.load(sound).play();
+			var sound = up ? volumeUpChangeSFX : volumeDownChangeSFX;
+			if (sound == null)
+				sound = volumeChangeSFX;
+			FlxG.sound.load(sound).play();
 		}
 
 		_timer = 1;

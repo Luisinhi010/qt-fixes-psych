@@ -72,13 +72,7 @@ import sys.io.File;
 import sys.thread.Thread;
 #end
 #if VIDEOS_ALLOWED
-#if (hxCodec >= "2.6.1")
-import hxcodec.VideoHandler;
-#elseif (hxCodec >= "2.6.0")
-import VideoHandler;
-#else
-import vlc.MP4Handler as VideoHandler;
-#end
+import hxcodec.flixel.FlxVideo as VideoHandler;
 #end
 import hud.GameHUD;
 import hud.KbAttackAlert;
@@ -107,9 +101,6 @@ class PlayState extends MusicBeatState
 		['Sick!', 1], // From 90% to 99%
 		['Perfect!!', 1] // The value on this one isn't used actually, since Perfect is always "1"
 	];
-
-	public var camGameShaders:Array<ShaderEffect> = [];
-	public var camHUDShaders:Array<ShaderEffect> = [];
 
 	// event variables
 	private var isCameraOnForcedPos:Bool = false;
@@ -167,6 +158,14 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+
+	public var downscroll(get, set):Bool;
+
+	@:dox(hide) private function set_downscroll(v:Bool)
+		return camHUD.downscroll = camGAS.downscroll = v;
+
+	@:dox(hide) private function get_downscroll():Bool
+		return camHUD.downscroll;
 
 	public var spawnTime:Float = 2000;
 
@@ -242,32 +241,9 @@ class PlayState extends MusicBeatState
 
 	public var practiceMode:Bool = false;
 
-	public var widescreen(default, set):Bool = true;
-
-	function set_widescreen(value:Bool):Bool
-	{
-		widescreen = value;
-		for (i in FlxG.cameras.list)
-			if (i != null)
-				i.widescreen = true;
-		FlxG.widescreen = value;
-		return widescreen;
-	}
-
-	public var angleFix(default, set):Bool = true;
-
-	function set_angleFix(value:Bool):Bool
-	{
-		angleFix = value;
-		for (i in FlxG.cameras.list)
-			if (i != null)
-				i.angleFix = true;
-		return angleFix;
-	}
-
-	public var camHUD:FlxCamera;
 	public var camGame:FlxCamera;
-	public var camGAS:FlxCamera;
+	public var camHUD:HudCamera;
+	public var camGAS:HudCamera;
 	public var camOther:FlxCamera;
 	public var cameraSpeed:Float = 1;
 
@@ -624,25 +600,18 @@ class PlayState extends MusicBeatState
 		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
 		kadeInputSystem = ClientPrefs.inputSystem == "Kade";
 
-		camGame = new FlxCamera();
-		camHUD = new FlxCamera();
-		camGAS = new FlxCamera();
-		camOther = new FlxCamera();
-		camGame.bgColor = FlxColor.BLACK;
-		camHUD.bgColor.alpha = 0;
-		camGAS.bgColor.alpha = 0;
-		camOther.bgColor.alpha = 0;
-
-		FlxG.cameras.reset(camGame);
+		FlxG.cameras.reset(camGame = new FlxCamera());
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
-		FlxG.cameras.add(camHUD);
+		camGame.bgColor = FlxColor.BLACK;
+		FlxG.cameras.add(camHUD = new FlxCamera());
 		FlxG.cameras.setDefaultDrawTarget(camHUD, false);
-		FlxG.cameras.add(camGAS);
+		camHUD.bgColor.alpha = 0;
+		FlxG.cameras.add(camGAS = new FlxCamera());
 		FlxG.cameras.setDefaultDrawTarget(camGAS, false);
-		FlxG.cameras.add(camOther);
+		camGAS.bgColor.alpha = 0;
+		FlxG.cameras.add(camOther = new FlxCamera());
 		FlxG.cameras.setDefaultDrawTarget(camOther, false);
-
-		widescreen = angleFix = true;
+		camOther.bgColor.alpha = 0;
 
 		// camHUD.follow(camHUD.target, LOCKON, camHUD.followLerp); // testing
 
@@ -650,8 +619,7 @@ class PlayState extends MusicBeatState
 
 		CustomFadeTransition.nextCamera = camOther;
 
-		if (ClientPrefs.downScroll)
-			camGAS.flashSprite.scaleY *= -1;
+		downscroll = ClientPrefs.downScroll;
 
 		// camHUD.flashSprite.scaleX *= -1;
 
@@ -738,7 +706,6 @@ class PlayState extends MusicBeatState
 					// kadeInputSystem = true;
 					cameramove = false;
 					classicTermination = true;
-					widescreen = angleFix = false;
 					alertsoundprefix = attacksoundprefix = 'hazard/old/';
 					opponentstrumanimation = false;
 					discordDifficultyOverride = "Classic";
@@ -1953,6 +1920,7 @@ class PlayState extends MusicBeatState
 	}
 
 	public function addCharacterToList(newCharacter:String, type:Int)
+	{
 		if (!ClientPrefs.optimize)
 			switch (type)
 			{
@@ -1988,6 +1956,7 @@ class PlayState extends MusicBeatState
 						startCharacterLua(newGf.curCharacter);
 					}
 			}
+	}
 
 	function startCharacterLua(name:String)
 	{
@@ -2073,28 +2042,9 @@ class PlayState extends MusicBeatState
 			switch (cam.toLowerCase())
 			{
 				case 'camhud' | 'hud':
-					camHUDShaders.push(effect);
-					var newCamEffects:Array<BitmapFilter> = []; // IT SHUTS HAXE UP IDK WHY BUT WHATEVER IDK WHY I CANT JUST ARRAY<SHADERFILTER>
-					for (i in camHUDShaders)
-						newCamEffects.push(new ShaderFilter(i.shader));
-					camHUD.filters = newCamEffects;
+					camHUD.addShader(effect);
 				case 'camgame' | 'game':
-					camGameShaders.push(effect);
-					var newCamEffects:Array<BitmapFilter> = [];
-					for (i in camGameShaders)
-						newCamEffects.push(new ShaderFilter(i.shader));
-					camGame.filters = newCamEffects;
-				default:
-					if (modchartSprites.exists(cam))
-						Reflect.setProperty(modchartSprites.get(cam), "shader", effect.shader);
-					else if (modchartTexts.exists(cam))
-						Reflect.setProperty(modchartTexts.get(cam), "shader", effect.shader);
-					else
-					{
-						var OBJ = Reflect.getProperty(PlayState.instance, cam);
-						if (OBJ != null)
-							Reflect.setProperty(OBJ, "shader", effect.shader);
-					}
+					camGame.addShader(effect);
 			}
 		}
 	}
@@ -2106,21 +2056,9 @@ class PlayState extends MusicBeatState
 			switch (cam.toLowerCase())
 			{
 				case 'camhud' | 'hud':
-					camHUDShaders.remove(effect);
-					var newCamEffects:Array<BitmapFilter> = [];
-					for (i in camHUDShaders)
-					{
-						newCamEffects.push(new ShaderFilter(i.shader));
-					}
-					camHUD.filters = newCamEffects;
-				default:
-					camGameShaders.remove(effect);
-					var newCamEffects:Array<BitmapFilter> = [];
-					for (i in camGameShaders)
-					{
-						newCamEffects.push(new ShaderFilter(i.shader));
-					}
-					camGame.filters = newCamEffects;
+					camHUD.removeShader(effect);
+				case 'camgame' | 'game':
+					camGame.removeShader(effect);
 			}
 		}
 	}
@@ -2130,13 +2068,14 @@ class PlayState extends MusicBeatState
 		switch (cam.toLowerCase())
 		{
 			case 'camhud' | 'hud':
-				camHUD.filters = [];
-			default:
-				camGame.filters = [];
+				camHUD.setFilters([]);
+			case 'camgame' | 'game':
+				camGame.setFilters([]);
 		}
 	}
 
 	function startCharacterPos(char:Character, ?gfCheck:Bool = false)
+	{
 		if (!ClientPrefs.optimize)
 		{
 			if (gfCheck && char.curCharacter == gf.curCharacter)
@@ -2148,6 +2087,7 @@ class PlayState extends MusicBeatState
 			char.x += char.positionArray[0];
 			char.y += char.positionArray[1];
 		}
+	}
 
 	public function startVideo(name:String)
 	{
@@ -2167,7 +2107,7 @@ class PlayState extends MusicBeatState
 		}
 
 		var video:VideoHandler = new VideoHandler();
-		video.playVideo(filepath);
+		video.play(filepath);
 		video.finishCallback = function()
 		{
 			video.dispose();
@@ -2978,7 +2918,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	public var skipArrowStartTween:Bool = false; // for lua
+	var skipArrowStartTween:Bool = false; // for lua
 
 	private function generateStaticArrows(player:Int, twens:Bool = true, skin:String = 'NOTE_assets'):Void
 	{
@@ -7148,7 +7088,6 @@ class PlayState extends MusicBeatState
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
 
-		widescreen = angleFix = false;
 		FlxAnimationController.globalSpeed = 1;
 		FlxTween.globalSpeed = 1;
 		FlxTimer.globalSpeed = 1;
