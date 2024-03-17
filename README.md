@@ -1,20 +1,5 @@
 # Friday Night Funkin' Qt Fixes
 
-Ok, i recommend using haxe 4.2.5, flixel 4.11.0, flixel addons 2.11.0, lime 8.0.0 and openfl 9.2.0
-So just like
-download/update ur haxe here:
-[https://haxe.org/download/version/4.2.5/](https://haxe.org/download/version/4.2.5/)
-
-and update ur haxelibs:
-`haxelib install flixel 4.11.0`
-`haxelib install flixel-addons 2.11.0`
-`haxelib install lime 8.0.0`
-`haxelib install openfl 9.2.0`
-
-this uses [TheWorldMachinima's Sscript lib](https://github.com/TheWorldMachinima/SScript) cuz im stupid
-
-`haxelib git SScript https://github.com/TheWorldMachinima/SScript`
-
 # Friday Night Funkin' - Psych Engine
 
 Engine originally used on [Mind Games Mod](https://gamebanana.com/mods/301107), intended to be a fix for the vanilla version's many issues while keeping the casual play aspect of it. Also aiming to be an easier alternative to newbie coders.

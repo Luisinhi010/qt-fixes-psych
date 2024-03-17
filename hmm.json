@@ -3,22 +3,26 @@
     {
       "name": "lime",
       "type": "haxelib",
-      "version": "8.0.0"
+      "version": null
     },
     {
       "name": "openfl",
       "type": "haxelib",
-      "version": "9.2.0"
+      "version": null
     },
     {
-      "name": "flixel",
-      "type": "haxelib",
-      "version": "4.11.0"
+      "name": "cne-flixel",
+      "type": "git",
+      "dir": null,
+      "ref": "dev",
+      "url": "https://github.com/FNF-CNE-Devs/flixel"
     },
     {
-      "name": "flixel-addons",
-      "type": "haxelib",
-      "version": "2.11.0"
+      "name": "cne-flixel-addons",
+      "type": "git",
+      "dir": null,
+      "ref": "dev",
+      "url": "https://github.com/FNF-CNE-Devs/flixel-addons"
     },
     {
       "name": "flixel-tools",
@@ -43,7 +47,7 @@
     {
       "name": "hxCodec",
       "type": "haxelib",
-      "version": "2.5.1"
+      "version": null
     },
     {
       "name": "hscript",
@@ -65,7 +69,7 @@
     {
       "name": "SScript",
       "type": "haxelib",
-      "version": "3.0.0"
+      "version": null
     },
     {
       "name": "hscript-ex",
