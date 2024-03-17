@@ -152,7 +152,8 @@ class Main extends Sprite
 			{
 				for (cam in FlxG.cameras.list)
 				{
-					if (cam != null && cam.filters != null)
+					@:privateAccess
+					if (cam != null && cam._filters != null)
 						resetSpriteCache(cam.flashSprite);
 				}
 			}

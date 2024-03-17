@@ -102,7 +102,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		if (PlayState.instance.inhumanSong)
 		{
-			var checker:flixel.addons.display.FlxBackdrop = new flixel.addons.display.FlxBackdrop(Paths.image('luis/qt-fixes/Checker'), 0.2, 0.2, true, true);
+			var checker:flixel.addons.display.FlxBackdrop = new flixel.addons.display.FlxBackdrop(Paths.image('luis/qt-fixes/Checker'), flixel.util.FlxAxes.XY);
 			checker.alpha = 0;
 			checker.color = FlxColor.BLACK;
 			add(checker);

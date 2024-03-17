@@ -1,5 +1,6 @@
 package;
 
+import flixel.system.FlxAssets.FlxShader;
 import flixel.graphics.FlxGraphic;
 #if desktop
 import Discord.DiscordClient;
@@ -72,7 +73,15 @@ import sys.io.File;
 import sys.thread.Thread;
 #end
 #if VIDEOS_ALLOWED
+#if (hxCodec >= "3.0.0")
 import hxcodec.flixel.FlxVideo as VideoHandler;
+#elseif (hxCodec >= "2.6.1")
+import hxcodec.VideoHandler as VideoHandler;
+#elseif (hxCodec == "2.6.0")
+import VideoHandler;
+#else
+import vlc.MP4Handler as VideoHandler;
+#end
 #end
 import hud.GameHUD;
 import hud.KbAttackAlert;
@@ -159,14 +168,6 @@ class PlayState extends MusicBeatState
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
 
-	public var downscroll(get, set):Bool;
-
-	@:dox(hide) private function set_downscroll(v:Bool)
-		return camHUD.downscroll = camGAS.downscroll = v;
-
-	@:dox(hide) private function get_downscroll():Bool
-		return camHUD.downscroll;
-
 	public var spawnTime:Float = 2000;
 
 	public var vocals:FlxSound;
@@ -242,8 +243,8 @@ class PlayState extends MusicBeatState
 	public var practiceMode:Bool = false;
 
 	public var camGame:FlxCamera;
-	public var camHUD:HudCamera;
-	public var camGAS:HudCamera;
+	public var camHUD:FlxCamera;
+	public var camGAS:FlxCamera;
 	public var camOther:FlxCamera;
 	public var cameraSpeed:Float = 1;
 
@@ -619,7 +620,8 @@ class PlayState extends MusicBeatState
 
 		CustomFadeTransition.nextCamera = camOther;
 
-		downscroll = ClientPrefs.downScroll;
+		if (ClientPrefs.downScroll)
+			camGAS.flashSprite.scaleY *= -1;
 
 		// camHUD.flashSprite.scaleX *= -1;
 
@@ -1122,7 +1124,6 @@ class PlayState extends MusicBeatState
 						wiggleShitShow.waveFrequency = 4.4;
 						wiggleShitShow.waveSpeed = 1;
 						hazardBGkb.shader = wiggleShitShow.shader;
-						// FlxG.camera.setFilters([new ShaderFilter(cast wiggleShitShow.shader)]);
 
 						fogShitGroup = new FlxTypedGroup<FogThing>();
 						// upper layer
@@ -2042,11 +2043,14 @@ class PlayState extends MusicBeatState
 			switch (cam.toLowerCase())
 			{
 				case 'camhud' | 'hud':
-					camHUD.addShader(effect);
+					camHUD.addShader(effect.shader);
 				case 'camgame' | 'game':
-					camGame.addShader(effect);
+					camGame.addShader(effect.shader);
 			}
 		}
+		// this is jus fucked up bro...
+		// i was using cne flixel for no reason  at all.
+		// now i need to stop from being stupid
 	}
 
 	public function removeShaderFromCamera(cam:String, effect:ShaderEffect)
@@ -2056,9 +2060,9 @@ class PlayState extends MusicBeatState
 			switch (cam.toLowerCase())
 			{
 				case 'camhud' | 'hud':
-					camHUD.removeShader(effect);
+					camHUD.removeShader(effect.shader);
 				case 'camgame' | 'game':
-					camGame.removeShader(effect);
+					camGame.removeShader(effect.shader);
 			}
 		}
 	}
@@ -2107,14 +2111,24 @@ class PlayState extends MusicBeatState
 		}
 
 		var video:VideoHandler = new VideoHandler();
+		#if (hxCodec >= "3.0.0")
+		// Recent versions
 		video.play(filepath);
-		video.finishCallback = function()
+		video.onEndReached.add(function()
 		{
 			video.dispose();
 			startAndEnd();
 			return;
-		}
+		}, true);
 		#else
+		// Older versions
+		video.playVideo(filepath);
+		video.finishCallback = function()
+		{
+			startAndEnd();
+			return;
+		}
+		#end
 		FlxG.log.warn('Platform not supported!');
 		startAndEnd();
 		return;

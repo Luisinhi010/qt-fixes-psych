@@ -71,7 +71,7 @@ class NoteSplash extends FlxSprite
 			name = 'Splashes/noteSplashes';
 
 		if (isPlayer && reloadshaders)
-			if (ClientPrefs.useRGB && skin == 'noteSplashes')
+			if (ClientPrefs.useRGB && (skin == 'noteSplashes' || name == 'Splashes/noteSplashes'))
 			{
 				name = 'Splashes/noteSplashesRGB';
 				shader = colorMask.shader;
