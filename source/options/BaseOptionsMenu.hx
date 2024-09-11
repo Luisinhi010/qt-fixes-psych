@@ -26,6 +26,7 @@ import flixel.FlxCamera;
 import Shaders;
 
 using StringTools;
+using lore.FlxSpriteTools;
 
 class BaseOptionsMenu extends MusicBeatSubstate
 {
@@ -392,9 +393,9 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			}
 		}
 
-		descBox.setPosition(descText.x - 10, descText.y - 10);
 		descBox.setGraphicSize(Std.int(descText.width + 20), Std.int(descText.height + 25));
 		descBox.updateHitbox();
+		descBox.centerOnSprite(descText);
 
 		if (boyfriend != null)
 		{

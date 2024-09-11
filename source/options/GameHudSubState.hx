@@ -4,10 +4,13 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 
 using StringTools;
+using lore.FlxSpriteTools;
 
 class GameHudSubState extends BaseOptionsMenu
 {
 	public var strumLineNotes:FlxTypedGroup<StrumNote> = null;
+
+	var ogpos:Null<Float> = null;
 
 	public function new()
 	{
@@ -70,23 +73,40 @@ class GameHudSubState extends BaseOptionsMenu
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		generateStaticArrows();
 		insert(members.indexOf(descBox) - 1, strumLineNotes);
+		ogpos = descBox.y;
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+		if (ogpos != null)
+		{
+			descBox.y = ogpos;
+			if (ClientPrefs.downScroll)
+				descBox.y += 60;
+
+			descText.centerOnSprite(descBox);
+		}
 	}
 
 	private function generateStaticArrows():Void
+	{
 		for (i in 0...4)
 		{
 			var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? -278 : 48, ClientPrefs.downScroll ? 570 : 50, i, 1, 'NOTE_assets');
-			babyArrow.downScroll = ClientPrefs.downScroll;
 			babyArrow.scrollFactor.set();
 			strumLineNotes.add(babyArrow);
 			babyArrow.postAddedToGroup();
 		}
+	}
 
 	public function reposNotes()
+	{
 		for (i in 0...4)
 		{
 			strumLineNotes.members[i].x = ClientPrefs.middleScroll ? -278 : 48;
 			strumLineNotes.members[i].y = ClientPrefs.downScroll ? 570 : 50;
 			strumLineNotes.members[i].postAddedToGroup();
 		}
+	}
 }

@@ -93,7 +93,6 @@ class FlxFixedShader extends FlxShader
 		var id = vertex + fragment;
 
 		// trace('Should save: $save');
-
 		@:privateAccess
 		if (__context.__programs.exists(id) && save)
 		{
@@ -109,7 +108,6 @@ class FlxFixedShader extends FlxShader
 
 			@:privateAccess
 			program.__glProgram = __createGLProgram(vertex, fragment);
-
 			@:privateAccess
 			if (save)
 				__context.__programs.set(id, program);

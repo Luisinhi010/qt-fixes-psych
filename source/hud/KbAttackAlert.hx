@@ -27,7 +27,7 @@ class KbAttackAlert extends FlxGroup
 
 	function set_color(value:FlxColor):FlxColor
 	{
-		tipTxt.applyMarkup(dodgeWarning, [new FlxTextFormatMarkerPair(new FlxTextFormat(value), "$")]);
+		tipTxt.applyMarkup(tipTxt.text, [new FlxTextFormatMarkerPair(new FlxTextFormat(value), "$")]);
 		return colorMask.rCol = color = value;
 	}
 
@@ -143,7 +143,9 @@ class KbAttackAlert extends FlxGroup
 			alert.x += alert.width / 4; // wtf? haz?
 			if (PlayState.instance.forceMiddleScroll || !ClientPrefs.opponentStrums)
 				alert.x -= alert.width / (PlayState.instance.forceMiddleScroll ? 2 : 3);
-			alert.y = 205 + (ClientPrefs.downScroll ? 20 : 0);
+			alert.y = 205;
+			if (ClientPrefs.downScroll)
+				alert.y += 20;
 			alert.moves = false;
 			add(alert);
 			alert.shader = colorMask.shader;
@@ -156,7 +158,6 @@ class KbAttackAlert extends FlxGroup
 			repostext();
 			tipTxt.moves = false;
 			add(tipTxt);
-			tipTxt.shader = colorMask.shader;
 
 			alertAdded = true;
 			multiplier = MusicBeatState.multAnims ? PlayState.instance.playbackRate : 1;

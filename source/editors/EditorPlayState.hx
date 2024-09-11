@@ -38,6 +38,7 @@ class EditorPlayState extends MusicBeatState
 	public var unspawnNotes:Array<Note> = [];
 
 	var generatedMusic:Bool = false;
+
 	var vocals:FlxSound;
 
 	var startOffset:Float = 0;
@@ -514,9 +515,7 @@ class EditorPlayState extends MusicBeatState
 	{
 		super.stepHit();
 		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
-		{
 			resyncVocals();
-		}
 	}
 
 	function resyncVocals():Void

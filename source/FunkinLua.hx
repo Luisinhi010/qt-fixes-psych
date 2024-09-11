@@ -4092,7 +4092,7 @@ class CustomSubstate extends MusicBeatSubstate
 }
 
 #if hscript
-class HScript /*extends SScript*/ // i really want to change this to use SScript, but idk... i may remove that too. -Luis
+class HScript
 {
 	public static var parser:Parser = new Parser();
 

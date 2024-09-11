@@ -309,8 +309,11 @@ class PauseSubState extends MusicBeatSubstate
 						PlayState.instance.gameHUD.healthBarBG.visible = !PlayState.instance.cpuControlled;
 						PlayState.instance.gameHUD.healthBar.visible = !PlayState.instance.cpuControlled;
 						PlayState.instance.gameHUD.healthBarFG.visible = !PlayState.instance.cpuControlled;
-						PlayState.instance.gameHUD.iconP1.visible = !PlayState.instance.cpuControlled;
-						PlayState.instance.gameHUD.iconP2.visible = !PlayState.instance.cpuControlled;
+						if (!ClientPrefs.optimize)
+						{
+							PlayState.instance.gameHUD.iconP1.visible = !PlayState.instance.cpuControlled;
+							PlayState.instance.gameHUD.iconP2.visible = !PlayState.instance.cpuControlled;
+						}
 						PlayState.instance.gameHUD.scoreTxt.visible = !PlayState.instance.cpuControlled;
 						PlayState.instance.gameHUD.botplayTxt.alpha = 1;
 						PlayState.instance.gameHUD.botplaySine = 0;

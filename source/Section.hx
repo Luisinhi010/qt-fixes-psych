@@ -32,6 +32,5 @@ class Section
 	{
 		this.sectionBeats = sectionBeats;
 		this.lengthInSteps = lengthInSteps;
-		// trace('test created section: ' + sectionBeats);
 	}
 }

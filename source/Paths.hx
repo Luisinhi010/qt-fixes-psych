@@ -189,19 +189,6 @@ class Paths
 	inline static public function lua(key:String, ?library:String)
 		return getPath('$key.lua', TEXT, library);
 
-	inline static public function Script(key:String)
-	{
-		#if MODS_ALLOWED
-		if (FileSystem.exists(modFolders('classes/$key.hx')))
-			return modFolders('classes/$key.hx');
-		#end
-		if (FileSystem.exists(getPreloadPath('classes/$key.hx')))
-			return getPreloadPath('classes/$key.hx');
-
-		trace('File for script $key.hx not found!');
-		return null;
-	}
-
 	static public function video(key:String)
 	{
 		#if MODS_ALLOWED

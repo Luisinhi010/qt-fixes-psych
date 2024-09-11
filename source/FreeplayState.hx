@@ -53,9 +53,6 @@ class FreeplayState extends MusicBeatState
 	public static var curInstPlaying:Int = -1;
 	public static var curInstPlayingtxt:String = "N/A";
 
-	public var instPlaying:Int = -1; // script handler doesnt work with static var for some reason?
-	public var instPlayingtxt:String = "N/A"; // its not really a text but who cares?
-
 	public var iconArray:Array<HealthIcon> = [];
 
 	public var bg:FlxSprite;
@@ -65,7 +62,12 @@ class FreeplayState extends MusicBeatState
 		'EASY' => FlxColor.GREEN,
 		'NORMAL' => FlxColor.YELLOW,
 		'HARD' => FlxColor.RED,
-		'HARDER' => 0xFF960000
+		'HARDER' => 0xFF960000,
+		'CLASSIC' => FlxColor.RED,
+		'VERY HARD' => FlxColor.RED,
+		'FUTURE' => FlxColor.CYAN,
+		'' => FlxColor.TRANSPARENT,
+		'???' => FlxColor.RED
 	];
 	public var curStringDifficulty:String = 'NORMAL';
 
@@ -74,9 +76,6 @@ class FreeplayState extends MusicBeatState
 	public var amountToTakeAway:Int = 0; // How deep you are in the depths.
 	public var downLoopCounter:Int; // Starts at 0, but each time you loop around, will increment by 1. Once it reaches 10 or above, it will allow you to go into the depths. Resets if you go up even once.
 
-	public var menuScript:ScriptHandler;
-	public var bgPath:String = 'menuDesat';
-
 	public static var usecontrols:Bool = true; // for some reason you can still use the controls when you reset your score???? -Luis
 
 	// nvm persistentUpdate does that but since i put the camera zoom i will use usecontrols for more things -Luis
@@ -84,9 +83,7 @@ class FreeplayState extends MusicBeatState
 	override function create()
 	{
 		// Paths.clearStoredMemory();
-		// Paths.clearUnusedMemory();
-		instPlaying = curInstPlaying;
-		instPlayingtxt = curInstPlayingtxt;
+		Paths.clearUnusedMemory();
 
 		persistentUpdate = usecontrols = true;
 		PlayState.isStoryMode = false;
@@ -95,16 +92,6 @@ class FreeplayState extends MusicBeatState
 		#if desktop
 		DiscordClient.changePresence("In the Menus", null);
 		#end
-
-		menuScript = new ScriptHandler(Paths.Script('FreeplayState'));
-
-		menuScript.setVar('FreeplayState', this);
-		menuScript.setVar('add', add);
-		menuScript.setVar('insert', insert);
-		menuScript.setVar('members', members);
-		menuScript.setVar('remove', remove);
-
-		menuScript.callFunc('create', []);
 
 		for (i in 0...WeekData.weeksList.length)
 		{
@@ -138,6 +125,7 @@ class FreeplayState extends MusicBeatState
 			addSong("Termination", 0, 'kb', FlxColor.fromRGB(255, 26, 26));
 		if (Achievements.isAchievementUnlocked('termination_beat') || Achievements.isAchievementUnlocked('termination_old'))
 			addSong("Cessation", 0, 'qtkb', FlxColor.fromRGB(130, 180, 255));
+		// addSong("Interlope", 0, 'invis', FlxColor.fromRGB(0, 0, 0));
 
 		lastSongLocation = songs.length - 1;
 		lastSongColor = songs[lastSongLocation].color; // Keep this the same colour as Cessation!
@@ -148,7 +136,7 @@ class FreeplayState extends MusicBeatState
 			addSong("Interlope", 0, 'invis', FlxColor.fromRGB(0, 0, 0));
 		}
 
-		bg = new FlxSprite().loadGraphic(Paths.image(bgPath));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuFreePlay'));
 		bg.antialiasing = ClientPrefs.antialiasing;
 		add(bg);
 		bg.screenCenter();
@@ -239,13 +227,12 @@ class FreeplayState extends MusicBeatState
 		text.setFormat(Paths.font("vcr.ttf"), size, FlxColor.WHITE, RIGHT);
 		text.scrollFactor.set();
 		add(text);
+		FlxG.camera.zoom = 1.1;
 		super.create();
-		menuScript.callFunc('postCreate', []);
 	}
 
 	override function closeSubState()
 	{
-		menuScript.callFunc('closeSubState', []);
 		changeSelection(0, false);
 		persistentUpdate = true;
 		super.closeSubState();
@@ -268,8 +255,6 @@ class FreeplayState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		menuScript.callFunc('update', [elapsed]);
-
 		if (FlxG.sound.music.volume < 0.7 && songs[curSelected].songName != "" && songs[curSelected].songName != "Interlope")
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
@@ -351,14 +336,10 @@ class FreeplayState extends MusicBeatState
 				}
 
 				if (FlxG.mouse.wheel != 0)
-				{
-					FlxG.sound.play(Paths.sound('scrollMenu'), 0.2);
 					if (FlxG.keys.pressed.SHIFT)
 						changeDiff(FlxG.mouse.wheel);
 					else
-						changeSelection(-FlxG.mouse.wheel, false);
-					changeDiff();
-				}
+						changeSelection(-FlxG.mouse.wheel);
 			}
 
 			if (controls.UI_LEFT_P)
@@ -423,14 +404,14 @@ class FreeplayState extends MusicBeatState
 						Conductor.songPosition = FlxG.sound.music.time;
 						Conductor.mapBPMChanges(PlayState.SONG);
 						Conductor.changeBPM(PlayState.SONG.bpm);
-						curInstPlayingtxt = instPlayingtxt = songs[curSelected].songName.toLowerCase();
+						curInstPlayingtxt = songs[curSelected].songName.toLowerCase();
 						FlxG.sound.list.add(vocals);
 						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.7);
 						vocals.play();
 						vocals.persist = true;
 						vocals.looped = true;
 						vocals.volume = 0.7;
-						curInstPlaying = instPlaying = curSelected;
+						curInstPlaying = curSelected;
 						for (i in 0...iconArray.length)
 							iconArray[i].animation.curAnim.curFrame = 0;
 						iconArray[curInstPlaying].bounce();
@@ -444,9 +425,9 @@ class FreeplayState extends MusicBeatState
 			else if ((accepted || FlxG.mouse.justPressed) && songs[curSelected].songName != "")
 			{
 				persistentUpdate = false;
-				curInstPlayingtxt = instPlayingtxt = '';
+				curInstPlayingtxt = '';
 				curPlaying = false;
-				curInstPlaying = instPlaying = -1;
+				curInstPlaying = -1;
 				var songLowercase:String = Paths.formatToSongPath(songs[curSelected].songName);
 				var poop:String = Highscore.formatSong(songLowercase, curDifficulty);
 				trace(poop);
@@ -481,7 +462,6 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 		super.update(elapsed);
-		menuScript.callFunc('postUpdate', [elapsed]);
 	}
 
 	public static function destroyFreeplayVocals()
@@ -496,7 +476,6 @@ class FreeplayState extends MusicBeatState
 
 	function changeDiff(change:Int = 0, ?jank:Bool = false)
 	{
-		menuScript.callFunc('changeDiff', [change, jank]);
 		if (jank)
 			curDifficulty = 1;
 		else
@@ -568,12 +547,10 @@ class FreeplayState extends MusicBeatState
 			});
 
 		positionHighscore();
-		menuScript.callFunc('postChangeDiff', [change, jank]);
 	}
 
 	function changeSelection(change:Int = 0, playSound:Bool = true)
 	{
-		menuScript.callFunc('changeSelection', [change, playSound]);
 		if (playSound)
 			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
@@ -723,12 +700,10 @@ class FreeplayState extends MusicBeatState
 		var newPos:Int = CoolUtil.difficulties.indexOf(lastDifficultyName);
 		if (newPos > -1)
 			curDifficulty = newPos;
-		menuScript.callFunc('postChangeSelection', [change, playSound]);
 	}
 
 	private function positionHighscore()
 	{
-		menuScript.callFunc('positionHighscore', []);
 		var songlength:Int = songs.length;
 		if (Achievements.isAchievementUnlocked('cessation_beat'))
 			songlength -= 21;
@@ -748,7 +723,6 @@ class FreeplayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-		menuScript.callFunc('beatHit', [curBeat]);
 		if (curPlaying)
 		{
 			if (iconArray != null)
@@ -762,7 +736,6 @@ class FreeplayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
-		menuScript.callFunc('stepHit', [curStep]);
 	}
 }
 

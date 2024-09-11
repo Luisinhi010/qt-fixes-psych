@@ -2,8 +2,10 @@ package lore;
 
 // og https://github.com/sayofthelor/lore-engine/blob/main/source/lore/Locale.hx
 import haxe.Json;
-#if sys import sys.io.File;
-import sys.FileSystem; #end // since haxe hates me
+#if sys
+import sys.io.File;
+import sys.FileSystem;
+#end // since haxe hates me
 import lime.utils.Assets;
 
 using StringTools;
